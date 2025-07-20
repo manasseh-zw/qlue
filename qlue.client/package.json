@@ -10,18 +10,25 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@heroui/react": "^2.8.1",
+    "@tailwindcss/typography": "^0.5.16",
     "@tanstack/react-router": "^1.121.2",
     "@tanstack/router-plugin": "^1.121.2",
+    "framer-motion": "^12.23.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.2.0",
+    "@types/node": "^24.0.15",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.21",
     "jsdom": "^26.0.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "3",
     "typescript": "^5.7.2",
     "vite": "^6.1.0",
     "vitest": "^3.0.5",

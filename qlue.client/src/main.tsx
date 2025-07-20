@@ -10,6 +10,7 @@ import { Providers } from "./providers";
 const router = createRouter({
   routeTree,
   context: {},
+  defaultViewTransition: true,
   defaultPreload: "intent",
   scrollRestoration: true,
   defaultStructuralSharing: true,

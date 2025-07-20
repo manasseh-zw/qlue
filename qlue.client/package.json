@@ -10,14 +10,18 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@ai-sdk/react": "^1.2.12",
     "@heroui/react": "^2.8.1",
     "@tailwindcss/typography": "^0.5.16",
     "@tanstack/react-router": "^1.121.2",
     "@tanstack/router-plugin": "^1.121.2",
+    "boring-avatars": "^1.11.2",
     "framer-motion": "^12.23.6",
     "lucide-react": "^0.525.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",

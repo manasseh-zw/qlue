@@ -4,6 +4,7 @@ import { Thinking } from "@/components/chat/thinking";
 import { useChat } from "@ai-sdk/react";
 import { createFileRoute } from "@tanstack/react-router";
 import Avatar from "boring-avatars";
+import { config } from "client.config";
 import { useEffect, useRef } from "react";
 
 export const Route = createFileRoute("/chat/")({
@@ -11,9 +12,12 @@ export const Route = createFileRoute("/chat/")({
 });
 
 function RouteComponent() {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const url = `${config.serverUrl}/api/chat`;
 
-  const { messages, append, status } = useChat();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { messages, append, status } = useChat({
+    api: url,
+  });
 
   useEffect(() => {
     // We only want to avoid scrolling when the response is actively streaming.

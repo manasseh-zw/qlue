@@ -11,6 +11,7 @@ module.exports = {
     fontFamily: {
       rubik: ["Rubik", "serif"],
       geist: ["Geist", "sans-serif"],
+      sans: ["Open Sans", "sans-serif"],
     },
   },
   plugins: [

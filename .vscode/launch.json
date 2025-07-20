@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Server",
+      "type": "bun",
+      "request": "launch",
+      "program": "${workspaceFolder}/qlue.server/src/index.ts",
+      "cwd": "${workspaceFolder}/qlue.server",
+      "stopOnEntry": false,
+      "watchMode": true
+    },
+    {
+      "name": "Launch Client",
+      "type": "node",
+      "request": "launch",
+      "preLaunchTask": "Start Client",
+      "program": "${workspaceFolder}/qlue.client",
+      "cwd": "${workspaceFolder}/qlue.client",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Launch Full Stack",
+      "configurations": [
+        "Debug Server",
+        "Launch Client"
+      ]
+    }
+  ]
+} 

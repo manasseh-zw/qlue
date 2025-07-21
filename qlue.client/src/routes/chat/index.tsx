@@ -47,7 +47,7 @@ function RouteComponent() {
       <div className="flex flex-col h-full w-full max-w-3xl mx-auto relative">
         <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-content1 to-transparent z-10 pointer-events-none" />
 
-        <div className="flex-1 p-4 space-y-9 font-geist overflow-y-auto scrollbar-hide">
+        <div className="flex-1 p-4 space-y-9 font-rubik overflow-y-auto scrollbar-hide">
           {displayMessages.map((message) => (
             <div
               key={message.id}
@@ -75,7 +75,7 @@ function RouteComponent() {
                   className={
                     message.role === "user"
                       ? "rounded-2xl bg-content2 p-3 max-w-[85%] break-words"
-                      : "text-base max-w-[90%] "
+                      : "text-base max-w-[90%]"
                   }
                 >
                   {message.role === "assistant" ? (

@@ -1,0 +1,3833 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Insights API",
+    "description": "Generate insights based on the query parameters supplied.",
+    "contact": {
+      "name": "Support",
+      "email": "support@qloo.com"
+    },
+    "version": "2.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://staging.api.qloo.com/v2",
+      "description": "Staging server"
+    }
+  ],
+  "security": [
+    {
+      "ApiKey": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "insights",
+      "description": "Endpoints related to insights API."
+    },
+    {
+      "name": "audiences",
+      "description": "Endpoints related to audiences."
+    },
+    {
+      "name": "tags",
+      "description": "Endpoints related to tags."
+    }
+  ],
+  "paths": {
+    "/insights": {
+      "get": {
+        "summary": "Insights API Deep Dive",
+        "operationId": "get-insights",
+        "description": "Returns taste-based insights based on the input parameters you provide.",
+        "tags": [
+          "insights"
+        ],
+        "parameters": [
+          {
+            "name": "filter.type",
+            "in": "query",
+            "description": "Filter by the category of entity to return (urn:entity:place).",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "urn:entity:artist",
+                "urn:entity:book",
+                "urn:entity:brand",
+                "urn:entity:destination",
+                "urn:entity:movie",
+                "urn:entity:person",
+                "urn:entity:place",
+                "urn:entity:podcast",
+                "urn:entity:tv_show",
+                "urn:entity:videogame",
+                "urn:heatmap"
+              ],
+              "examples": [
+                "urn:entity:book"
+              ]
+            }
+          },
+          {
+            "name": "bias.trends",
+            "in": "query",
+            "description": "The level of impact a trending entity has on the results. Supported by select categories only.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "off",
+                "low",
+                "medium",
+                "high"
+              ],
+              "examples": [
+                "low"
+              ]
+            }
+          },
+          {
+            "name": "diversify.by",
+            "in": "query",
+            "description": "Limits results to a set number of high-affinity entities per city. Set this to \"properties.geocode.city\" to enable city-based diversification. Cities are ranked based on the highest-affinity entity within them, and entities within each city are ordered by their individual affinities.\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "properties.geocode.city"
+              ]
+            }
+          },
+          {
+            "name": "diversify.take",
+            "in": "query",
+            "description": "Sets the maximum number of results to return per city when using \"diversify.by\": \"properties.geocode.city\". For example, if set to 5, the response will include up to 5 entities with the highest affinities in each city.\n",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                5
+              ]
+            }
+          },
+          {
+            "name": "feature.explainability",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "When set to `true`, the response includes explainability metadata for each recommendation and for the overall result set.\n\n**Per-recommendation**: Each result includes a `query.explainability` section showing which input entities (e.g. `signal.interests.entities`) contributed to the recommendation and by how much. Scores are normalized between 0–1. Entities with scores ≥ 0.1 are always included; those below may be omitted to reduce response size.\n\n**Aggregate impact**: The top-level `query.explainability` object shows average influence of each input entity across top-N result subsets (e.g. top 3, 5, 10, all).\n\n**Note**: If explainability cannot be computed for the request, a warning is included under `query.explainability.warning`, but results still return normally.\n"
+          },
+          {
+            "name": "filter.address",
+            "in": "query",
+            "description": "Filter by address using a partial string query.",
+            "schema": {
+              "type": "string",
+              "examples": [
+                "123 Main St"
+              ]
+            }
+          },
+          {
+            "name": "filter.content_rating",
+            "in": "query",
+            "description": "Filter by a comma-separated list of content ratings based on the MPAA film rating system, which determines suitability for various audiences.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "G",
+                "PG",
+                "PG-13",
+                "R",
+                "NC-17"
+              ],
+              "examples": [
+                "PG"
+              ]
+            }
+          },
+          {
+            "name": "filter.date_of_birth.max",
+            "in": "query",
+            "description": "Filter by the most recent date of birth desired for the queried person.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "examples": [
+                "2004-01-01"
+              ]
+            }
+          },
+          {
+            "name": "filter.date_of_birth.min",
+            "in": "query",
+            "description": "Filter by the earliest date of birth desired for the queried person.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "examples": [
+                "1996-01-01"
+              ]
+            }
+          },
+          {
+            "name": "filter.date_of_death.max",
+            "in": "query",
+            "description": "Filter by the most recent date of death desired for the queried person.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "examples": [
+                "2004-01-01"
+              ]
+            }
+          },
+          {
+            "name": "filter.date_of_death.min",
+            "in": "query",
+            "description": "Filter by the earliest date of death desired for the queried person.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "examples": [
+                "1985-01-01"
+              ]
+            }
+          },
+          {
+            "name": "filter.exclude.tags",
+            "in": "query",
+            "description": "Exclude entities associated with a comma-separated list of tags.",
+            "schema": {
+              "type": "string",
+              "examples": [
+                "urn:tag:genre:media:mystery,urn:tag:genre:media:drama"
+              ]
+            }
+          },
+          {
+            "name": "operator.exclude.tags",
+            "in": "query",
+            "description": "Specifies how multiple `filter.exclude.tags` values are combined in the query. Use \"union\" (equivalent to a logical \"or\") to exclude results that contain at least one of the specified tags, or \"intersection\" (equivalent to a logical \"and\") to exclude only results that contain all specified tags. The default is \"union\".",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "union",
+                "intersection"
+              ],
+              "examples": [
+                "union"
+              ]
+            }
+          },
+          {
+            "name": "filter.exists",
+            "in": "query",
+            "description": "Filter results to include only entities that have one or more specified properties. Use `properties.image` to return only entities that include an image URL.\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "properties.image"
+              ]
+            }
+          },
+          {
+            "name": "filter.external.exists",
+            "in": "query",
+            "description": "Filter by a comma-separated list of external keys. (`resy`\\|`michelin`\\|`tablet`).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "resy,michelin"
+              ]
+            }
+          },
+          {
+            "name": "operator.filter.external.exists",
+            "in": "query",
+            "description": "Specifies how multiple `filter.external.exists` values are combined in the query. Use \"union\" (equivalent to a logical \"or\") to return results that match at least one of the specified external keys (e.g., resy, michelin, or tablet), or \"intersection\" (equivalent to a logical \"and\") to return only results that match all specified external keys. The default is \"union\".",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "union",
+                "intersection"
+              ],
+              "examples": [
+                "union"
+              ]
+            }
+          },
+          {
+            "name": "filter.external.resy.count.max",
+            "in": "query",
+            "description": "Filter places to include only those with a Resy rating count less than or equal to the specified maximum.   Applies only to entities with `filter.type` of `urn:entity:place`.\n",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "examples": [
+                200
+              ]
+            }
+          },
+          {
+            "name": "filter.external.resy.count.min",
+            "in": "query",
+            "description": "Filter places to include only those with a Resy rating count greater than or equal to the specified minimum.   Applies only to entities with `filter.type` of `urn:entity:place`.\n",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "examples": [
+                20
+              ]
+            }
+          },
+          {
+            "name": "filter.external.resy.party_size.max",
+            "in": "query",
+            "description": "Filter by the maximum supported party size required for a Point of Interest.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                10
+              ]
+            }
+          },
+          {
+            "name": "filter.external.resy.party_size.min",
+            "in": "query",
+            "description": "Filter by the minimum supported party size required for a Point of Interest.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                2
+              ]
+            }
+          },
+          {
+            "name": "filter.external.resy.rating.max",
+            "in": "query",
+            "description": "Filter places to include only those with a Resy rating less than or equal to the specified maximum (1–5 scale). Applies only to entities with `filter.type` of `urn:entity:place`.",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5,
+              "examples": [
+                4.5
+              ]
+            }
+          },
+          {
+            "name": "filter.external.resy.rating.min",
+            "in": "query",
+            "description": "Filter places to include only those with a Resy rating greater than or equal to the specified minimum (1–5 scale). Applies only to entities with `filter.type` of `urn:entity:place`.",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5,
+              "examples": [
+                3.5
+              ]
+            }
+          },
+          {
+            "name": "filter.external.tripadvisor.rating.count.min",
+            "in": "query",
+            "description": "Filter places to include only those with a Tripadvisor review count greater than or equal to the specified minimum. This filter only applies to entities with `filter.type` of `urn:entity:place`.\n",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "examples": [
+                50
+              ]
+            }
+          },
+          {
+            "name": "filter.external.tripadvisor.rating.count.max",
+            "in": "query",
+            "description": "Filter places to include only those with a Tripadvisor review count less than or equal to the specified maximum. This filter only applies to entities with `filter.type` of `urn:entity:place`.\n",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "examples": [
+                500
+              ]
+            }
+          },
+          {
+            "name": "filter.external.tripadvisor.rating.max",
+            "in": "query",
+            "description": "Filter places to include only those with a Tripadvisor rating less than or equal to the specified maximum. This filter only applies to entities with `filter.type` of `urn:entity:place`.\n",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5,
+              "examples": [
+                4
+              ]
+            }
+          },
+          {
+            "name": "filter.external.tripadvisor.rating.min",
+            "in": "query",
+            "description": "Filter places to include only those with a Tripadvisor rating greater than or equal to the specified minimum. This filter only applies to entities with `filter.type` of `urn:entity:place`.\n",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5,
+              "examples": [
+                3
+              ]
+            }
+          },
+          {
+            "name": "filter.finale_year.max",
+            "in": "query",
+            "description": "Filter by the latest desired year for the final season of a TV show.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "examples": [
+                2021
+              ]
+            }
+          },
+          {
+            "name": "filter.finale_year.min",
+            "in": "query",
+            "description": "Filter by the earliest desired year for the final season of a TV show.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "examples": [
+                2014
+              ]
+            }
+          },
+          {
+            "name": "filter.gender",
+            "in": "query",
+            "description": "Filter results to align with a specific gender identity. Used to personalize output based on known or inferred gender preferences.\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "female"
+              ]
+            }
+          },
+          {
+            "name": "filter.geocode.admin1_region",
+            "in": "query",
+            "description": "Filter by `properties.geocode.admin1_region`. Exact match (usually state).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "NY"
+              ]
+            }
+          },
+          {
+            "name": "filter.geocode.admin2_region",
+            "in": "query",
+            "description": "Filter by `properties.geocode.admin2_region`. Exact match (often county or borough).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "New York County"
+              ]
+            }
+          },
+          {
+            "name": "filter.geocode.country_code",
+            "in": "query",
+            "description": "Filter by `properties.geocode.country_code`. Exact match (two-letter country code).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "US"
+              ]
+            }
+          },
+          {
+            "name": "filter.geocode.name",
+            "in": "query",
+            "description": "Filter by `properties.geocode.name`. Exact match (usually city or town name).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "New York"
+              ]
+            }
+          },
+          {
+            "name": "filter.hotel_class.max",
+            "in": "query",
+            "description": "Filter by the maximum desired hotel class (1-5, inclusive).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "examples": [
+                5
+              ]
+            }
+          },
+          {
+            "name": "filter.hotel_class.min",
+            "in": "query",
+            "description": "Filter by the minimum desired hotel class (1-5, inclusive).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "examples": [
+                3
+              ]
+            }
+          },
+          {
+            "name": "filter.hours",
+            "in": "query",
+            "description": "Filter by the day of the week the Point of Interest must be open (Monday, Tuesday, etc.).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "monday",
+                "tuesday",
+                "wednesday",
+                "thursday",
+                "friday",
+                "saturday",
+                "sunday"
+              ],
+              "examples": [
+                "monday"
+              ]
+            }
+          },
+          {
+            "name": "filter.latest_known_year.max",
+            "in": "query",
+            "description": "Filter by a certain maximum year that shows were released or updated.",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "examples": [
+                    2023
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "name": "filter.latest_known_year.min",
+            "in": "query",
+            "description": "Filter by a certain minimum year that shows were released or updated.",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "examples": [
+                    2014
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "name": "filter.location",
+            "in": "query",
+            "description": "Used to filter by a WKT `POINT`, `POLYGON`, `MULTIPOLYGON` or a single Qloo ID for a named `urn:entity:locality`. WKT is formatted as X then Y, therefore longitude is first (`POINT(-73.99823 40.722668)`). If a Qloo ID or WKT `POLYGON` is passed, `filter.location.radius` will create a fuzzy boundary when set to a value > 0.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "POINT(-73.99823 40.722668)"
+              ]
+            }
+          },
+          {
+            "name": "filter.exclude.location",
+            "in": "query",
+            "description": "Exclude results that fall within a specific location, defined by either a WKT `POINT`, `POLYGON`, `MULTIPOLYGON`, or a Qloo ID for a named `urn:entity:locality`.   WKT is formatted with longitude first (e.g., `POINT(-73.99823 40.722668)`).   When using a locality ID or a WKT `POLYGON`, setting `filter.location.radius` to a value > 0 creates a fuzzy exclusion boundary.\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "POINT(-73.99823 40.722668)"
+              ]
+            }
+          },
+          {
+            "name": "filter.location.query",
+            "in": "query",
+            "description": "A query used to search for one or more named `urn:entity:locality` Qloo IDs for filtering requests, equivalent to passing the same Locality Qloo ID(s) into `filter.location`.\n  - For **GET requests**: Provide a single locality query as a string.\n  - For **POST requests**:\n    - You can still send a single locality as a string.\n    - Or you can send an array of locality names to query multiple localities at once. When multiple localities are provided, their geographic shapes are merged, and the system returns results with the highest affinities across the combined area.\n\nLocality queries are fuzzy-matched and case-insensitive. Examples include `New York City`, `Garden City`, `New York`, `Los Angeles`, `Lower East Side`, and AKAs like `The Big Apple`. When a single locality is supplied, the response JSON includes `query.locality.signal` with the matched Qloo entity. If multiple are supplied, this field is omitted. By default, the API includes a tuning that also captures nearby entities just outside the official boundaries of the locality. To turn this off and limit results strictly to within the locality, set `filter.location.radius=0`. If no localities are found, the API returns a 400 error.\n",
+            "required": false,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            },
+            "examples": {
+              "singleLocality": {
+                "summary": "A single locality string",
+                "value": "New York City"
+              },
+              "multipleLocalities": {
+                "summary": "An array of locality strings (POST only)",
+                "value": [
+                  "Miami",
+                  "Miami Beach"
+                ]
+              }
+            }
+          },
+          {
+            "name": "filter.exclude.location.query",
+            "in": "query",
+            "description": "A query used to exclude results based on one or more named `urn:entity:locality` Qloo IDs, resolved from fuzzy-matched locality names.   This is equivalent to passing the resolved Locality Qloo ID(s) into `filter.exclude.location`.\n- For **GET requests**: Provide a single locality query as a string. - For **POST requests**:\n  - You can still send a single locality as a string.\n  - Or send an array of locality names to exclude multiple areas at once. When multiple localities are provided, their geographic shapes are merged, and the system excludes results from across the combined area.\n\nLocality queries are case-insensitive and support common AKAs (e.g., `The Big Apple` for New York).   When a single locality is supplied, the response includes `query.locality.exclude.signal` with the matched Qloo entity.   If multiple are supplied, this field is omitted. If no localities are matched, the API returns a 400 error.\n",
+            "required": false,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            },
+            "examples": {
+              "singleLocality": {
+                "summary": "A single locality to exclude",
+                "value": "Williamsburg"
+              },
+              "multipleLocalities": {
+                "summary": "Multiple localities to exclude (POST only)",
+                "value": [
+                  "Chelsea",
+                  "SoHo"
+                ]
+              }
+            }
+          },
+          {
+            "name": "filter.location.geohash",
+            "in": "query",
+            "description": "Filter by a geohash. Geohashes are generated using the Python package pygeohash with a precision of 12 characters. This parameter returns all POIs that start with the specified geohash. For example, supplying `dr5rs` would allow returning the geohash `dr5rsjk4sr2w`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "dr5rsjk4sr2w"
+              ]
+            }
+          },
+          {
+            "name": "filter.exclude.location.geohash",
+            "in": "query",
+            "description": "Exclude all entities whose geohash starts with the specified prefix.   Geohashes are generated using the Python package `pygeohash` with a precision of 12 characters.   For example, supplying `dr5rs` would exclude any result whose geohash begins with `dr5rs`, such as `dr5rsjk4sr2w`.\n",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "dr5rs"
+              ]
+            }
+          },
+          {
+            "name": "filter.location.radius",
+            "in": "query",
+            "description": "Filter by the radius (in meters) when also supplying `filter.location` or `filter.location.query`.\nWhen this parameter is **not provided**, the API applies a default tuning that slightly expands the locality boundary to include nearby entities outside its official shape.\nTo **disable** this behavior and strictly limit results to entities inside the defined locality boundary, set `filter.location.radius=0`.\n",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15000
+            },
+            "examples": {
+              "defaultRadius": {
+                "summary": "Custom radius in meters",
+                "value": 10000
+              },
+              "disableTuning": {
+                "summary": "Turn off default tuning behavior",
+                "value": 0
+              }
+            }
+          },
+          {
+            "name": "filter.parents.types",
+            "in": "query",
+            "description": "Filter by a comma-separated list of parental entity types (`urn:audience:communities`). Each type must match exactly.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "examples": [
+                "urn:audience:communities,",
+                "urn:audience:global_issues"
+              ]
+            }
+          },
+          {
+            "name": "filter.popularity.max",
+            "in": "query",
+            "description": "Filter by the maximum popularity percentile a Point of Interest must have (float, between 0 and 1; closer to 1 indicates higher popularity, e.g., 0.98 for the 98th percentile).",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "examples": [
+                0.98
+              ]
+            }
+          },
+          {
+            "name": "filter.popularity.min",
+            "in": "query",
+            "description": "Filter by the minimum popularity percentile required for a Point of Interest (float, between 0 and 1; closer to 1 indicates higher popularity, e.g., 0.98 for the 98th percentile).",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "examples": [
+                0.5
+              ]
+            }
+          },
+          {
+            "name": "filter.price_level.max",
+            "in": "query",
+            "description": "Filter by the maximum price level a Point of Interest can have (1|2|3|4, similar to dollar signs).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4,
+              "examples": [
+                3
+              ]
+            }
+          },
+          {
+            "name": "filter.price_level.min",
+            "in": "query",
+            "description": "Filter by the minimum price level a Point of Interest can have (1|2|3|4, similar to dollar signs).",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4,
+              "examples": [
+                1
+              ]
+            }
+          },
+          {
+            "name": "filter.price_range.from",
+            "in": "query",
+            "description": "Filter places by a minimum price level, representing the lowest price in the desired range. Accepts an integer value between 0 and 1,000,000.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "examples": [
+                200
+              ]
+            }
+          },
+          {
+            "name": "filter.price_range.to",
+            "in": "query",
+            "description": "Filter places by a maximum price level, representing the highest price in the desired range. Accepts an integer value between 0 and 1,000,000. Only applies to places.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000,
+              "examples": [
+                200
+              ]
+            }
+          },
+          {
+            "name": "filter.price.max",
+            "in": "query",
+            "description": "maximum price",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "number",
+                  "format": "float",
+                  "examples": [
+                    200
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "name": "filter.price.min",
+            "in": "query",
+            "description": "minimum price",
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "number",
+                  "format": "float",
+                  "examples": [
+                    1
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "name": "filter.properties.business_rating.max",
+            "in": "query",
+            "description": "Filter by the highest desired business rating.",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "enum": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "examples": [
+                3
+              ]
+            }
+          },
+          {
+            "name": "filter.properties.business_rating.min",
+            "in": "query",
+            "description": "Filter by the lowest desired business rating.",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "enum": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "examples": [
+                3
+              ]
+            }
+          },
+          {
+            "name": "filter.publication_year.max",
+            "in": "query",
+            "description": "Filter by the latest desired year of initial publication for the work.",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "examples": [
+                2021
+              ]
+            }
+          },
+          {
+            "name": "filter.publication_year.min",
+            "in": "query",
+            "description": "Filter by the earliest desired year of initial publication for the work.",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "examples": [
+                1985
+              ]
+            }
+          },
+          {
+            "name": "filter.rating.max",
+            "in": "query",
+            "description": "Filter by the maximum Qloo rating a Point of Interest must have (float, between 0 and 5).",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5,
+              "examples": [
+                4.5
+              ]
+            }
+          },
+          {
+            "name": "filter.rating.min",
+            "in": "query",
+            "description": "Filter by the minimum Qloo rating a Point of Interest must have (float, between 0 and 5).",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5,
+              "examples": [
+                3.5
+              ]
+            }
+          },
+          {
+            "name": "filter.references_brand",
+            "in": "query",
+            "description": "Filter by a comma-separated list of brand entity IDs. Use this to narrow down place recommendations to specific brands. For example, to include only Walmart stores, pass the Walmart brand ID. Each ID must match exactly.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "examples": [
+                "636E1B95-6232-43E1-BDFE-37CD209C2CE3,7D2B1DFF-9D5D-44DE-970E-46B80C76CFA6"
+              ]
+            }
+          },
+          {
+            "name": "filter.release_country",
+            "in": "query",
+            "description": "Filter by a list of countries where a movie or TV show was originally released.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "examples": [
+                "United States",
+                "France"
+              ]
+            }
+          },
+          {
+            "name": "operator.filter.release_country",
+            "in": "query",
+            "description": "Specifies how multiple `filter.release_country`` values are combined in the query. Use \"union\" (equivalent to a logical \"or\") to return results that match at least one of the specified countries, or \"intersection\" (equivalent to a logical \"and\") to return only results that match all specified countries. The default is \"union\".",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "intersection",
+                "union"
+              ],
+              "examples": [
+                "union"
+              ]
+            }
+          },
+          {
+            "name": "filter.release_date.max",
+            "in": "query",
+            "description": "Filter by the latest desired release date.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "examples": [
+                "2024-01-01"
+              ]
+            }
+          },
+          {
+            "name": "filter.release_date.min",
+            "in": "query",
+            "description": "Filter by the earliest desired release date.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "examples": [
+                "2021-01-01"
+              ]
+            }
+          },
+          {
+            "name": "filter.release_year.max",
+            "in": "query",
+            "description": "Filter by the latest desired release year.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "examples": [
+                2024
+              ]
+            }
+          },
+          {
+            "name": "filter.release_year.min",
+            "in": "query",
+            "description": "Filter by the earliest desired release year.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "examples": [
+                1996
+              ]
+            }
+          },
+          {
+            "name": "filter.results.entities",
+            "in": "query",
+            "description": "Filter by a comma-separated list of entity IDs. Often used to assess the affinity of an entity towards input.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "636E1B95-6232-43E1-BDFE-37CD209C2CE3,7D2B1DFF-9D5D-44DE-970E-46B80C76CFA6"
+              ]
+            }
+          },
+          {
+            "name": "filter.results.entities.query",
+            "in": "query",
+            "description": "Search for one or more entities by name to use as filters.   - For **GET requests**: Provide a single entity name as a string. - For **POST requests**: You can provide a single name or an array of names.\n",
+            "required": false,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ],
+              "examples": {
+                "singleEntity": {
+                  "summary": "A single entity query",
+                  "value": "Balthazar"
+                },
+                "multipleEntities": {
+                  "summary": "Multiple entity queries (POST only)",
+                  "value": [
+                    "Balthazar",
+                    "Via Carota"
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "name": "filter.exclude.entities",
+            "in": "query",
+            "description": "A comma-separated list of entity IDs to remove from the results.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "39458DC0-F91D-4591-80A8-E254E66F84A2,B315A4B4-6756-4CF3-8297-75FD94CC8CF2"
+              ]
+            }
+          },
+          {
+            "name": "filter.exclude.entities.query",
+            "in": "query",
+            "description": "This parameter can only be supplied when using POST HTTP method, since it requires JSON encoded body. The value for `filter.exclude.entities.query` is a JSON array with objects containing the `name` and `address` properties. For a fuzzier search, just include an array of strings. When supplied, it overwrites the `filter.exclude.entities` object with resolved entity IDs. The response will contain a path `query.entities.exclude`, with partial Qloo entities that were matched by the query. If no entities are found, the API will throw a `400` error.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "examples": [
+                          "Balthazar"
+                        ]
+                      },
+                      "address": {
+                        "type": "string",
+                        "examples": [
+                          "80 Spring St, New York"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "string",
+                    "examples": [
+                      "Balthazar"
+                    ]
+                  }
+                ]
+              },
+              "examples": [
+                {
+                  "name": "Balthazar",
+                  "address": "80 Spring St, New York"
+                },
+                "Balthazar"
+              ]
+            }
+          },
+          {
+            "name": "filter.results.tags",
+            "in": "query",
+            "description": "Filter by a comma-separated list of tag IDs. Often used to assess the affinity of a tag towards input.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "examples": [
+                  "?",
+                  "?"
+                ]
+              }
+            }
+          },
+          {
+            "name": "filter.tags",
+            "in": "query",
+            "description": "Filter by a comma-separated list of tag IDs (urn:tag:genre:restaurant:Italian).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "urn:tag:genre:restaurant:Italian"
+              ]
+            }
+          },
+          {
+            "name": "operator.filter.tags",
+            "in": "query",
+            "description": "Specifies how multiple `filter.tags` values are combined in the query. Use \"union\" (equivalent to a logical \"or\") to return results that match at least one of the specified tags, or \"intersection\" (equivalent to a logical \"and\") to return only results that match all specified tags. The default is \"union\".",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "union",
+                "intersection"
+              ],
+              "examples": [
+                "union"
+              ]
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "The number of results to skip, starting from 0. Allows arbitrary offsets but is less commonly used than `page`.",
+            "schema": {
+              "type": "integer",
+              "examples": [
+                5
+              ]
+            }
+          },
+          {
+            "name": "output.heatmap.boundary",
+            "in": "query",
+            "description": "Indicates the type of heatmap output desired: The default is geohashes. The other options are a city or a neighborhood.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "urn:entity:locality"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number of results to return. This is equivalent to take + offset and is the recommended approach for most use cases.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                1
+              ]
+            }
+          },
+          {
+            "name": "signal.demographics.age",
+            "in": "query",
+            "description": "A comma-separated list of age ranges that influence the affinity score.(35_and_younger\\|36_to_55\\|55_and_older).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "35_and_younger",
+                "36_to_55",
+                "55_and_older"
+              ],
+              "examples": [
+                "36_to_55"
+              ]
+            }
+          },
+          {
+            "name": "signal.demographics.age.weight",
+            "in": "query",
+            "description": "Specifies the extent to which results should be influenced by age-based demographic signals. Higher values increase the influence of age data; lower values reduce its impact.",
+            "required": false,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "very_low",
+                    "low",
+                    "mid",
+                    "medium",
+                    "high",
+                    "very_high"
+                  ]
+                }
+              ],
+              "examples": [
+                "medium"
+              ]
+            }
+          },
+          {
+            "name": "signal.demographics.audiences.weight",
+            "in": "query",
+            "description": "Specifies the extent to which results should be influenced by the preferences of the selected audience. Higher values increase the influence of audience preferences; lower values reduce their impact.",
+            "required": false,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "very_low",
+                    "low",
+                    "mid",
+                    "medium",
+                    "high",
+                    "very_high"
+                  ]
+                }
+              ],
+              "examples": [
+                "medium"
+              ]
+            }
+          },
+          {
+            "name": "signal.demographics.audiences",
+            "in": "query",
+            "description": "A comma-separated list of audiences that influence the affinity score. Audience IDs can be retrieved via the v2/audiences search route.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "examples": [
+                  "‘urn:audience:artist’",
+                  "‘urn:audience:brand’"
+                ]
+              }
+            }
+          },
+          {
+            "name": "signal.demographics.gender",
+            "in": "query",
+            "description": "Influence the affinity score based on gender (male\\|female).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "male",
+                "female"
+              ],
+              "examples": [
+                "male"
+              ]
+            }
+          },
+          {
+            "name": "signal.demographics.gender.weight",
+            "in": "query",
+            "description": "Specifies the extent to which results should be influenced by gender-based demographic signals. Higher values increase the influence of gender data; lower values reduce its impact.",
+            "required": false,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "very_low",
+                    "low",
+                    "mid",
+                    "medium",
+                    "high",
+                    "very_high"
+                  ]
+                }
+              ],
+              "examples": [
+                "medium"
+              ]
+            }
+          },
+          {
+            "name": "signal.interests.entities",
+            "in": "query",
+            "description": "Allows you to supply a list of entities to influence affinity scores. You can also include a `weight` property that will indicate the strength of influence for each entity in your list.\n  - For GET requests: Provide a comma-separated list of entity IDs. \n  - For POST requests, you can either:\n    - Send the same string of comma-separated values.\n    - Send an array of objects with \"entity\" and \"weight\" properties, such as:\n      [\n        { \"entity\": \"urn:entity:movie:inception\", \"weight\": 10 },\n        { \"entity\": \"urn:entity:movie:interstellar\", \"weight\": 25 }\n      ]\nWeights must be greater than 0 and are relative. So, a weight of 25 means that entity will more heavily influence affinity scores than a weight of 10.\n",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "examples": [
+                "636E1B95-6232-43E1-BDFE-37CD209C2CE3,7D2B1DFF-9D5D-44DE-970E-46B80C76CFA6"
+              ]
+            }
+          },
+          {
+            "name": "signal.interests.entities.query",
+            "in": "query",
+            "description": "This parameter can only be supplied when using POST HTTP method, which requires a JSON-encoded body. The value should be a JSON array of objects with 'name' and 'address' properties; supports 'resolve_to' for specifying resolution to place, brand, or both.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "examples": [
+                          "Balthazar"
+                        ]
+                      },
+                      "address": {
+                        "type": "string",
+                        "examples": [
+                          "80 Spring St, New York"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "string",
+                    "examples": [
+                      "Balthazar"
+                    ]
+                  }
+                ]
+              },
+              "examples": [
+                {
+                  "name": "Balthazar",
+                  "address": "80 Spring St, New York"
+                },
+                "Balthazar",
+                {
+                  "name": "Naya",
+                  "address": "ny",
+                  "resolve_to": "both"
+                }
+              ]
+            }
+          },
+          {
+            "name": "signal.interests.entities.weight",
+            "in": "query",
+            "description": "Specifies the extent to which results should be influenced by the relevance of entities (in-domain or cross-domain). Higher values increase the influence of entities; lower values reduce their impact.",
+            "required": false,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "very_low",
+                    "low",
+                    "mid",
+                    "medium",
+                    "high",
+                    "very_high"
+                  ]
+                }
+              ],
+              "examples": [
+                "medium"
+              ]
+            }
+          },
+          {
+            "name": "signal.interests.tags",
+            "in": "query",
+            "description": "Allows you to supply a list of tags to influence affinity scores. You can also include a `weight` property that will indicate the strength of influence for each tag in your list.\n  - For GET requests: Provide a comma-separated list of tag IDs. \n  - For POST requests, you can either:\n    - Send the same string of comma-separated values.\n    - Send an array of objects with \"tag\" and \"weight\" properties, such as:\n      [\n        { \"tag\": \"urn:tag:genre:media:horror\", \"weight\": 7 },\n        { \"tag\": \"urn:tag:genre:media:thriller\", \"weight\": 20 }\n      ]\nWeights must be greater than 0 and are relative. So, a weight of 20 means that tag will more heavily influence affinity scores than a weight of 7.\n",
+            "required": false,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tag": {
+                        "type": "string"
+                      },
+                      "weight": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "examples": {
+              "listOfTags": {
+                "summary": "A comma-separated list of tag IDs",
+                "value": [
+                  "urn:tag:genre:restaurant:Italian",
+                  "urn:tag:genre:restaurant:Mexican"
+                ]
+              },
+              "listOfTagsWeights": {
+                "summary": "An array of tag-weight pairs",
+                "value": [
+                  {
+                    "tag": "urn:tag:genre:media:horror",
+                    "weight": 7
+                  },
+                  {
+                    "tag": "urn:tag:genre:media:thriller",
+                    "weight": 20
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "name": "signal.interests.tags.weight",
+            "in": "query",
+            "description": "Specifies the extent to which results should be influenced by the presence of tags (taste analysis). Higher values increase the influence of tags; lower values reduce their impact.",
+            "required": false,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "very_low",
+                    "low",
+                    "mid",
+                    "medium",
+                    "high",
+                    "very_high"
+                  ]
+                }
+              ],
+              "examples": [
+                "medium"
+              ]
+            }
+          },
+          {
+            "name": "signal.location",
+            "in": "query",
+            "description": "The geolocation to use for geospatial results. The value will be a WKT POINT, POLYGON or a single Qloo ID for a named urn:entity:locality to filter by. WKT is formatted as X then Y, therefore longitude is first (POINT(-73.99823 40.722668)). Unlike filter.location.radius, signal.location.radius is ignored if a Qloo ID or WKT POLYGON is passed.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "POINT(-73.99823 40.722668)"
+              ]
+            }
+          },
+          {
+            "name": "signal.location.radius",
+            "in": "query",
+            "description": "The optional radius (in meters), used when providing a WKT POINT. We generally recommend avoiding this parameter, as it overrides dynamic density discovery.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "examples": [
+                5000
+              ]
+            }
+          },
+          {
+            "name": "signal.location.query",
+            "in": "query",
+            "description": "A string query used to search for a named urn:entity:locality Qloo ID for geospatial results, effectively equivalent to passing the same Locality Qloo ID into signal.location. Examples of locality queries include New York City, Garden City, New York, Los Angeles, Lower East Side, and AKAs like The Big Apple. These queries are fuzzy-matched and case-insensitive. When filter.location.query is supplied, the response JSON will include query.locality.signal, which contains the partially matched Qloo entity. If no locality is found, the API will return a 400 error.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "New York City"
+              ]
+            }
+          },
+          {
+            "name": "signal.location.weight",
+            "in": "query",
+            "description": "Specifies the extent to which results should be influenced by location-based signals (geospatial). Higher values increase the influence of location; lower values reduce its impact.",
+            "required": false,
+            "schema": {
+              "oneOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "string",
+                  "enum": [
+                    "very_low",
+                    "low",
+                    "mid",
+                    "medium",
+                    "high",
+                    "very_high"
+                  ]
+                }
+              ],
+              "examples": [
+                "medium"
+              ]
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "This parameter modifies the results sorting algorithm (affinity\\|distance). The distance option can only be used when `filter.location`` is supplied.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "affinity",
+                "distance"
+              ],
+              "examples": [
+                "affinity"
+              ]
+            }
+          },
+          {
+            "name": "take",
+            "in": "query",
+            "description": "The number of results to return.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                10
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "results": {
+                      "type": "object",
+                      "properties": {
+                        "entities": {
+                          "type": "array",
+                          "items": {}
+                        },
+                        "duration": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/audiences": {
+      "get": {
+        "summary": "Find Audiences",
+        "operationId": "get-audiences",
+        "description": "The Find Audiences API retrieves a list of audience IDs that can be used for filtering results and refining targeting in recommendations. You can use the returned audience IDs as values for `signal.demographics.audiences` to filter Insights API query results by specific audiences.",
+        "tags": [
+          "audiences"
+        ],
+        "parameters": [
+          {
+            "name": "filter.parents.types",
+            "in": "query",
+            "description": "Filter by a comma-separated list of parental entity types (`urn:audience:communities`). Each type must match exactly.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "examples": [
+                "urn:audience:communities,",
+                "urn:audience:global_issues"
+              ]
+            }
+          },
+          {
+            "name": "filter.results.audiences",
+            "in": "query",
+            "description": "Filter by a comma-separated list of audience IDs.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "examples": [
+                  "?",
+                  "?"
+                ]
+              }
+            }
+          },
+          {
+            "name": "filter.audience.types",
+            "in": "query",
+            "description": "Filter by a list of audience types.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "examples": [
+                  "?",
+                  "?"
+                ]
+              }
+            }
+          },
+          {
+            "name": "filter.popularity.min",
+            "in": "query",
+            "description": "Filter by the minimum popularity percentile required for a Point of Interest (float, between 0 and 1; closer to 1 indicates higher popularity, e.g., 0.98 for the 98th percentile).",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "examples": [
+                0.5
+              ]
+            }
+          },
+          {
+            "name": "filter.popularity.max",
+            "in": "query",
+            "description": "Filter by the maximum popularity percentile a Point of Interest must have (float, between 0 and 1; closer to 1 indicates higher popularity, e.g., 0.98 for the 98th percentile).",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "examples": [
+                0.98
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number of results to return. This is equivalent to take + offset and is the recommended approach for most use cases.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                1
+              ]
+            }
+          },
+          {
+            "name": "take",
+            "in": "query",
+            "description": "The number of results to return.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                10
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "results": {
+                      "type": "object",
+                      "properties": {
+                        "entities": {
+                          "type": "array",
+                          "items": {}
+                        },
+                        "duration": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/audiences/types": {
+      "get": {
+        "summary": "Get Audience Types",
+        "operationId": "get-audience-types",
+        "description": "The Get Audience Types API returns all available audience type IDs, representing different audience categories. You can use this API to explore audience classifications and refine searches in the Find Audiences API. Including `filter.parents.types` allows you to narrow results by relevant entity types.",
+        "tags": [
+          "audiences"
+        ],
+        "parameters": [
+          {
+            "name": "filter.parents.types",
+            "in": "query",
+            "description": "Filter by a comma-separated list of parental entity types (`urn:audience:communities`). Each type must match exactly.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "examples": [
+                "urn:audience:communities,",
+                "urn:audience:global_issues"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number of results to return. This is equivalent to take + offset and is the recommended approach for most use cases.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                1
+              ]
+            }
+          },
+          {
+            "name": "take",
+            "in": "query",
+            "description": "The number of results to return.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                10
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "results": {
+                      "type": "object",
+                      "properties": {
+                        "entities": {
+                          "type": "array",
+                          "items": {}
+                        },
+                        "duration": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/tags": {
+      "get": {
+        "summary": "Tags Search",
+        "operationId": "get-tags",
+        "description": "Search for tags that are supported by the `filter.tags`, `exclude.tags`, and `signal.interests.tags parameters`.",
+        "tags": [
+          "tags"
+        ],
+        "parameters": [
+          {
+            "name": "feature.typo_tolerance",
+            "in": "query",
+            "description": "When set to true, allows tolerance for typos in the `filter.query parameter`. For example, a query for “Mediterranaen” would return tags with the word “Mediterranean” in their titles. Default is false.",
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "examples": [
+                true,
+                false
+              ]
+            }
+          },
+          {
+            "name": "filter.results.tags",
+            "in": "query",
+            "description": "Filter by a comma-separated list of tag IDs. Often used to assess the affinity of a tag towards input.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "examples": [
+                  "?",
+                  "?"
+                ]
+              }
+            }
+          },
+          {
+            "name": "filter.parents.types",
+            "in": "query",
+            "description": "Filter by a comma-separated list of parental entity types (`urn:audience:communities`). Each type must match exactly.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "examples": [
+                "urn:audience:communities,",
+                "urn:audience:global_issues"
+              ]
+            }
+          },
+          {
+            "name": "filter.popularity.min",
+            "in": "query",
+            "description": "Filter by the minimum popularity percentile required for a Point of Interest (float, between 0 and 1; closer to 1 indicates higher popularity, e.g., 0.98 for the 98th percentile).",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "examples": [
+                0.5
+              ]
+            }
+          },
+          {
+            "name": "filter.popularity.max",
+            "in": "query",
+            "description": "Filter by the maximum popularity percentile a Point of Interest must have (float, between 0 and 1; closer to 1 indicates higher popularity, e.g., 0.98 for the 98th percentile).",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "examples": [
+                0.98
+              ]
+            }
+          },
+          {
+            "name": "filter.query",
+            "in": "query",
+            "description": "A partial string search on the audience or tag name.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "examples": [
+                "vegan"
+              ]
+            }
+          },
+          {
+            "name": "filter.tag.types",
+            "in": "query",
+            "description": "Filter by a comma-separated list of tag types. Each tag type requires an exact match. You can retrieve a list of tag types supported by each entity type via the Tag Types API.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "examples": [
+                  "urn:audience:brand:genre",
+                  "?"
+                ]
+              }
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number of results to return. This is equivalent to take + offset and is the recommended approach for most use cases.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                1
+              ]
+            }
+          },
+          {
+            "name": "take",
+            "in": "query",
+            "description": "The number of results to return.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                10
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "duration": {
+                      "type": "number"
+                    },
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "results": {
+                      "type": "object",
+                      "properties": {
+                        "tags": {
+                          "type": "array",
+                          "items": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/tags/types": {
+      "get": {
+        "summary": "Tag Types",
+        "operationId": "get-tag-types",
+        "description": "Returns a list of tag types supported by each entity type. You can leverage this data with the Tags API to filter results by specific tag types.",
+        "tags": [
+          "tags"
+        ],
+        "parameters": [
+          {
+            "name": "filter.parents.types",
+            "in": "query",
+            "description": "Filter by a comma-separated list of parental entity types (`urn:audience:communities`). Each type must match exactly.",
+            "required": false,
+            "style": "form",
+            "explode": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "examples": [
+                "urn:audience:communities,",
+                "urn:audience:global_issues"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number of results to return. This is equivalent to take + offset and is the recommended approach for most use cases.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                1
+              ]
+            }
+          },
+          {
+            "name": "take",
+            "in": "query",
+            "description": "The number of results to return.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "examples": [
+                10
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "results": {
+                      "type": "object",
+                      "properties": {
+                        "entities": {
+                          "type": "array",
+                          "items": {}
+                        },
+                        "duration": {
+                          "type": "number"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Api-Key"
+      }
+    },
+    "parameters": {
+      "bias.trends": {
+        "name": "bias.trends",
+        "in": "query",
+        "description": "The level of impact a trending entity has on the results. Supported by select categories only.",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "off",
+            "low",
+            "medium",
+            "high"
+          ],
+          "examples": [
+            "low"
+          ]
+        }
+      },
+      "diversify.by": {
+        "name": "diversify.by",
+        "in": "query",
+        "description": "Limits results to a set number of high-affinity entities per city. Set this to \"properties.geocode.city\" to enable city-based diversification. Cities are ranked based on the highest-affinity entity within them, and entities within each city are ordered by their individual affinities.\n",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "properties.geocode.city"
+          ]
+        }
+      },
+      "diversify.take": {
+        "name": "diversify.take",
+        "in": "query",
+        "description": "Sets the maximum number of results to return per city when using \"diversify.by\": \"properties.geocode.city\". For example, if set to 5, the response will include up to 5 entities with the highest affinities in each city.\n",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "examples": [
+            5
+          ]
+        }
+      },
+      "feature.explainability": {
+        "name": "feature.explainability",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "boolean",
+          "default": false
+        },
+        "description": "When set to `true`, the response includes explainability metadata for each recommendation and for the overall result set.\n\n**Per-recommendation**: Each result includes a `query.explainability` section showing which input entities (e.g. `signal.interests.entities`) contributed to the recommendation and by how much. Scores are normalized between 0–1. Entities with scores ≥ 0.1 are always included; those below may be omitted to reduce response size.\n\n**Aggregate impact**: The top-level `query.explainability` object shows average influence of each input entity across top-N result subsets (e.g. top 3, 5, 10, all).\n\n**Note**: If explainability cannot be computed for the request, a warning is included under `query.explainability.warning`, but results still return normally.\n"
+      },
+      "feature.typo_tolerance": {
+        "name": "feature.typo_tolerance",
+        "in": "query",
+        "description": "When set to true, allows tolerance for typos in the `filter.query parameter`. For example, a query for “Mediterranaen” would return tags with the word “Mediterranean” in their titles. Default is false.",
+        "schema": {
+          "type": "boolean",
+          "default": false,
+          "examples": [
+            true,
+            false
+          ]
+        }
+      },
+      "filter.address": {
+        "name": "filter.address",
+        "in": "query",
+        "description": "Filter by address using a partial string query.",
+        "schema": {
+          "type": "string",
+          "examples": [
+            "123 Main St"
+          ]
+        }
+      },
+      "filter.audience.types": {
+        "name": "filter.audience.types",
+        "in": "query",
+        "description": "Filter by a list of audience types.",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "examples": [
+              "?",
+              "?"
+            ]
+          }
+        }
+      },
+      "filter.content_rating": {
+        "name": "filter.content_rating",
+        "in": "query",
+        "description": "Filter by a comma-separated list of content ratings based on the MPAA film rating system, which determines suitability for various audiences.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "G",
+            "PG",
+            "PG-13",
+            "R",
+            "NC-17"
+          ],
+          "examples": [
+            "PG"
+          ]
+        }
+      },
+      "filter.date_of_birth.max": {
+        "name": "filter.date_of_birth.max",
+        "in": "query",
+        "description": "Filter by the most recent date of birth desired for the queried person.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "examples": [
+            "2004-01-01"
+          ]
+        }
+      },
+      "filter.date_of_birth.min": {
+        "name": "filter.date_of_birth.min",
+        "in": "query",
+        "description": "Filter by the earliest date of birth desired for the queried person.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "examples": [
+            "1996-01-01"
+          ]
+        }
+      },
+      "filter.date_of_death.max": {
+        "name": "filter.date_of_death.max",
+        "in": "query",
+        "description": "Filter by the most recent date of death desired for the queried person.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "examples": [
+            "2004-01-01"
+          ]
+        }
+      },
+      "filter.date_of_death.min": {
+        "name": "filter.date_of_death.min",
+        "in": "query",
+        "description": "Filter by the earliest date of death desired for the queried person.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "examples": [
+            "1985-01-01"
+          ]
+        }
+      },
+      "filter.exclude.entities": {
+        "name": "filter.exclude.entities",
+        "in": "query",
+        "description": "A comma-separated list of entity IDs to remove from the results.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "39458DC0-F91D-4591-80A8-E254E66F84A2,B315A4B4-6756-4CF3-8297-75FD94CC8CF2"
+          ]
+        }
+      },
+      "filter.exclude.entities.query": {
+        "name": "filter.exclude.entities.query",
+        "in": "query",
+        "description": "This parameter can only be supplied when using POST HTTP method, since it requires JSON encoded body. The value for `filter.exclude.entities.query` is a JSON array with objects containing the `name` and `address` properties. For a fuzzier search, just include an array of strings. When supplied, it overwrites the `filter.exclude.entities` object with resolved entity IDs. The response will contain a path `query.entities.exclude`, with partial Qloo entities that were matched by the query. If no entities are found, the API will throw a `400` error.",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "examples": [
+                      "Balthazar"
+                    ]
+                  },
+                  "address": {
+                    "type": "string",
+                    "examples": [
+                      "80 Spring St, New York"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "string",
+                "examples": [
+                  "Balthazar"
+                ]
+              }
+            ]
+          },
+          "examples": [
+            {
+              "name": "Balthazar",
+              "address": "80 Spring St, New York"
+            },
+            "Balthazar"
+          ]
+        }
+      },
+      "filter.exclude.location": {
+        "name": "filter.exclude.location",
+        "in": "query",
+        "description": "Exclude results that fall within a specific location, defined by either a WKT `POINT`, `POLYGON`, `MULTIPOLYGON`, or a Qloo ID for a named `urn:entity:locality`.   WKT is formatted with longitude first (e.g., `POINT(-73.99823 40.722668)`).   When using a locality ID or a WKT `POLYGON`, setting `filter.location.radius` to a value > 0 creates a fuzzy exclusion boundary.\n",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "POINT(-73.99823 40.722668)"
+          ]
+        }
+      },
+      "filter.exclude.location.geohash": {
+        "name": "filter.exclude.location.geohash",
+        "in": "query",
+        "description": "Exclude all entities whose geohash starts with the specified prefix.   Geohashes are generated using the Python package `pygeohash` with a precision of 12 characters.   For example, supplying `dr5rs` would exclude any result whose geohash begins with `dr5rs`, such as `dr5rsjk4sr2w`.\n",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "dr5rs"
+          ]
+        }
+      },
+      "filter.exclude.location.query": {
+        "name": "filter.exclude.location.query",
+        "in": "query",
+        "description": "A query used to exclude results based on one or more named `urn:entity:locality` Qloo IDs, resolved from fuzzy-matched locality names.   This is equivalent to passing the resolved Locality Qloo ID(s) into `filter.exclude.location`.\n- For **GET requests**: Provide a single locality query as a string. - For **POST requests**:\n  - You can still send a single locality as a string.\n  - Or send an array of locality names to exclude multiple areas at once. When multiple localities are provided, their geographic shapes are merged, and the system excludes results from across the combined area.\n\nLocality queries are case-insensitive and support common AKAs (e.g., `The Big Apple` for New York).   When a single locality is supplied, the response includes `query.locality.exclude.signal` with the matched Qloo entity.   If multiple are supplied, this field is omitted. If no localities are matched, the API returns a 400 error.\n",
+        "required": false,
+        "schema": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "examples": {
+          "singleLocality": {
+            "summary": "A single locality to exclude",
+            "value": "Williamsburg"
+          },
+          "multipleLocalities": {
+            "summary": "Multiple localities to exclude (POST only)",
+            "value": [
+              "Chelsea",
+              "SoHo"
+            ]
+          }
+        }
+      },
+      "filter.exclude.tags": {
+        "name": "filter.exclude.tags",
+        "in": "query",
+        "description": "Exclude entities associated with a comma-separated list of tags.",
+        "schema": {
+          "type": "string",
+          "examples": [
+            "urn:tag:genre:media:mystery,urn:tag:genre:media:drama"
+          ]
+        }
+      },
+      "filter.exists": {
+        "name": "filter.exists",
+        "in": "query",
+        "description": "Filter results to include only entities that have one or more specified properties. Use `properties.image` to return only entities that include an image URL.\n",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "properties.image"
+          ]
+        }
+      },
+      "filter.external.exists": {
+        "name": "filter.external.exists",
+        "in": "query",
+        "description": "Filter by a comma-separated list of external keys. (`resy`\\|`michelin`\\|`tablet`).",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "resy,michelin"
+          ]
+        }
+      },
+      "filter.external.resy.count.max": {
+        "name": "filter.external.resy.count.max",
+        "in": "query",
+        "description": "Filter places to include only those with a Resy rating count less than or equal to the specified maximum.   Applies only to entities with `filter.type` of `urn:entity:place`.\n",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "examples": [
+            200
+          ]
+        }
+      },
+      "filter.external.resy.count.min": {
+        "name": "filter.external.resy.count.min",
+        "in": "query",
+        "description": "Filter places to include only those with a Resy rating count greater than or equal to the specified minimum.   Applies only to entities with `filter.type` of `urn:entity:place`.\n",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "examples": [
+            20
+          ]
+        }
+      },
+      "filter.external.resy.party_size.max": {
+        "name": "filter.external.resy.party_size.max",
+        "in": "query",
+        "description": "Filter by the maximum supported party size required for a Point of Interest.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "examples": [
+            10
+          ]
+        }
+      },
+      "filter.external.resy.party_size.min": {
+        "name": "filter.external.resy.party_size.min",
+        "in": "query",
+        "description": "Filter by the minimum supported party size required for a Point of Interest.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "examples": [
+            2
+          ]
+        }
+      },
+      "filter.external.resy.rating.max": {
+        "name": "filter.external.resy.rating.max",
+        "in": "query",
+        "description": "Filter places to include only those with a Resy rating less than or equal to the specified maximum (1–5 scale). Applies only to entities with `filter.type` of `urn:entity:place`.",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5,
+          "examples": [
+            4.5
+          ]
+        }
+      },
+      "filter.external.resy.rating.min": {
+        "name": "filter.external.resy.rating.min",
+        "in": "query",
+        "description": "Filter places to include only those with a Resy rating greater than or equal to the specified minimum (1–5 scale). Applies only to entities with `filter.type` of `urn:entity:place`.",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5,
+          "examples": [
+            3.5
+          ]
+        }
+      },
+      "filter.external.tripadvisor.rating.count.max": {
+        "name": "filter.external.tripadvisor.rating.count.max",
+        "in": "query",
+        "description": "Filter places to include only those with a Tripadvisor review count less than or equal to the specified maximum. This filter only applies to entities with `filter.type` of `urn:entity:place`.\n",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "examples": [
+            500
+          ]
+        }
+      },
+      "filter.external.tripadvisor.rating.count.min": {
+        "name": "filter.external.tripadvisor.rating.count.min",
+        "in": "query",
+        "description": "Filter places to include only those with a Tripadvisor review count greater than or equal to the specified minimum. This filter only applies to entities with `filter.type` of `urn:entity:place`.\n",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "examples": [
+            50
+          ]
+        }
+      },
+      "filter.external.tripadvisor.rating.max": {
+        "name": "filter.external.tripadvisor.rating.max",
+        "in": "query",
+        "description": "Filter places to include only those with a Tripadvisor rating less than or equal to the specified maximum. This filter only applies to entities with `filter.type` of `urn:entity:place`.\n",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5,
+          "examples": [
+            4
+          ]
+        }
+      },
+      "filter.external.tripadvisor.rating.min": {
+        "name": "filter.external.tripadvisor.rating.min",
+        "in": "query",
+        "description": "Filter places to include only those with a Tripadvisor rating greater than or equal to the specified minimum. This filter only applies to entities with `filter.type` of `urn:entity:place`.\n",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5,
+          "examples": [
+            3
+          ]
+        }
+      },
+      "filter.finale_year.max": {
+        "name": "filter.finale_year.max",
+        "in": "query",
+        "description": "Filter by the latest desired year for the final season of a TV show.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "examples": [
+            2021
+          ]
+        }
+      },
+      "filter.finale_year.min": {
+        "name": "filter.finale_year.min",
+        "in": "query",
+        "description": "Filter by the earliest desired year for the final season of a TV show.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "examples": [
+            2014
+          ]
+        }
+      },
+      "filter.gender": {
+        "name": "filter.gender",
+        "in": "query",
+        "description": "Filter results to align with a specific gender identity. Used to personalize output based on known or inferred gender preferences.\n",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "female"
+          ]
+        }
+      },
+      "filter.geocode.admin1_region": {
+        "name": "filter.geocode.admin1_region",
+        "in": "query",
+        "description": "Filter by `properties.geocode.admin1_region`. Exact match (usually state).",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "NY"
+          ]
+        }
+      },
+      "filter.geocode.admin2_region": {
+        "name": "filter.geocode.admin2_region",
+        "in": "query",
+        "description": "Filter by `properties.geocode.admin2_region`. Exact match (often county or borough).",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "New York County"
+          ]
+        }
+      },
+      "filter.geocode.country_code": {
+        "name": "filter.geocode.country_code",
+        "in": "query",
+        "description": "Filter by `properties.geocode.country_code`. Exact match (two-letter country code).",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "US"
+          ]
+        }
+      },
+      "filter.geocode.name": {
+        "name": "filter.geocode.name",
+        "in": "query",
+        "description": "Filter by `properties.geocode.name`. Exact match (usually city or town name).",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "New York"
+          ]
+        }
+      },
+      "filter.hotel_class.max": {
+        "name": "filter.hotel_class.max",
+        "in": "query",
+        "description": "Filter by the maximum desired hotel class (1-5, inclusive).",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "examples": [
+            5
+          ]
+        }
+      },
+      "filter.hotel_class.min": {
+        "name": "filter.hotel_class.min",
+        "in": "query",
+        "description": "Filter by the minimum desired hotel class (1-5, inclusive).",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "examples": [
+            3
+          ]
+        }
+      },
+      "filter.hours": {
+        "name": "filter.hours",
+        "in": "query",
+        "description": "Filter by the day of the week the Point of Interest must be open (Monday, Tuesday, etc.).",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday"
+          ],
+          "examples": [
+            "monday"
+          ]
+        }
+      },
+      "filter.latest_known_year.max": {
+        "name": "filter.latest_known_year.max",
+        "in": "query",
+        "description": "Filter by a certain maximum year that shows were released or updated.",
+        "required": false,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "integer",
+              "examples": [
+                2023
+              ]
+            }
+          }
+        }
+      },
+      "filter.latest_known_year.min": {
+        "name": "filter.latest_known_year.min",
+        "in": "query",
+        "description": "Filter by a certain minimum year that shows were released or updated.",
+        "required": false,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "integer",
+              "examples": [
+                2014
+              ]
+            }
+          }
+        }
+      },
+      "filter.location": {
+        "name": "filter.location",
+        "in": "query",
+        "description": "Used to filter by a WKT `POINT`, `POLYGON`, `MULTIPOLYGON` or a single Qloo ID for a named `urn:entity:locality`. WKT is formatted as X then Y, therefore longitude is first (`POINT(-73.99823 40.722668)`). If a Qloo ID or WKT `POLYGON` is passed, `filter.location.radius` will create a fuzzy boundary when set to a value > 0.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "POINT(-73.99823 40.722668)"
+          ]
+        }
+      },
+      "filter.location.geohash": {
+        "name": "filter.location.geohash",
+        "in": "query",
+        "description": "Filter by a geohash. Geohashes are generated using the Python package pygeohash with a precision of 12 characters. This parameter returns all POIs that start with the specified geohash. For example, supplying `dr5rs` would allow returning the geohash `dr5rsjk4sr2w`.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "dr5rsjk4sr2w"
+          ]
+        }
+      },
+      "filter.location.query": {
+        "name": "filter.location.query",
+        "in": "query",
+        "description": "A query used to search for one or more named `urn:entity:locality` Qloo IDs for filtering requests, equivalent to passing the same Locality Qloo ID(s) into `filter.location`.\n  - For **GET requests**: Provide a single locality query as a string.\n  - For **POST requests**:\n    - You can still send a single locality as a string.\n    - Or you can send an array of locality names to query multiple localities at once. When multiple localities are provided, their geographic shapes are merged, and the system returns results with the highest affinities across the combined area.\n\nLocality queries are fuzzy-matched and case-insensitive. Examples include `New York City`, `Garden City`, `New York`, `Los Angeles`, `Lower East Side`, and AKAs like `The Big Apple`. When a single locality is supplied, the response JSON includes `query.locality.signal` with the matched Qloo entity. If multiple are supplied, this field is omitted. By default, the API includes a tuning that also captures nearby entities just outside the official boundaries of the locality. To turn this off and limit results strictly to within the locality, set `filter.location.radius=0`. If no localities are found, the API returns a 400 error.\n",
+        "required": false,
+        "schema": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "examples": {
+          "singleLocality": {
+            "summary": "A single locality string",
+            "value": "New York City"
+          },
+          "multipleLocalities": {
+            "summary": "An array of locality strings (POST only)",
+            "value": [
+              "Miami",
+              "Miami Beach"
+            ]
+          }
+        }
+      },
+      "filter.location.radius": {
+        "name": "filter.location.radius",
+        "in": "query",
+        "description": "Filter by the radius (in meters) when also supplying `filter.location` or `filter.location.query`.\nWhen this parameter is **not provided**, the API applies a default tuning that slightly expands the locality boundary to include nearby entities outside its official shape.\nTo **disable** this behavior and strictly limit results to entities inside the defined locality boundary, set `filter.location.radius=0`.\n",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "default": 15000
+        },
+        "examples": {
+          "defaultRadius": {
+            "summary": "Custom radius in meters",
+            "value": 10000
+          },
+          "disableTuning": {
+            "summary": "Turn off default tuning behavior",
+            "value": 0
+          }
+        }
+      },
+      "filter.parents.types": {
+        "name": "filter.parents.types",
+        "in": "query",
+        "description": "Filter by a comma-separated list of parental entity types (`urn:audience:communities`). Each type must match exactly.",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            "urn:audience:communities,",
+            "urn:audience:global_issues"
+          ]
+        }
+      },
+      "filter.popularity.max": {
+        "name": "filter.popularity.max",
+        "in": "query",
+        "description": "Filter by the maximum popularity percentile a Point of Interest must have (float, between 0 and 1; closer to 1 indicates higher popularity, e.g., 0.98 for the 98th percentile).",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "examples": [
+            0.98
+          ]
+        }
+      },
+      "filter.popularity.min": {
+        "name": "filter.popularity.min",
+        "in": "query",
+        "description": "Filter by the minimum popularity percentile required for a Point of Interest (float, between 0 and 1; closer to 1 indicates higher popularity, e.g., 0.98 for the 98th percentile).",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "examples": [
+            0.5
+          ]
+        }
+      },
+      "filter.price.max": {
+        "name": "filter.price.max",
+        "in": "query",
+        "description": "maximum price",
+        "required": false,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "examples": [
+                200
+              ]
+            }
+          }
+        }
+      },
+      "filter.price.min": {
+        "name": "filter.price.min",
+        "in": "query",
+        "description": "minimum price",
+        "required": false,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "number",
+              "format": "float",
+              "examples": [
+                1
+              ]
+            }
+          }
+        }
+      },
+      "filter.price_level.max": {
+        "name": "filter.price_level.max",
+        "in": "query",
+        "description": "Filter by the maximum price level a Point of Interest can have (1|2|3|4, similar to dollar signs).",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4,
+          "examples": [
+            3
+          ]
+        }
+      },
+      "filter.price_level.min": {
+        "name": "filter.price_level.min",
+        "in": "query",
+        "description": "Filter by the minimum price level a Point of Interest can have (1|2|3|4, similar to dollar signs).",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4,
+          "examples": [
+            1
+          ]
+        }
+      },
+      "filter.price_range.from": {
+        "name": "filter.price_range.from",
+        "in": "query",
+        "description": "Filter places by a minimum price level, representing the lowest price in the desired range. Accepts an integer value between 0 and 1,000,000.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000,
+          "examples": [
+            200
+          ]
+        }
+      },
+      "filter.price_range.to": {
+        "name": "filter.price_range.to",
+        "in": "query",
+        "description": "Filter places by a maximum price level, representing the highest price in the desired range. Accepts an integer value between 0 and 1,000,000. Only applies to places.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000,
+          "examples": [
+            200
+          ]
+        }
+      },
+      "filter.properties.business_rating.max": {
+        "name": "filter.properties.business_rating.max",
+        "in": "query",
+        "description": "Filter by the highest desired business rating.",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "format": "float",
+          "enum": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "examples": [
+            3
+          ]
+        }
+      },
+      "filter.properties.business_rating.min": {
+        "name": "filter.properties.business_rating.min",
+        "in": "query",
+        "description": "Filter by the lowest desired business rating.",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "format": "float",
+          "enum": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "examples": [
+            3
+          ]
+        }
+      },
+      "filter.publication_year.max": {
+        "name": "filter.publication_year.max",
+        "in": "query",
+        "description": "Filter by the latest desired year of initial publication for the work.",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "examples": [
+            2021
+          ]
+        }
+      },
+      "filter.publication_year.min": {
+        "name": "filter.publication_year.min",
+        "in": "query",
+        "description": "Filter by the earliest desired year of initial publication for the work.",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "examples": [
+            1985
+          ]
+        }
+      },
+      "filter.query": {
+        "name": "filter.query",
+        "in": "query",
+        "description": "A partial string search on the audience or tag name.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "vegan"
+          ]
+        }
+      },
+      "filter.rating.max": {
+        "name": "filter.rating.max",
+        "in": "query",
+        "description": "Filter by the maximum Qloo rating a Point of Interest must have (float, between 0 and 5).",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5,
+          "examples": [
+            4.5
+          ]
+        }
+      },
+      "filter.rating.min": {
+        "name": "filter.rating.min",
+        "in": "query",
+        "description": "Filter by the minimum Qloo rating a Point of Interest must have (float, between 0 and 5).",
+        "required": false,
+        "schema": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 5,
+          "examples": [
+            3.5
+          ]
+        }
+      },
+      "filter.references_brand": {
+        "name": "filter.references_brand",
+        "in": "query",
+        "description": "Filter by a comma-separated list of brand entity IDs. Use this to narrow down place recommendations to specific brands. For example, to include only Walmart stores, pass the Walmart brand ID. Each ID must match exactly.",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            "636E1B95-6232-43E1-BDFE-37CD209C2CE3,7D2B1DFF-9D5D-44DE-970E-46B80C76CFA6"
+          ]
+        }
+      },
+      "filter.release_country": {
+        "name": "filter.release_country",
+        "in": "query",
+        "description": "Filter by a list of countries where a movie or TV show was originally released.",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            "United States",
+            "France"
+          ]
+        }
+      },
+      "filter.release_date.max": {
+        "name": "filter.release_date.max",
+        "in": "query",
+        "description": "Filter by the latest desired release date.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "examples": [
+            "2024-01-01"
+          ]
+        }
+      },
+      "filter.release_date.min": {
+        "name": "filter.release_date.min",
+        "in": "query",
+        "description": "Filter by the earliest desired release date.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "date",
+          "examples": [
+            "2021-01-01"
+          ]
+        }
+      },
+      "filter.release_year.max": {
+        "name": "filter.release_year.max",
+        "in": "query",
+        "description": "Filter by the latest desired release year.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "examples": [
+            2024
+          ]
+        }
+      },
+      "filter.release_year.min": {
+        "name": "filter.release_year.min",
+        "in": "query",
+        "description": "Filter by the earliest desired release year.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "examples": [
+            1996
+          ]
+        }
+      },
+      "filter.results.audiences": {
+        "name": "filter.results.audiences",
+        "in": "query",
+        "description": "Filter by a comma-separated list of audience IDs.",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "examples": [
+              "?",
+              "?"
+            ]
+          }
+        }
+      },
+      "filter.results.entities": {
+        "name": "filter.results.entities",
+        "in": "query",
+        "description": "Filter by a comma-separated list of entity IDs. Often used to assess the affinity of an entity towards input.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "636E1B95-6232-43E1-BDFE-37CD209C2CE3,7D2B1DFF-9D5D-44DE-970E-46B80C76CFA6"
+          ]
+        }
+      },
+      "filter.results.entities.query": {
+        "name": "filter.results.entities.query",
+        "in": "query",
+        "description": "Search for one or more entities by name to use as filters.   - For **GET requests**: Provide a single entity name as a string. - For **POST requests**: You can provide a single name or an array of names.\n",
+        "required": false,
+        "schema": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ],
+          "examples": {
+            "singleEntity": {
+              "summary": "A single entity query",
+              "value": "Balthazar"
+            },
+            "multipleEntities": {
+              "summary": "Multiple entity queries (POST only)",
+              "value": [
+                "Balthazar",
+                "Via Carota"
+              ]
+            }
+          }
+        }
+      },
+      "filter.results.tags": {
+        "name": "filter.results.tags",
+        "in": "query",
+        "description": "Filter by a comma-separated list of tag IDs. Often used to assess the affinity of a tag towards input.",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "examples": [
+              "?",
+              "?"
+            ]
+          }
+        }
+      },
+      "filter.tag.types": {
+        "name": "filter.tag.types",
+        "in": "query",
+        "description": "Filter by a comma-separated list of tag types. Each tag type requires an exact match. You can retrieve a list of tag types supported by each entity type via the Tag Types API.",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "examples": [
+              "urn:audience:brand:genre",
+              "?"
+            ]
+          }
+        }
+      },
+      "filter.tags": {
+        "name": "filter.tags",
+        "in": "query",
+        "description": "Filter by a comma-separated list of tag IDs (urn:tag:genre:restaurant:Italian).",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "urn:tag:genre:restaurant:Italian"
+          ]
+        }
+      },
+      "filter.type": {
+        "name": "filter.type",
+        "in": "query",
+        "description": "Filter by the category of entity to return (urn:entity:place).",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "urn:entity:artist",
+            "urn:entity:book",
+            "urn:entity:brand",
+            "urn:entity:destination",
+            "urn:entity:movie",
+            "urn:entity:person",
+            "urn:entity:place",
+            "urn:entity:podcast",
+            "urn:entity:tv_show",
+            "urn:entity:videogame",
+            "urn:heatmap"
+          ],
+          "examples": [
+            "urn:entity:book"
+          ]
+        }
+      },
+      "offset": {
+        "name": "offset",
+        "in": "query",
+        "description": "The number of results to skip, starting from 0. Allows arbitrary offsets but is less commonly used than `page`.",
+        "schema": {
+          "type": "integer",
+          "examples": [
+            5
+          ]
+        }
+      },
+      "operator.exclude.tags": {
+        "name": "operator.exclude.tags",
+        "in": "query",
+        "description": "Specifies how multiple `filter.exclude.tags` values are combined in the query. Use \"union\" (equivalent to a logical \"or\") to exclude results that contain at least one of the specified tags, or \"intersection\" (equivalent to a logical \"and\") to exclude only results that contain all specified tags. The default is \"union\".",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "union",
+            "intersection"
+          ],
+          "examples": [
+            "union"
+          ]
+        }
+      },
+      "operator.filter.external.exists": {
+        "name": "operator.filter.external.exists",
+        "in": "query",
+        "description": "Specifies how multiple `filter.external.exists` values are combined in the query. Use \"union\" (equivalent to a logical \"or\") to return results that match at least one of the specified external keys (e.g., resy, michelin, or tablet), or \"intersection\" (equivalent to a logical \"and\") to return only results that match all specified external keys. The default is \"union\".",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "union",
+            "intersection"
+          ],
+          "examples": [
+            "union"
+          ]
+        }
+      },
+      "operator.filter.release_country": {
+        "name": "operator.filter.release_country",
+        "in": "query",
+        "description": "Specifies how multiple `filter.release_country`` values are combined in the query. Use \"union\" (equivalent to a logical \"or\") to return results that match at least one of the specified countries, or \"intersection\" (equivalent to a logical \"and\") to return only results that match all specified countries. The default is \"union\".",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "intersection",
+            "union"
+          ],
+          "examples": [
+            "union"
+          ]
+        }
+      },
+      "operator.filter.tags": {
+        "name": "operator.filter.tags",
+        "in": "query",
+        "description": "Specifies how multiple `filter.tags` values are combined in the query. Use \"union\" (equivalent to a logical \"or\") to return results that match at least one of the specified tags, or \"intersection\" (equivalent to a logical \"and\") to return only results that match all specified tags. The default is \"union\".",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "union",
+            "intersection"
+          ],
+          "examples": [
+            "union"
+          ]
+        }
+      },
+      "output.heatmap.boundary": {
+        "name": "output.heatmap.boundary",
+        "in": "query",
+        "description": "Indicates the type of heatmap output desired: The default is geohashes. The other options are a city or a neighborhood.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "urn:entity:locality"
+          ]
+        }
+      },
+      "page": {
+        "name": "page",
+        "in": "query",
+        "description": "The page number of results to return. This is equivalent to take + offset and is the recommended approach for most use cases.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "examples": [
+            1
+          ]
+        }
+      },
+      "signal.demographics.age": {
+        "name": "signal.demographics.age",
+        "in": "query",
+        "description": "A comma-separated list of age ranges that influence the affinity score.(35_and_younger\\|36_to_55\\|55_and_older).",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "35_and_younger",
+            "36_to_55",
+            "55_and_older"
+          ],
+          "examples": [
+            "36_to_55"
+          ]
+        }
+      },
+      "signal.demographics.age.weight": {
+        "name": "signal.demographics.age.weight",
+        "in": "query",
+        "description": "Specifies the extent to which results should be influenced by age-based demographic signals. Higher values increase the influence of age data; lower values reduce its impact.",
+        "required": false,
+        "schema": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "enum": [
+                "very_low",
+                "low",
+                "mid",
+                "medium",
+                "high",
+                "very_high"
+              ]
+            }
+          ],
+          "examples": [
+            "medium"
+          ]
+        }
+      },
+      "signal.demographics.audiences": {
+        "name": "signal.demographics.audiences",
+        "in": "query",
+        "description": "A comma-separated list of audiences that influence the affinity score. Audience IDs can be retrieved via the v2/audiences search route.",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "examples": [
+              "‘urn:audience:artist’",
+              "‘urn:audience:brand’"
+            ]
+          }
+        }
+      },
+      "signal.demographics.audiences.weight": {
+        "name": "signal.demographics.audiences.weight",
+        "in": "query",
+        "description": "Specifies the extent to which results should be influenced by the preferences of the selected audience. Higher values increase the influence of audience preferences; lower values reduce their impact.",
+        "required": false,
+        "schema": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "enum": [
+                "very_low",
+                "low",
+                "mid",
+                "medium",
+                "high",
+                "very_high"
+              ]
+            }
+          ],
+          "examples": [
+            "medium"
+          ]
+        }
+      },
+      "signal.demographics.gender": {
+        "name": "signal.demographics.gender",
+        "in": "query",
+        "description": "Influence the affinity score based on gender (male\\|female).",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "male",
+            "female"
+          ],
+          "examples": [
+            "male"
+          ]
+        }
+      },
+      "signal.demographics.gender.weight": {
+        "name": "signal.demographics.gender.weight",
+        "in": "query",
+        "description": "Specifies the extent to which results should be influenced by gender-based demographic signals. Higher values increase the influence of gender data; lower values reduce its impact.",
+        "required": false,
+        "schema": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "enum": [
+                "very_low",
+                "low",
+                "mid",
+                "medium",
+                "high",
+                "very_high"
+              ]
+            }
+          ],
+          "examples": [
+            "medium"
+          ]
+        }
+      },
+      "signal.interests.entities": {
+        "name": "signal.interests.entities",
+        "in": "query",
+        "description": "Allows you to supply a list of entities to influence affinity scores. You can also include a `weight` property that will indicate the strength of influence for each entity in your list.\n  - For GET requests: Provide a comma-separated list of entity IDs. \n  - For POST requests, you can either:\n    - Send the same string of comma-separated values.\n    - Send an array of objects with \"entity\" and \"weight\" properties, such as:\n      [\n        { \"entity\": \"urn:entity:movie:inception\", \"weight\": 10 },\n        { \"entity\": \"urn:entity:movie:interstellar\", \"weight\": 25 }\n      ]\nWeights must be greater than 0 and are relative. So, a weight of 25 means that entity will more heavily influence affinity scores than a weight of 10.\n",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            "636E1B95-6232-43E1-BDFE-37CD209C2CE3,7D2B1DFF-9D5D-44DE-970E-46B80C76CFA6"
+          ]
+        }
+      },
+      "signal.interests.entities.query": {
+        "name": "signal.interests.entities.query",
+        "in": "query",
+        "description": "This parameter can only be supplied when using POST HTTP method, which requires a JSON-encoded body. The value should be a JSON array of objects with 'name' and 'address' properties; supports 'resolve_to' for specifying resolution to place, brand, or both.",
+        "required": false,
+        "style": "form",
+        "explode": false,
+        "schema": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "examples": [
+                      "Balthazar"
+                    ]
+                  },
+                  "address": {
+                    "type": "string",
+                    "examples": [
+                      "80 Spring St, New York"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "string",
+                "examples": [
+                  "Balthazar"
+                ]
+              }
+            ]
+          },
+          "examples": [
+            {
+              "name": "Balthazar",
+              "address": "80 Spring St, New York"
+            },
+            "Balthazar",
+            {
+              "name": "Naya",
+              "address": "ny",
+              "resolve_to": "both"
+            }
+          ]
+        }
+      },
+      "signal.interests.entities.weight": {
+        "name": "signal.interests.entities.weight",
+        "in": "query",
+        "description": "Specifies the extent to which results should be influenced by the relevance of entities (in-domain or cross-domain). Higher values increase the influence of entities; lower values reduce their impact.",
+        "required": false,
+        "schema": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "enum": [
+                "very_low",
+                "low",
+                "mid",
+                "medium",
+                "high",
+                "very_high"
+              ]
+            }
+          ],
+          "examples": [
+            "medium"
+          ]
+        }
+      },
+      "signal.interests.tags": {
+        "name": "signal.interests.tags",
+        "in": "query",
+        "description": "Allows you to supply a list of tags to influence affinity scores. You can also include a `weight` property that will indicate the strength of influence for each tag in your list.\n  - For GET requests: Provide a comma-separated list of tag IDs. \n  - For POST requests, you can either:\n    - Send the same string of comma-separated values.\n    - Send an array of objects with \"tag\" and \"weight\" properties, such as:\n      [\n        { \"tag\": \"urn:tag:genre:media:horror\", \"weight\": 7 },\n        { \"tag\": \"urn:tag:genre:media:thriller\", \"weight\": 20 }\n      ]\nWeights must be greater than 0 and are relative. So, a weight of 20 means that tag will more heavily influence affinity scores than a weight of 7.\n",
+        "required": false,
+        "schema": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string"
+                  },
+                  "weight": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "examples": {
+          "listOfTags": {
+            "summary": "A comma-separated list of tag IDs",
+            "value": [
+              "urn:tag:genre:restaurant:Italian",
+              "urn:tag:genre:restaurant:Mexican"
+            ]
+          },
+          "listOfTagsWeights": {
+            "summary": "An array of tag-weight pairs",
+            "value": [
+              {
+                "tag": "urn:tag:genre:media:horror",
+                "weight": 7
+              },
+              {
+                "tag": "urn:tag:genre:media:thriller",
+                "weight": 20
+              }
+            ]
+          }
+        }
+      },
+      "signal.interests.tags.weight": {
+        "name": "signal.interests.tags.weight",
+        "in": "query",
+        "description": "Specifies the extent to which results should be influenced by the presence of tags (taste analysis). Higher values increase the influence of tags; lower values reduce their impact.",
+        "required": false,
+        "schema": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "enum": [
+                "very_low",
+                "low",
+                "mid",
+                "medium",
+                "high",
+                "very_high"
+              ]
+            }
+          ],
+          "examples": [
+            "medium"
+          ]
+        }
+      },
+      "signal.location": {
+        "name": "signal.location",
+        "in": "query",
+        "description": "The geolocation to use for geospatial results. The value will be a WKT POINT, POLYGON or a single Qloo ID for a named urn:entity:locality to filter by. WKT is formatted as X then Y, therefore longitude is first (POINT(-73.99823 40.722668)). Unlike filter.location.radius, signal.location.radius is ignored if a Qloo ID or WKT POLYGON is passed.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "POINT(-73.99823 40.722668)"
+          ]
+        }
+      },
+      "signal.location.query": {
+        "name": "signal.location.query",
+        "in": "query",
+        "description": "A string query used to search for a named urn:entity:locality Qloo ID for geospatial results, effectively equivalent to passing the same Locality Qloo ID into signal.location. Examples of locality queries include New York City, Garden City, New York, Los Angeles, Lower East Side, and AKAs like The Big Apple. These queries are fuzzy-matched and case-insensitive. When filter.location.query is supplied, the response JSON will include query.locality.signal, which contains the partially matched Qloo entity. If no locality is found, the API will return a 400 error.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "examples": [
+            "New York City"
+          ]
+        }
+      },
+      "signal.location.radius": {
+        "name": "signal.location.radius",
+        "in": "query",
+        "description": "The optional radius (in meters), used when providing a WKT POINT. We generally recommend avoiding this parameter, as it overrides dynamic density discovery.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "examples": [
+            5000
+          ]
+        }
+      },
+      "signal.location.weight": {
+        "name": "signal.location.weight",
+        "in": "query",
+        "description": "Specifies the extent to which results should be influenced by location-based signals (geospatial). Higher values increase the influence of location; lower values reduce its impact.",
+        "required": false,
+        "schema": {
+          "oneOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "string",
+              "enum": [
+                "very_low",
+                "low",
+                "mid",
+                "medium",
+                "high",
+                "very_high"
+              ]
+            }
+          ],
+          "examples": [
+            "medium"
+          ]
+        }
+      },
+      "sort_by": {
+        "name": "sort_by",
+        "in": "query",
+        "description": "This parameter modifies the results sorting algorithm (affinity\\|distance). The distance option can only be used when `filter.location`` is supplied.",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "affinity",
+            "distance"
+          ],
+          "examples": [
+            "affinity"
+          ]
+        }
+      },
+      "take": {
+        "name": "take",
+        "in": "query",
+        "description": "The number of results to return.",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "examples": [
+            10
+          ]
+        }
+      }
+    }
+  }
+}

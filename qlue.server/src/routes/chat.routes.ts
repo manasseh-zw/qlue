@@ -14,7 +14,7 @@ chatRoutes.post("/", async (c) => {
   }
 
   const { messages } = await c.req.json();
-  const response = await assistant.streamChat(messages);
+  const response = await assistant.streamChat(messages, user.id);
 
   return response;
 });

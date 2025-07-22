@@ -1,17 +1,39 @@
 import Header from "@/components/header";
 import { Button } from "@heroui/react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { useAuth } from "@/lib/providers/auth.provider";
+import { signInWithGoogle } from "@/lib/services/auth.service";
 
 export const Route = createFileRoute("/")({
   component: App,
 });
 
 function App() {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const { isAuthenticated } = useAuth();
+
+  const handleGetStarted = async () => {
+    if (isAuthenticated) {
+      navigate({ to: "/chat" });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error("Authentication failed:", error);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <main className="relative isolate h-screen w-full overflow-hidden">
       <Header />
 
-      {/* SVG Pattern Background */}
       <svg
         className="absolute inset-x-0 top-0 -z-10 h-full w-full stroke-gray-200 [mask-image:radial-gradient(32rem_32rem_at_center,white,transparent)]"
         aria-hidden="true"
@@ -73,11 +95,17 @@ function App() {
             </h1>
 
             <div className="mt-10 flex justify-center lg:justify-start">
-              <Link to="/chat">
-                <Button size="lg" color="primary" radius="full">
-                  Get Started
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                color="primary"
+                radius="full"
+                onPress={handleGetStarted}
+                isLoading={isLoading}
+              >
+                {isAuthenticated
+                  ? "Continue to Chat"
+                  : "Get Started with Google"}
+              </Button>
             </div>
           </div>
 

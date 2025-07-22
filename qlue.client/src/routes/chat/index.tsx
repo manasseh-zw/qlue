@@ -2,25 +2,40 @@ import ChatPromptForm from "@/components/chat/chat-prompt-form";
 import { Markdown } from "@/components/chat/markdown";
 import { Thinking } from "@/components/chat/thinking";
 import { useChat } from "@ai-sdk/react";
-import { createFileRoute } from "@tanstack/react-router";
-import Avatar from "boring-avatars";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Avatar as UserAvatar } from "@heroui/react";
 import { useEffect, useRef } from "react";
 import { config } from "../../../client.config";
+import { Button } from "@heroui/react";
+import Logo from "@/components/logo";
+import { useAuth } from "@/lib/providers/auth.provider";
 
 export const Route = createFileRoute("/chat/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const navigate = useNavigate();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const url = `${config.serverUrl}/api/chat`;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
   const { messages, append, status } = useChat({
     api: url,
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 
   useEffect(() => {
-    // We only want to avoid scrolling when the response is actively streaming.
+    if (!isLoading && !isAuthenticated) {
+      navigate({ to: "/" });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
+
+  useEffect(() => {
     if (status === "streaming") {
       return;
     }
@@ -29,14 +44,38 @@ function RouteComponent() {
   }, [messages.length, status]);
 
   useEffect(() => {
-    if (messages.length === 0) {
+    if (messages.length === 0 && isAuthenticated) {
       append({ role: "user", content: "start_conversation" });
     }
-  }, [append, messages.length]);
+  }, [append, messages.length, isAuthenticated]);
 
   const handleSendMessage = (message: string) => {
     append({ role: "user", content: message });
   };
+
+  if (isLoading) {
+    return (
+      <main className="h-screen w-full bg-content1 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <main className="h-screen w-full bg-content1 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-xl mb-4">Please sign in to continue</p>
+          <Button color="primary" onPress={() => navigate({ to: "/" })}>
+            Go to Home
+          </Button>
+        </div>
+      </main>
+    );
+  }
 
   const displayMessages = messages.filter(
     (msg) => msg.content !== "start_conversation"
@@ -47,7 +86,7 @@ function RouteComponent() {
       <div className="flex flex-col h-full w-full max-w-3xl mx-auto relative">
         <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-content1 to-transparent z-10 pointer-events-none" />
 
-        <div className="flex-1 p-4 space-y-9 font-rubik overflow-y-auto scrollbar-hide">
+        <div className="flex-1 p-4 space-y-9 font-rubik text-zinc-800 overflow-y-auto scrollbar-hide">
           {displayMessages.map((message) => (
             <div
               key={message.id}
@@ -58,11 +97,11 @@ function RouteComponent() {
               <div className="flex-shrink-0">
                 {message.role === "assistant" ? (
                   <div className="p-1 rounded-full">
-                    <Avatar name="" size={34} />
+                    <Logo width={34} height={34} />
                   </div>
                 ) : (
                   <div className="p-1 rounded-full">
-                    <Avatar name="You" variant="beam" size={34} />
+                    <UserAvatar name={user?.name || "You"} src={user?.image} />
                   </div>
                 )}
               </div>
@@ -93,7 +132,7 @@ function RouteComponent() {
             <div className="flex flex-row items-center gap-3">
               <div className="flex-shrink-0">
                 <div className="p-1 rounded-full">
-                  <Avatar name="" size={34} />
+                  <Logo width={34} height={34} />
                 </div>
               </div>
               <Thinking />

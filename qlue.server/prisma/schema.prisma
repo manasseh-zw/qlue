@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(cuid())
+  email    String  @unique
+  name     String?
+  image    String?
+  googleId String  @unique // Google user ID
+
+  // Custom fields for our app
+  age            Int?
+  interests      Json? // JSON object for user interests
+  onboarding     OnboardingStatus @default(SIGNUP)
+  tasteProfileId String?          @unique
+  tasteProfile   TasteProfile?    @relation(fields: [tasteProfileId], references: [id])
+
+  // Session management
+  sessions Session[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model TasteProfile {
+  id        String   @id @default(cuid())
+  data      Json // JSON object containing the taste profile data
+  user      User? // Optional back-reference to user
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("taste_profiles")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+enum OnboardingStatus {
+  SIGNUP // First time user
+  CHAT // User exists but no data points or taste profile failed to generate
+  COMPLETE // Completed onboarding with full taste profile
+}

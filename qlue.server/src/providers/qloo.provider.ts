@@ -5,15 +5,20 @@ const qloo = new Qloo({
   apiKey: config.qloo.apiKey,
 });
 
-// Types for better type safety and agent integration
 export interface TasteProfile {
   interests: {
     entities: string[];
     tags: string[];
   };
   demographics: {
-    age?: 'under_21' | '21_to_34' | '35_to_54' | '55_and_older' | '35_and_younger' | '36_to_55';
-    gender?: 'male' | 'female';
+    age?:
+      | "under_21"
+      | "21_to_34"
+      | "35_to_54"
+      | "55_and_older"
+      | "35_and_younger"
+      | "36_to_55";
+    gender?: "male" | "female";
     audiences?: string[];
   };
   location?: {
@@ -34,21 +39,12 @@ export interface InsightOptions {
 }
 
 export class QlooProvider {
-  
-  // =============================================================================
-  // CORE INSIGHTS METHODS - Primary recommendation engine
-  // =============================================================================
-
-  /**
-   * Get place recommendations (restaurants, hotels, attractions, stores)
-   * Requires at least one primary signal (entities, tags, or location)
-   */
   static async getPlaceInsights(params: {
     signals?: {
       entities?: string[];
       tags?: string[];
       location?: string;
-      demographics?: TasteProfile['demographics'];
+      demographics?: TasteProfile["demographics"];
     };
     filters?: {
       location?: string;
@@ -62,10 +58,10 @@ export class QlooProvider {
     options?: InsightOptions;
   }) {
     const { signals = {}, filters = {}, options = {} } = params;
-    
+
     try {
       const request: any = {
-        filterType: 'urn:entity:place',
+        filterType: "urn:entity:place",
         take: options.take || 10,
         page: options.page || 1,
       };
@@ -126,19 +122,20 @@ export class QlooProvider {
 
       return await qloo.insights.getInsights(request);
     } catch (error) {
-      console.error('Qloo place insights error:', error);
-      throw new Error(`Failed to get place insights: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Qloo place insights error:", error);
+      throw new Error(
+        `Failed to get place insights: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 
-  /**
-   * Get movie recommendations based on taste preferences
-   */
   static async getMovieInsights(params: {
     signals?: {
       entities?: string[];
       tags?: string[];
-      demographics?: TasteProfile['demographics'];
+      demographics?: TasteProfile["demographics"];
     };
     filters?: {
       releaseYearMin?: number;
@@ -149,10 +146,10 @@ export class QlooProvider {
     options?: InsightOptions;
   }) {
     const { signals = {}, filters = {}, options = {} } = params;
-    
+
     try {
       const request: any = {
-        filterType: 'urn:entity:movie',
+        filterType: "urn:entity:movie",
         take: options.take || 10,
         page: options.page || 1,
       };
@@ -190,27 +187,28 @@ export class QlooProvider {
 
       return await qloo.insights.getInsights(request);
     } catch (error) {
-      console.error('Qloo movie insights error:', error);
-      throw new Error(`Failed to get movie insights: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Qloo movie insights error:", error);
+      throw new Error(
+        `Failed to get movie insights: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 
-  /**
-   * Get artist/music recommendations
-   */
   static async getArtistInsights(params: {
     signals?: {
       entities?: string[];
       tags?: string[];
-      demographics?: TasteProfile['demographics'];
+      demographics?: TasteProfile["demographics"];
     };
     options?: InsightOptions;
   }) {
     const { signals = {}, options = {} } = params;
-    
+
     try {
       const request: any = {
-        filterType: 'urn:entity:artist',
+        filterType: "urn:entity:artist",
         take: options.take || 10,
         page: options.page || 1,
       };
@@ -234,27 +232,28 @@ export class QlooProvider {
 
       return await qloo.insights.getInsights(request);
     } catch (error) {
-      console.error('Qloo artist insights error:', error);
-      throw new Error(`Failed to get artist insights: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Qloo artist insights error:", error);
+      throw new Error(
+        `Failed to get artist insights: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 
-  /**
-   * Get podcast recommendations
-   */
   static async getPodcastInsights(params: {
     signals?: {
       entities?: string[];
       tags?: string[];
-      demographics?: TasteProfile['demographics'];
+      demographics?: TasteProfile["demographics"];
     };
     options?: InsightOptions;
   }) {
     const { signals = {}, options = {} } = params;
-    
+
     try {
       const request: any = {
-        filterType: 'urn:entity:podcast',
+        filterType: "urn:entity:podcast",
         take: options.take || 10,
         page: options.page || 1,
       };
@@ -278,27 +277,28 @@ export class QlooProvider {
 
       return await qloo.insights.getInsights(request);
     } catch (error) {
-      console.error('Qloo podcast insights error:', error);
-      throw new Error(`Failed to get podcast insights: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Qloo podcast insights error:", error);
+      throw new Error(
+        `Failed to get podcast insights: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 
-  /**
-   * Get brand recommendations
-   */
   static async getBrandInsights(params: {
     signals?: {
       entities?: string[];
       tags?: string[];
-      demographics?: TasteProfile['demographics'];
+      demographics?: TasteProfile["demographics"];
     };
     options?: InsightOptions;
   }) {
     const { signals = {}, options = {} } = params;
-    
+
     try {
       const request: any = {
-        filterType: 'urn:entity:brand',
+        filterType: "urn:entity:brand",
         take: options.take || 10,
         page: options.page || 1,
       };
@@ -322,19 +322,20 @@ export class QlooProvider {
 
       return await qloo.insights.getInsights(request);
     } catch (error) {
-      console.error('Qloo brand insights error:', error);
-      throw new Error(`Failed to get brand insights: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Qloo brand insights error:", error);
+      throw new Error(
+        `Failed to get brand insights: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 
-  /**
-   * Get book recommendations
-   */
   static async getBookInsights(params: {
     signals?: {
       entities?: string[];
       tags?: string[];
-      demographics?: TasteProfile['demographics'];
+      demographics?: TasteProfile["demographics"];
     };
     filters?: {
       publicationYearMin?: number;
@@ -343,10 +344,10 @@ export class QlooProvider {
     options?: InsightOptions;
   }) {
     const { signals = {}, filters = {}, options = {} } = params;
-    
+
     try {
       const request: any = {
-        filterType: 'urn:entity:book',
+        filterType: "urn:entity:book",
         take: options.take || 10,
         page: options.page || 1,
       };
@@ -377,24 +378,23 @@ export class QlooProvider {
 
       return await qloo.insights.getInsights(request);
     } catch (error) {
-      console.error('Qloo book insights error:', error);
-      throw new Error(`Failed to get book insights: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Qloo book insights error:", error);
+      throw new Error(
+        `Failed to get book insights: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 
-  // =============================================================================
-  // TAG DISCOVERY METHODS - For finding valid Qloo tags
-  // =============================================================================
-
-  /**
-   * Search for tags by query string
-   * Essential for discovering valid tag IDs for use in insights
-   */
-  static async searchTags(query: string, options?: {
-    tagTypes?: string[];
-    take?: number;
-    typoTolerance?: boolean;
-  }) {
+  static async searchTags(
+    query: string,
+    options?: {
+      tagTypes?: string[];
+      take?: number;
+      typoTolerance?: boolean;
+    }
+  ) {
     try {
       const request: any = {
         filterQuery: query,
@@ -408,14 +408,15 @@ export class QlooProvider {
 
       return await qloo.tags.getTags(request);
     } catch (error) {
-      console.error('Qloo tag search error:', error);
-      throw new Error(`Failed to search tags: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Qloo tag search error:", error);
+      throw new Error(
+        `Failed to search tags: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 
-  /**
-   * Get available tag types for a domain
-   */
   static async getTagTypes(parentTypes?: string[]) {
     try {
       const request: any = {
@@ -428,58 +429,44 @@ export class QlooProvider {
 
       return await qloo.tags.getTagTypes(request);
     } catch (error) {
-      console.error('Qloo tag types error:', error);
-      throw new Error(`Failed to get tag types: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Qloo tag types error:", error);
+      throw new Error(
+        `Failed to get tag types: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 
-  /**
-   * Get restaurant/cuisine tags
-   */
   static async getRestaurantTags(query?: string) {
-    return this.searchTags(query || '', {
-      tagTypes: ['urn:tag:genre:restaurant'],
+    return this.searchTags(query || "", {
+      tagTypes: ["urn:tag:genre:restaurant"],
       take: 30,
     });
   }
 
-  /**
-   * Get music genre tags
-   */
+
   static async getMusicTags(query?: string) {
-    return this.searchTags(query || '', {
-      tagTypes: ['urn:tag:genre:music'],
+    return this.searchTags(query || "", {
+      tagTypes: ["urn:tag:genre:music"],
       take: 30,
     });
   }
 
-  /**
-   * Get podcast genre tags
-   */
   static async getPodcastTags(query?: string) {
-    return this.searchTags(query || '', {
-      tagTypes: ['urn:tag:genre:podcast'],
+    return this.searchTags(query || "", {
+      tagTypes: ["urn:tag:genre:podcast"],
       take: 30,
     });
   }
 
-  /**
-   * Get movie genre tags
-   */
   static async getMovieTags(query?: string) {
-    return this.searchTags(query || '', {
-      tagTypes: ['urn:tag:genre:media'],
+    return this.searchTags(query || "", {
+      tagTypes: ["urn:tag:genre:media"],
       take: 30,
     });
   }
-
-  // =============================================================================
-  // AUDIENCE DISCOVERY METHODS - For demographic targeting
-  // =============================================================================
-
-  /**
-   * Get available audiences for demographic targeting
-   */
+  
   static async getAudiences(options?: {
     parentTypes?: string[];
     take?: number;
@@ -495,46 +482,40 @@ export class QlooProvider {
 
       return await qloo.audiences.getAudiences(request);
     } catch (error) {
-      console.error('Qloo audiences error:', error);
-      throw new Error(`Failed to get audiences: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Qloo audiences error:", error);
+      throw new Error(
+        `Failed to get audiences: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 
-  /**
-   * Get audience types/categories
-   */
   static async getAudienceTypes() {
     try {
       return await qloo.audiences.getAudienceTypes({
         take: 50,
       });
     } catch (error) {
-      console.error('Qloo audience types error:', error);
-      throw new Error(`Failed to get audience types: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Qloo audience types error:", error);
+      throw new Error(
+        `Failed to get audience types: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 
-  /**
-   * Get community audiences (millennials, gen-z, etc.)
-   */
   static async getCommunityAudiences() {
     return this.getAudiences({
-      parentTypes: ['urn:audience:communities'],
+      parentTypes: ["urn:audience:communities"],
       take: 30,
     });
   }
 
-  // =============================================================================
-  // UTILITY METHODS - Common patterns for agent usage
-  // =============================================================================
-
-  /**
-   * Build a comprehensive taste profile from multiple entity types
-   * Useful for agent to understand cross-domain preferences
-   */
   static async buildCrossDomainProfile(params: {
     baseEntities: string[];
-    demographics?: TasteProfile['demographics'];
+    demographics?: TasteProfile["demographics"];
     location?: string;
     take?: number;
   }) {
@@ -547,63 +528,62 @@ export class QlooProvider {
         location,
       };
 
-      const [places, artists, movies, podcasts, brands] = await Promise.allSettled([
-        this.getPlaceInsights({ 
-          signals: { ...signals, location }, 
-          filters: location ? { location } : {},
-          options: { take }
-        }),
-        this.getArtistInsights({ signals, options: { take } }),
-        this.getMovieInsights({ signals, options: { take } }),
-        this.getPodcastInsights({ signals, options: { take } }),
-        this.getBrandInsights({ signals, options: { take } }),
-      ]);
+      const [places, artists, movies, podcasts, brands] =
+        await Promise.allSettled([
+          this.getPlaceInsights({
+            signals: { ...signals, location },
+            filters: location ? { location } : {},
+            options: { take },
+          }),
+          this.getArtistInsights({ signals, options: { take } }),
+          this.getMovieInsights({ signals, options: { take } }),
+          this.getPodcastInsights({ signals, options: { take } }),
+          this.getBrandInsights({ signals, options: { take } }),
+        ]);
 
       return {
-        places: places.status === 'fulfilled' ? places.value : null,
-        artists: artists.status === 'fulfilled' ? artists.value : null,
-        movies: movies.status === 'fulfilled' ? movies.value : null,
-        podcasts: podcasts.status === 'fulfilled' ? podcasts.value : null,
-        brands: brands.status === 'fulfilled' ? brands.value : null,
+        places: places.status === "fulfilled" ? places.value : null,
+        artists: artists.status === "fulfilled" ? artists.value : null,
+        movies: movies.status === "fulfilled" ? movies.value : null,
+        podcasts: podcasts.status === "fulfilled" ? podcasts.value : null,
+        brands: brands.status === "fulfilled" ? brands.value : null,
         errors: [places, artists, movies, podcasts, brands]
-          .filter(result => result.status === 'rejected')
-          .map(result => (result as PromiseRejectedResult).reason),
+          .filter((result) => result.status === "rejected")
+          .map((result) => (result as PromiseRejectedResult).reason),
       };
     } catch (error) {
-      console.error('Cross-domain profile error:', error);
-      throw new Error(`Failed to build cross-domain profile: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error("Cross-domain profile error:", error);
+      throw new Error(
+        `Failed to build cross-domain profile: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     }
   }
 
-  /**
-   * Quick entity type detection for agent routing
-   */
   static getEntityTypeFromString(entityType: string) {
     const typeMap: Record<string, string> = {
-      'restaurant': 'urn:entity:place',
-      'place': 'urn:entity:place',
-      'hotel': 'urn:entity:place',
-      'venue': 'urn:entity:place',
-      'movie': 'urn:entity:movie',
-      'film': 'urn:entity:movie',
-      'artist': 'urn:entity:artist',
-      'musician': 'urn:entity:artist',
-      'band': 'urn:entity:artist',
-      'podcast': 'urn:entity:podcast',
-      'show': 'urn:entity:podcast',
-      'brand': 'urn:entity:brand',
-      'company': 'urn:entity:brand',
-      'book': 'urn:entity:book',
-      'person': 'urn:entity:person',
-      'celebrity': 'urn:entity:person',
+      restaurant: "urn:entity:place",
+      place: "urn:entity:place",
+      hotel: "urn:entity:place",
+      venue: "urn:entity:place",
+      movie: "urn:entity:movie",
+      film: "urn:entity:movie",
+      artist: "urn:entity:artist",
+      musician: "urn:entity:artist",
+      band: "urn:entity:artist",
+      podcast: "urn:entity:podcast",
+      show: "urn:entity:podcast",
+      brand: "urn:entity:brand",
+      company: "urn:entity:brand",
+      book: "urn:entity:book",
+      person: "urn:entity:person",
+      celebrity: "urn:entity:person",
     };
 
     return typeMap[entityType.toLowerCase()] || entityType;
   }
 
-  /**
-   * Validate that a request has required primary signals
-   */
   static validateSignals(signals: {
     entities?: string[];
     tags?: string[];
@@ -615,7 +595,538 @@ export class QlooProvider {
       signals.location
     );
   }
+
+  static async searchEntities(params: {
+    query: string;
+    entityType?: string;
+    filters?: {
+      location?: string;
+      tags?: string[];
+      popularity?: { min?: number; max?: number };
+      excludeEntities?: string[];
+    };
+    options?: {
+      take?: number;
+      page?: number;
+      typoTolerance?: boolean;
+    };
+  }) {
+    const { query, entityType, filters = {}, options = {} } = params;
+
+    try {
+      const searchParams = new URLSearchParams();
+      searchParams.append("query", query);
+
+      if (entityType) {
+        searchParams.append(
+          "filter.type",
+          this.getEntityTypeFromString(entityType)
+        );
+      }
+      if (filters.location) {
+        searchParams.append("filter.location.query", filters.location);
+      }
+      if (filters.tags?.length) {
+        searchParams.append("filter.tags", filters.tags.join(","));
+      }
+      if (filters.popularity?.min !== undefined) {
+        searchParams.append(
+          "filter.popularity.min",
+          filters.popularity.min.toString()
+        );
+      }
+      if (filters.popularity?.max !== undefined) {
+        searchParams.append(
+          "filter.popularity.max",
+          filters.popularity.max.toString()
+        );
+      }
+      if (filters.excludeEntities?.length) {
+        searchParams.append(
+          "filter.exclude.entities",
+          filters.excludeEntities.join(",")
+        );
+      }
+      if (options.take) {
+        searchParams.append("take", options.take.toString());
+      }
+
+      const response = await fetch(
+        `${config.qloo.url}/search?${searchParams}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": config.qloo.apiKey!,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Search failed: ${response.status} ${response.statusText}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Qloo entity search error:", error);
+      throw new Error(
+        `Failed to search entities: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  }
+
+ 
+  static async getEntitiesByIds(
+    entityIds: string[],
+    options?: {
+      includeProperties?: boolean;
+      includeTags?: boolean;
+    }
+  ) {
+    try {
+      if (!config.qloo.apiKey) {
+        throw new Error("Qloo API key is not configured");
+      }
+
+      const searchParams = new URLSearchParams();
+      searchParams.append("ids", entityIds.join(","));
+
+      if (options?.includeProperties) {
+        searchParams.append("include_properties", "true");
+      }
+      if (options?.includeTags) {
+        searchParams.append("include_tags", "true");
+      }
+
+      const response = await fetch(
+        `${config.qloo.url}/entities?${searchParams}`,
+        {
+          headers: {
+            "x-api-key": config.qloo.apiKey!,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Entity lookup failed: ${response.status} ${response.statusText}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Qloo entity lookup error:", error);
+      throw new Error(
+        `Failed to lookup entities: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  }
+
+  static async resolveEntities(entities: Array<string>) {
+    try {
+      console.log(entities);
+
+      const result = await this.searchEntities({
+        query: entities[0],
+        options: { take: entities.length * 2 }, // Get extra results for better matching
+      });
+
+      console.log(result.results[0]["entity_id"]);
+      console.log(result[0]["entity_id"]);
+
+      // Extract resolved entity IDs from the response
+      const resolvedEntities = result.query?.entities?.signal || [];
+      return {
+        success: result.success,
+        resolved: resolvedEntities,
+        entities: result.results?.entities || [],
+      };
+    } catch (error) {
+      console.error("Entity resolution error:", error);
+      throw new Error(
+        `Failed to resolve entities: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  }
+
+  static async analyzeEntities(params: {
+    entityIds: string[];
+    analysisType?: "tags" | "entities" | "both";
+    filters?: {
+      tagTypes?: string[];
+      entityTypes?: string[];
+      parentTypes?: string[];
+    };
+    options?: {
+      take?: number;
+      confidence?: number;
+    };
+  }) {
+    const {
+      entityIds,
+      analysisType = "both",
+      filters = {},
+      options = {},
+    } = params;
+
+    try {
+      const request: any = {
+        "signal.interests.entities": entityIds.join(","),
+        take: options.take || 20,
+      };
+
+      // Analyze for tags
+      if (analysisType === "tags" || analysisType === "both") {
+        const tagRequest = {
+          ...request,
+          "filter.type": "urn:tag",
+        };
+
+        if (filters.tagTypes?.length) {
+          tagRequest["filter.tag.types"] = filters.tagTypes.join(",");
+        }
+        if (filters.parentTypes?.length) {
+          tagRequest["filter.parents.types"] = filters.parentTypes.join(",");
+        }
+
+        const tagResponse = await qloo.insights.getInsights(tagRequest);
+
+        // If we only want tags, return here
+        if (analysisType === "tags") {
+          return { tags: tagResponse, entities: null };
+        }
+
+        // For 'both', continue to get entities
+        const entityRequest = {
+          ...request,
+          "filter.type": filters.entityTypes?.length
+            ? filters.entityTypes.join(",")
+            : "urn:entity",
+        };
+
+        const entityResponse = await qloo.insights.getInsights(entityRequest);
+
+        return {
+          tags: tagResponse,
+          entities: entityResponse,
+        };
+      }
+
+      // Analyze for similar entities only
+      else {
+        request["filter.type"] = filters.entityTypes?.length
+          ? filters.entityTypes.join(",")
+          : "urn:entity";
+        const response = await qloo.insights.getInsights(request);
+        return { tags: null, entities: response };
+      }
+    } catch (error) {
+      console.error("Qloo analysis error:", error);
+      throw new Error(
+        `Failed to analyze entities: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  }
+
+
+  static async compareEntityGroups(params: {
+    group1: {
+      entityIds: string[];
+      label?: string;
+    };
+    group2: {
+      entityIds: string[];
+      label?: string;
+    };
+    compareType?: "tags" | "entities" | "both";
+    filters?: {
+      entityTypes?: string[];
+      tagTypes?: string[];
+    };
+    options?: {
+      take?: number;
+      showDifferences?: boolean;
+    };
+  }) {
+    const {
+      group1,
+      group2,
+      compareType = "both",
+      filters = {},
+      options = {},
+    } = params;
+
+    try {
+      // Use the v2 insights compare endpoint
+      const request: any = {
+        "signal.interests.entities.a": group1.entityIds.join(","),
+        "signal.interests.entities.b": group2.entityIds.join(","),
+        take: options.take || 15,
+      };
+
+      if (filters.entityTypes?.length) {
+        request["filter.type"] = filters.entityTypes.join(",");
+      }
+      if (filters.tagTypes?.length) {
+        request["filter.tag.types"] = filters.tagTypes.join(",");
+      }
+
+      if (!config.qloo.apiKey) {
+        throw new Error("Qloo API key is not configured");
+      }
+
+      const response = await fetch("${config.qloo.url}/v2/insights/compare", {
+        method: "GET",
+        headers: {
+          "x-api-key": config.qloo.apiKey,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Comparison failed: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const result = await response.json();
+
+      return {
+        success: result.success,
+        group1Label: group1.label || "Group A",
+        group2Label: group2.label || "Group B",
+        comparison: result.results,
+        insights: result.query || {},
+      };
+    } catch (error) {
+      console.error("Qloo comparison error:", error);
+      throw new Error(
+        `Failed to compare entity groups: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  }
+
+
+  static async analyzeTasteSimilarity(params: {
+    targetEntities: string[];
+    candidateEntities: string[];
+    analysisDepth?: "shallow" | "deep";
+    includeExplanation?: boolean;
+  }) {
+    const {
+      targetEntities,
+      candidateEntities,
+      analysisDepth = "shallow",
+      includeExplanation = false,
+    } = params;
+
+    try {
+      const similarities: Array<{
+        entityId: string;
+        similarityScore: number;
+        commonTags?: any[];
+        explanation?: string;
+      }> = [];
+
+      // For each candidate, analyze similarity to target
+      for (const candidateId of candidateEntities) {
+        try {
+          const comparison = await this.compareEntityGroups({
+            group1: { entityIds: targetEntities, label: "Target Profile" },
+            group2: { entityIds: [candidateId], label: "Candidate" },
+            compareType: analysisDepth === "deep" ? "both" : "tags",
+            options: { take: 10 },
+          });
+
+          // Calculate basic similarity score (this is a simplified approach)
+          const similarity = this.calculateSimilarityScore(comparison);
+
+          similarities.push({
+            entityId: candidateId,
+            similarityScore: similarity,
+            commonTags: comparison.comparison?.common_tags || [],
+            explanation: includeExplanation
+              ? this.generateSimilarityExplanation(comparison)
+              : undefined,
+          });
+        } catch (error) {
+          console.warn(
+            `Failed to analyze similarity for ${candidateId}:`,
+            error
+          );
+        }
+      }
+
+      // Sort by similarity score descending
+      similarities.sort((a, b) => b.similarityScore - a.similarityScore);
+
+      return {
+        success: true,
+        targetProfile: targetEntities,
+        similarities,
+        totalAnalyzed: candidateEntities.length,
+        successfulAnalyses: similarities.length,
+      };
+    } catch (error) {
+      console.error("Taste similarity analysis error:", error);
+      throw new Error(
+        `Failed to analyze taste similarity: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  }
+
+  static async getTrendingEntities(params: {
+    category: string;
+    location?: string;
+    timeframe?: "daily" | "weekly" | "monthly";
+    take?: number;
+  }) {
+    const { category, location, timeframe = "weekly", take = 20 } = params;
+
+    console.log(config.qloo.url);
+
+    try {
+      const searchParams = new URLSearchParams();
+      searchParams.append("category", category);
+      searchParams.append("take", take.toString());
+
+      if (location) {
+        searchParams.append("location", location);
+      }
+      if (timeframe) {
+        searchParams.append("timeframe", timeframe);
+      }
+
+      const response = await fetch(
+        `${config.qloo.url}/trends/category?${searchParams}`,
+        {
+          headers: {
+            "x-api-key": config.qloo.apiKey!,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Trending request failed: ${response.status} ${response.statusText}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Qloo trending entities error:", error);
+      throw new Error(
+        `Failed to get trending entities: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  }
+
+  static async getEntityTrendData(entityId: string, weeks?: number) {
+    try {
+      const searchParams = new URLSearchParams();
+      searchParams.append("entity_id", entityId);
+
+      if (weeks) {
+        searchParams.append("weeks", weeks.toString());
+      }
+
+      const response = await fetch(
+        `${config.qloo.url}/trends/entity?${searchParams}`,
+        {
+          headers: {
+            "x-api-key": config.qloo.apiKey!,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Entity trend request failed: ${response.status} ${response.statusText}`
+        );
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Qloo entity trend error:", error);
+      throw new Error(
+        `Failed to get entity trend data: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    }
+  }
+
+
+  private static calculateSimilarityScore(comparison: any): number {
+    // This is a simplified scoring algorithm
+    // In production, you'd want more sophisticated scoring
+    try {
+      const results = comparison.comparison;
+      if (!results) return 0;
+
+      // Score based on common elements, affinity scores, etc.
+      let score = 0;
+
+      // Weight common tags
+      if (results.common_tags?.length) {
+        score += results.common_tags.length * 0.3;
+      }
+
+      // Weight affinity scores if available
+      if (results.affinity_difference !== undefined) {
+        score += Math.max(0, 1 - Math.abs(results.affinity_difference)) * 0.7;
+      }
+
+      return Math.min(1, score); // Normalize to 0-1
+    } catch (error) {
+      return 0;
+    }
+  }
+
+  private static generateSimilarityExplanation(comparison: any): string {
+    try {
+      const results = comparison.comparison;
+      if (!results) return "No comparison data available";
+
+      const explanations = [];
+
+      if (results.common_tags?.length) {
+        explanations.push(
+          `Shares ${results.common_tags.length} common characteristics`
+        );
+      }
+
+      if (results.unique_to_a?.length) {
+        explanations.push(
+          `Target has ${results.unique_to_a.length} unique traits`
+        );
+      }
+
+      if (results.unique_to_b?.length) {
+        explanations.push(
+          `Candidate has ${results.unique_to_b.length} distinctive traits`
+        );
+      }
+
+      return explanations.join("; ") || "Analysis completed";
+    } catch (error) {
+      return "Explanation generation failed";
+    }
+  }
 }
 
-// Export default instance for easy access
 export const qlooProvider = QlooProvider;

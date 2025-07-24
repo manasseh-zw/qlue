@@ -5,6 +5,7 @@ import { config } from "../server.config";
 import { authRoutes } from "./routes/auth.routes";
 import { userRoutes } from "./routes/user.routes";
 import { chatRoutes } from "./routes/chat.routes";
+import { qlooRoutes } from "./routes/qloo.routes";
 
 const app = new Hono();
 
@@ -23,6 +24,7 @@ app.use(
 app.route("/api/auth", authRoutes);
 app.route("/api/user", userRoutes);
 app.route("/api/chat", chatRoutes);
+app.route("/api/qloo", qlooRoutes);
 
 // Health check endpoint
 app.get("/api/health", (c) => {
@@ -31,5 +33,7 @@ app.get("/api/health", (c) => {
 
 // Start server
 serve({ fetch: app.fetch, port: 8080 });
+
+console.log(config.qloo);
 
 console.log("🚀 Server running on http://localhost:8080");

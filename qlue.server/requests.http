@@ -1,0 +1,426 @@
+# Qloo API Testing Endpoints
+# Base URL: http://localhost:8080
+
+### Health Check
+GET http://localhost:8080/api/health
+
+### =============================================================================
+### INSIGHTS ENDPOINTS - Entity recommendations
+### =============================================================================
+
+### Places Insights - Italian restaurants in NYC for young professionals
+POST http://localhost:8080/api/qloo/insights/places
+Content-Type: application/json
+
+{
+  "signals": {
+    "tags": ["urn:tag:genre:media:horror"],
+    "location": "Harare",
+    "demographics": {
+      "age": "35_and_younger"
+    }
+  },
+  "filters": {
+    "location": "Harare",
+    "priceMin": 1,
+    "priceMax": 4,
+    "ratingMin": 2.0
+  },
+  "options": {
+    "take": 5,
+    "explainability": true
+  }
+}
+
+### Movie Insights - Horror movies for males released after 2020
+POST http://localhost:8080/api/qloo/insights/movies
+Content-Type: application/json
+
+{
+  "signals": {
+    "tags": ["urn:tag:genre:media:horror"],
+    "demographics": {
+      "gender": "male",
+      "age": "35_and_younger"
+    }
+  },
+  "filters": {
+    "releaseYearMin": 2020,
+    "contentRating": "R"
+  },
+  "options": {
+    "take": 8,
+    "explainability": true
+  }
+}
+
+### Artist Insights - Similar to Taylor Swift
+POST http://localhost:8080/api/qloo/insights/artists
+Content-Type: application/json
+
+{
+  "signals": {
+    "tags": ["urn:tag:genre:music:pop"],
+    "demographics": {
+      "gender": "female",
+      "age": "35_and_younger"
+    }
+  },
+  "options": {
+    "take": 5
+  }
+}
+
+### Podcast Insights - Comedy podcasts
+POST http://localhost:8080/api/qloo/insights/podcasts
+Content-Type: application/json
+
+{
+  "signals": {
+    "tags": ["urn:tag:genre:podcast:comedy"],
+    "demographics": {
+      "age": "35_and_younger"
+    }
+  },
+  "options": {
+    "take": 5
+  }
+}
+
+### Brand Insights - Fashion brands for young females
+POST http://localhost:8080/api/qloo/insights/brands
+Content-Type: application/json
+
+{
+  "signals": {
+    "tags": ["urn:tag:category:fashion"],
+    "demographics": {
+      "gender": "female",
+      "age": "35_and_younger"
+    }
+  },
+  "options": {
+    "take": 8
+  }
+}
+
+### Book Insights - Science fiction books
+POST http://localhost:8080/api/qloo/insights/books
+Content-Type: application/json
+
+{
+  "signals": {
+    "tags": ["urn:tag:genre:book:science_fiction"]
+  },
+  "filters": {
+    "publicationYearMin": 2020
+  },
+  "options": {
+    "take": 5
+  }
+}
+
+### Cross-Domain Profile - Build comprehensive taste profile
+POST http://localhost:8080/api/qloo/insights/cross-domain
+Content-Type: application/json
+
+{
+  "baseEntities": [
+    "B0AD05A3-D334-4A0B-90A7-4F285256AFA8",
+    "92C08AC7-9CFF-46EE-AC69-ECE349E25B59"
+  ],
+  "demographics": {
+    "age": "35_and_younger",
+    "gender": "male"
+  },
+  "location": "America",
+  "take": 5
+}
+
+### =============================================================================
+### TAG DISCOVERY ENDPOINTS
+### =============================================================================
+
+### Search Tags - Find Italian restaurant tags
+GET http://localhost:8080/api/qloo/tags/search?query=italian&tagTypes=urn:tag:category:place
+
+### Search Tags - Music genres
+GET http://localhost:8080/api/qloo/tags/search?query=pop&tagTypes=urn:tag:genre:music&take=15&typoTolerance=true
+
+### Get Tag Types - All available tag types
+GET http://localhost:8080/api/qloo/tags/types
+
+### Get Restaurant Tags
+GET http://localhost:8080/api/qloo/tags/restaurant?query=italian
+
+### Get Music Tags
+GET http://localhost:8080/api/qloo/tags/music?query=rock
+
+### Get Podcast Tags
+GET http://localhost:8080/api/qloo/tags/podcast?query=comedy
+
+### Get Movie Tags
+GET http://localhost:8080/api/qloo/tags/movie?query=horror
+
+### =============================================================================
+### AUDIENCE ENDPOINTS
+### =============================================================================
+
+### Get Audiences
+GET http://localhost:8080/api/qloo/audiences?take=20
+
+### Get Audience Types
+GET http://localhost:8080/api/qloo/audiences/types
+
+### Get Community Audiences
+GET http://localhost:8080/api/qloo/audiences/communities
+
+### =============================================================================
+### SEARCH & LOOKUP ENDPOINTS
+### =============================================================================
+
+### Search Entities - Simple string search
+POST http://localhost:8080/api/qloo/search/entities
+
+Content-Type: application/json
+{
+  "query": "Starbucks",
+  "entityType": "place",
+  "filters": {
+    "location": "New York City"
+  },
+  "options": {
+    "take": 5
+  }
+}
+
+### Search Entities - Complex name/address search
+POST http://localhost:8080/api/qloo/search/entities
+Content-Type: application/json
+
+{
+  "query": [
+    {
+      "name": "Starbucks",
+      "address": "123 Main St, New York"
+    },
+    {
+      "name": "Joe Coffee",
+      "address": "Brooklyn, NY"
+    }
+  ],
+  "entityType": "place",
+  "options": {
+    "take": 5
+  }
+}
+
+### Get Entities by IDs - Lookup specific entities
+POST http://localhost:8080/api/qloo/entities/lookup
+Content-Type: application/json
+
+{
+  "entityIds": [
+    "example-entity-id-1",
+    "example-entity-id-2"
+  ],
+  "options": {
+    "includeProperties": true,
+    "includeTags": true
+  }
+}
+
+### Resolve Entities - Convert names to entity IDs
+POST http://localhost:8080/api/qloo/entities/resolve
+Content-Type: application/json
+
+{
+  "entities": [
+    "Taylor Swift",
+    "Joe Rogan"
+  ]
+}
+
+### =============================================================================
+### ANALYSIS & COMPARISON ENDPOINTS
+### =============================================================================
+
+### Analyze Entities - Discover taste patterns
+POST http://localhost:8080/api/qloo/analysis/entities
+Content-Type: application/json
+
+{
+  "entityIds": [
+    "example-entity-id-1",
+    "example-entity-id-2",
+    "example-entity-id-3"
+  ],
+  "analysisType": "both",
+  "filters": {
+    "tagTypes": ["urn:tag:genre:restaurant", "urn:tag:genre:music"],
+    "entityTypes": ["urn:entity:place", "urn:entity:artist"]
+  },
+  "options": {
+    "take": 15
+  }
+}
+
+### Compare Entity Groups - Taste differences between groups
+POST http://localhost:8080/api/qloo/analysis/compare
+Content-Type: application/json
+
+{
+  "group1": {
+    "entityIds": ["entity-1", "entity-2"],
+    "label": "Group A - Pop Music Fans"
+  },
+  "group2": {
+    "entityIds": ["entity-3", "entity-4"],
+    "label": "Group B - Rock Music Fans"
+  },
+  "compareType": "both",
+  "filters": {
+    "entityTypes": ["urn:entity:artist", "urn:entity:place"]
+  },
+  "options": {
+    "take": 5,
+    "showDifferences": true
+  }
+}
+
+### Analyze Taste Similarity - Score candidates against target
+POST http://localhost:8080/api/qloo/analysis/similarity
+Content-Type: application/json
+
+{
+  "targetEntities": [
+    "target-entity-1",
+    "target-entity-2"
+  ],
+  "candidateEntities": [
+    "candidate-1",
+    "candidate-2",
+    "candidate-3"
+  ],
+  "analysisDepth": "deep",
+  "includeExplanation": true
+}
+
+### =============================================================================
+### TRENDING ENDPOINTS
+### =============================================================================
+
+### Get Trending Entities - Weekly trending restaurants
+GET http://localhost:8080/api/qloo/trends/restaurants?location=New York&timeframe=weekly&take=15
+
+### Get Trending Entities - Daily trending movies
+GET http://localhost:8080/api/qloo/trends/movies?timeframe=daily&take=20
+
+### Get Entity Trend Data - Specific entity trends
+GET http://localhost:8080/api/qloo/trends/entity/example-entity-id?weeks=12
+
+### =============================================================================
+### UTILITY ENDPOINTS
+### =============================================================================
+
+### Validate Signals - Check if signals are valid
+POST http://localhost:8080/api/qloo/utils/validate-signals
+Content-Type: application/json
+
+{
+  "entities": ["entity-1", "entity-2"],
+  "tags": ["urn:tag:genre:music:pop"],
+  "location": "New York City"
+}
+
+### Get Entity Type - Convert string to Qloo entity type
+GET http://localhost:8080/api/qloo/utils/entity-type/restaurant
+
+### Get Entity Type - Convert string to Qloo entity type
+GET http://localhost:8080/api/qloo/utils/entity-type/movie
+
+### =============================================================================
+### SAMPLE REALISTIC WORKFLOWS
+### =============================================================================
+
+### Workflow 1: Find Italian restaurants for Taylor Swift fans in NYC
+# Step 1: Get music tags to understand Taylor Swift fan preferences
+GET http://localhost:8080/api/qloo/tags/music?query=pop
+
+###
+# Step 2: Get restaurant recommendations based on pop music preferences
+POST http://localhost:8080/api/qloo/insights/places
+Content-Type: application/json
+
+{
+  "signals": {
+    "tags": ["urn:tag:genre:music:pop"],
+    "location": "New York City",
+    "demographics": {
+      "gender": "female",
+      "age": "35_and_younger"
+    }
+  },
+  "filters": {
+    "location": "Manhattan",
+    "priceMin": 2,
+    "priceMax": 4
+  },
+  "options": {
+    "take": 8,
+    "explainability": true
+  }
+}
+
+### Workflow 2: Build comprehensive taste profile for podcast recommendation
+# Step 1: Resolve user's favorite entities
+POST http://localhost:8080/api/qloo/entities/resolve
+Content-Type: application/json
+
+{
+  "entities": [
+    "Joe Rogan",
+    "Serial Podcast",
+    "This American Life"
+  ]
+}
+
+###
+# Step 2: Build cross-domain profile (use actual resolved entity IDs)
+POST http://localhost:8080/api/qloo/insights/cross-domain
+Content-Type: application/json
+
+{
+  "baseEntities": [
+    "resolved-joe-rogan-id",
+    "resolved-serial-id"
+  ],
+  "demographics": {
+    "age": "36_to_55",
+    "gender": "male"
+  },
+  "take": 5
+}
+
+### Workflow 3: Compare taste profiles between user groups
+# Compare millennials vs gen-z music preferences
+POST http://localhost:8080/api/qloo/analysis/compare
+Content-Type: application/json
+
+{
+  "group1": {
+    "entityIds": ["millennial-artist-1", "millennial-artist-2"],
+    "label": "Millennial Music Taste"
+  },
+  "group2": {
+    "entityIds": ["genz-artist-1", "genz-artist-2"],
+    "label": "Gen-Z Music Taste"
+  },
+  "compareType": "tags",
+  "filters": {
+    "tagTypes": ["urn:tag:genre:music"]
+  },
+  "options": {
+    "take": 20
+  }
+}

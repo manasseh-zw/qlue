@@ -18,5 +18,6 @@ export const config = {
   },
   qloo: {
     apiKey: process.env.QLOO_API_KEY,
+    url: process.env.QLOO_URL,
   },
 };

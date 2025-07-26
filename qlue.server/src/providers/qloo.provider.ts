@@ -1,6 +1,7 @@
 import { Qloo } from "@devma/qloo";
-import { config } from "../../../server.config";
+import { config } from "../../server.config";
 import type {
+  FilterType,
   GetInsightsRequest,
   GetInsightsResponse,
   SignalDemographicsAge,
@@ -19,33 +20,28 @@ const qloo = new Qloo({
   apiKey: config.qloo.apiKey,
 });
 
-export interface TasteProfile {
-  interests: {
-    entities: string[];
-    tags: string[];
-  };
-  demographics: {
-    age?:
-      | "under_21"
-      | "21_to_34"
-      | "35_to_54"
-      | "55_and_older"
-      | "35_and_younger"
-      | "36_to_55";
-    gender?: "male" | "female";
-    audiences?: string[];
-  };
-  location?: {
-    query?: string;
-    coordinates?: string;
-    radius?: number;
-  };
-}
-
-export type Demographics = {
-  age?: SignalDemographicsAge;
-  gender?: SignalDemographicsGender;
-};
+// export interface TasteProfile {
+//   interests: {
+//     entities: string[];
+//     tags: string[];
+//   };
+//   demographics: {
+//     age?:
+//       | "under_21"
+//       | "21_to_34"
+//       | "35_to_54"
+//       | "55_and_older"
+//       | "35_and_younger"
+//       | "36_to_55";
+//     gender?: "male" | "female";
+//     audiences?: string[];
+//   };
+//   location?: {
+//     query?: string;
+//     coordinates?: string;
+//     radius?: number;
+//   };
+// }
 
 export type InsightOptions = {
   take?: number;
@@ -56,6 +52,29 @@ export type InsightOptions = {
     take: number;
   };
 };
+
+export function getEntityTypeFromString(entityType: string) {
+  const typeMap: Record<string, string> = {
+    restaurant: "urn:entity:place",
+    place: "urn:entity:place",
+    hotel: "urn:entity:place",
+    venue: "urn:entity:place",
+    movie: "urn:entity:movie",
+    film: "urn:entity:movie",
+    artist: "urn:entity:artist",
+    musician: "urn:entity:artist",
+    band: "urn:entity:artist",
+    podcast: "urn:entity:podcast",
+    show: "urn:entity:podcast",
+    brand: "urn:entity:brand",
+    company: "urn:entity:brand",
+    book: "urn:entity:book",
+    person: "urn:entity:person",
+    celebrity: "urn:entity:person",
+  };
+
+  return typeMap[entityType.toLowerCase()] as FilterType;
+}
 
 export class QlooProvider {
   static async getInsights(
@@ -145,7 +164,7 @@ export class QlooProvider {
       if (options?.entityType) {
         searchParams.append(
           "filter.type",
-          this.getEntityTypeFromString(options.entityType)
+          getEntityTypeFromString(options.entityType)
         );
       }
       if (options?.take) {
@@ -327,79 +346,7 @@ export class QlooProvider {
     }
   }
 
-  static async resolveEntities(entities: Array<string>) {
-    try {
-      const resolvedEntities = [];
 
-      for (const entity of entities) {
-        try {
-          const result = await this.searchEntities(entity, {
-            take: 5, // Get top 5 matches for each entity
-          });
-
-          // Extract the first (best) match
-          if (result.results?.length > 0) {
-            resolvedEntities.push({
-              input: entity,
-              resolved: result.results[0],
-              alternatives: result.results.slice(1, 3), // Keep 2 alternatives
-            });
-          } else {
-            resolvedEntities.push({
-              input: entity,
-              resolved: null,
-              alternatives: [],
-            });
-          }
-        } catch (error) {
-          console.warn(`Failed to resolve entity "${entity}":`, error);
-          resolvedEntities.push({
-            input: entity,
-            resolved: null,
-            alternatives: [],
-            error: error instanceof Error ? error.message : "Unknown error",
-          });
-        }
-      }
-
-      return {
-        success: true,
-        resolved: resolvedEntities,
-        total: entities.length,
-        successful: resolvedEntities.filter((r) => r.resolved !== null).length,
-      };
-    } catch (error) {
-      console.error("Entity resolution error:", error);
-      throw new Error(
-        `Failed to resolve entities: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
-    }
-  }
-
-  static getEntityTypeFromString(entityType: string) {
-    const typeMap: Record<string, string> = {
-      restaurant: "urn:entity:place",
-      place: "urn:entity:place",
-      hotel: "urn:entity:place",
-      venue: "urn:entity:place",
-      movie: "urn:entity:movie",
-      film: "urn:entity:movie",
-      artist: "urn:entity:artist",
-      musician: "urn:entity:artist",
-      band: "urn:entity:artist",
-      podcast: "urn:entity:podcast",
-      show: "urn:entity:podcast",
-      brand: "urn:entity:brand",
-      company: "urn:entity:brand",
-      book: "urn:entity:book",
-      person: "urn:entity:person",
-      celebrity: "urn:entity:person",
-    };
-
-    return typeMap[entityType.toLowerCase()] || entityType;
-  }
 }
 
 export const qlooProvider = QlooProvider;

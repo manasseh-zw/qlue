@@ -5,7 +5,7 @@ import { config } from "../server.config";
 import { authRoutes } from "./routes/auth.routes";
 import { userRoutes } from "./routes/user.routes";
 import { chatRoutes } from "./routes/chat.routes";
-import { qlooRoutes } from "./routes/qloo.routes";
+import { tasteRoutes } from "./routes/taste.routes";
 
 const app = new Hono();
 
@@ -24,7 +24,7 @@ app.use(
 app.route("/api/auth", authRoutes);
 app.route("/api/user", userRoutes);
 app.route("/api/chat", chatRoutes);
-app.route("/api/qloo", qlooRoutes);
+app.route("/api/taste", tasteRoutes);
 
 // Health check endpoint
 app.get("/api/health", (c) => {

@@ -6,7 +6,7 @@ import {
   getGoogleAuthUrl,
   getUserFromSession,
   handleGoogleCallback,
-} from "../auth/auth.service";
+} from "../services/auth.service";
 
 const authRoutes = new Hono();
 
@@ -61,4 +61,4 @@ authRoutes.post("/logout", async (c) => {
   return c.json({ success: true });
 });
 
-export { authRoutes }; 
+export { authRoutes };

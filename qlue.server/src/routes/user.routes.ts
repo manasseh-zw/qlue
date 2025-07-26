@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
-import { getUserFromSession, updateUser } from "../auth/auth.service";
+import { getUserFromSession, updateUser } from "../services/auth.service";
 
 const userRoutes = new Hono();
 
@@ -31,4 +31,4 @@ userRoutes.patch("/", async (c) => {
   return c.json({ user: updatedUser });
 });
 
-export { userRoutes }; 
+export { userRoutes };

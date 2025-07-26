@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
-import { getUserFromSession } from "../auth/auth.service";
+import { getUserFromSession } from "../services/auth.service";
 import { assistant } from "../ai/assistant";
 
 const chatRoutes = new Hono();
@@ -19,4 +19,4 @@ chatRoutes.post("/", async (c) => {
   return response;
 });
 
-export { chatRoutes }; 
+export { chatRoutes };

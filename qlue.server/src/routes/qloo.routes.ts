@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { QlooProvider } from "../providers/qloo.provider";
+import { QlooProvider } from "../providers/qloo/qloo.provider";
 
 const qlooRoutes = new Hono();
 
@@ -264,7 +264,7 @@ qlooRoutes.get("/audiences/communities", async (c) => {
 qlooRoutes.post("/search/entities", async (c) => {
   try {
     const { query, entityType, take } = await c.req.json();
-    
+
     if (!query) {
       return c.json({ error: "Query parameter is required" }, 400);
     }
@@ -273,7 +273,7 @@ qlooRoutes.post("/search/entities", async (c) => {
       entityType,
       take,
     });
-    
+
     return c.json(result);
   } catch (error) {
     return c.json(

@@ -1,6 +1,6 @@
 import { Qloo } from "@devma/qloo";
 import { config } from "../../server.config";
-
+import type{GetInsightsRequest} from "@devma/qloo/dist/commonjs/models/operations/getinsights";
 const qloo = new Qloo({
   apiKey: config.qloo.apiKey,
 });
@@ -39,6 +39,7 @@ export interface InsightOptions {
 }
 
 export class QlooProvider {
+  
   static async getPlaceInsights(params: {
     signals?: {
       entities?: string[];
@@ -58,7 +59,6 @@ export class QlooProvider {
     options?: InsightOptions;
   }) {
     const { signals = {}, filters = {}, options = {} } = params;
-
     try {
       const request: any = {
         filterType: "urn:entity:place",
@@ -596,78 +596,54 @@ export class QlooProvider {
     );
   }
 
-  static async searchEntities(params: {
-    query: string;
+  /**
+   * Search for entities by query string
+   * Essential for converting user input into valid Qloo entity IDs
+   */
+  static async searchEntities(query: string, options?: {
     entityType?: string;
-    filters?: {
-      location?: string;
-      tags?: string[];
-      popularity?: { min?: number; max?: number };
-      excludeEntities?: string[];
-    };
-    options?: {
-      take?: number;
-      page?: number;
-      typoTolerance?: boolean;
-    };
+    take?: number;
   }) {
-    const { query, entityType, filters = {}, options = {} } = params;
-
     try {
       const searchParams = new URLSearchParams();
       searchParams.append("query", query);
-
-      if (entityType) {
-        searchParams.append(
-          "filter.type",
-          this.getEntityTypeFromString(entityType)
-        );
+      
+      if (options?.entityType) {
+        searchParams.append("filter.type", this.getEntityTypeFromString(options.entityType));
       }
-      if (filters.location) {
-        searchParams.append("filter.location.query", filters.location);
-      }
-      if (filters.tags?.length) {
-        searchParams.append("filter.tags", filters.tags.join(","));
-      }
-      if (filters.popularity?.min !== undefined) {
-        searchParams.append(
-          "filter.popularity.min",
-          filters.popularity.min.toString()
-        );
-      }
-      if (filters.popularity?.max !== undefined) {
-        searchParams.append(
-          "filter.popularity.max",
-          filters.popularity.max.toString()
-        );
-      }
-      if (filters.excludeEntities?.length) {
-        searchParams.append(
-          "filter.exclude.entities",
-          filters.excludeEntities.join(",")
-        );
-      }
-      if (options.take) {
+      if (options?.take) {
         searchParams.append("take", options.take.toString());
       }
 
-      const response = await fetch(
-        `${config.qloo.url}/search?${searchParams}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": config.qloo.apiKey!,
-          },
-        }
-      );
-
+      // Use direct HTTP call for search endpoint
+      const response = await fetch(`https://hackathon.api.qloo.com/search?${searchParams}`,  {
+        headers: {
+          "x-api-key": config.qloo.apiKey!,
+        },
+      });
+      
       if (!response.ok) {
-        throw new Error(
-          `Search failed: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`Search failed: ${response.status} ${response.statusText}`);
       }
 
-      return await response.json();
+      const rawResult = await response.json();
+      
+      // Clean and minimize the response for LLM consumption
+      const cleanedResults = rawResult.results?.map((entity: any) => ({
+        name: entity.name,
+        entity_id: entity.entity_id,
+        type: entity.types?.[0] || 'urn:entity',
+        popularity: entity.popularity,
+        description: entity.properties?.short_description || '',
+        image: entity.properties?.image?.url || null,
+      })) || [];
+
+      return {
+        success: true,
+        results: cleanedResults,
+        total: cleanedResults.length,
+        query: query,
+      };
     } catch (error) {
       console.error("Qloo entity search error:", error);
       throw new Error(
@@ -727,24 +703,50 @@ export class QlooProvider {
     }
   }
 
+  /**
+   * Quick entity resolution for user input
+   * Converts names to Qloo entity IDs for use in other methods
+   */
   static async resolveEntities(entities: Array<string>) {
     try {
-      console.log(entities);
+      const resolvedEntities = [];
 
-      const result = await this.searchEntities({
-        query: entities[0],
-        options: { take: entities.length * 2 }, // Get extra results for better matching
-      });
+      for (const entity of entities) {
+        try {
+          const result = await this.searchEntities(entity, {
+            take: 5, // Get top 5 matches for each entity
+          });
 
-      console.log(result.results[0]["entity_id"]);
-      console.log(result[0]["entity_id"]);
+          // Extract the first (best) match
+          if (result.results?.length > 0) {
+            resolvedEntities.push({
+              input: entity,
+              resolved: result.results[0],
+              alternatives: result.results.slice(1, 3), // Keep 2 alternatives
+            });
+          } else {
+            resolvedEntities.push({
+              input: entity,
+              resolved: null,
+              alternatives: [],
+            });
+          }
+        } catch (error) {
+          console.warn(`Failed to resolve entity "${entity}":`, error);
+          resolvedEntities.push({
+            input: entity,
+            resolved: null,
+            alternatives: [],
+            error: error instanceof Error ? error.message : "Unknown error",
+          });
+        }
+      }
 
-      // Extract resolved entity IDs from the response
-      const resolvedEntities = result.query?.entities?.signal || [];
       return {
-        success: result.success,
+        success: true,
         resolved: resolvedEntities,
-        entities: result.results?.entities || [],
+        total: entities.length,
+        successful: resolvedEntities.filter(r => r.resolved !== null).length,
       };
     } catch (error) {
       console.error("Entity resolution error:", error);
@@ -757,6 +759,7 @@ export class QlooProvider {
   }
 
   static async analyzeEntities(params: {
+    filterType: string;
     entityIds: string[];
     analysisType?: "tags" | "entities" | "both";
     filters?: {
@@ -770,11 +773,13 @@ export class QlooProvider {
     };
   }) {
     const {
+      filterType,
       entityIds,
       analysisType = "both",
       filters = {},
       options = {},
     } = params;
+
 
     try {
       const request: any = {

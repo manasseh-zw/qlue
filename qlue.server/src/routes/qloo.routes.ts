@@ -263,8 +263,17 @@ qlooRoutes.get("/audiences/communities", async (c) => {
 // Search entities
 qlooRoutes.post("/search/entities", async (c) => {
   try {
-    const body = await c.req.json();
-    const result = await QlooProvider.searchEntities(body);
+    const { query, entityType, take } = await c.req.json();
+    
+    if (!query) {
+      return c.json({ error: "Query parameter is required" }, 400);
+    }
+
+    const result = await QlooProvider.searchEntities(query, {
+      entityType,
+      take,
+    });
+    
     return c.json(result);
   } catch (error) {
     return c.json(

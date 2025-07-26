@@ -34,6 +34,4 @@ app.get("/api/health", (c) => {
 // Start server
 serve({ fetch: app.fetch, port: 8080 });
 
-console.log(config.qloo);
-
 console.log("🚀 Server running on http://localhost:8080");

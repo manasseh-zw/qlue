@@ -1,0 +1,3 @@
+faced an issue whist doing a cross domain search where the entity in whos domain we were looking into was too influenced by other entities so we got less relevant results from the main data point entity in that field e.g. when doing a cross domain search in music where we have an artist whitney houston we were not getting results relevant to alike whiteny .. so to fix this we saw teh signal.entities.weight ..increasing this will make the domain entity have more weith...
+
+also discovered that tags are very important, and i can use them to enrich data and get more relevant results

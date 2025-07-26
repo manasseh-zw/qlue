@@ -196,6 +196,11 @@ export class QlooProvider {
           type: entity.types?.[0] || "urn:entity",
           popularity: entity.popularity,
           description: entity.properties?.short_description || "",
+          tags: entity.tags?.slice(0, 3).map((tag: any) => ({
+            name: tag.name || "",
+            tag_id: tag.tag_id || "",
+            value: tag.value || "",
+          })) || [],
           image: entity.properties?.image?.url || null,
         })) || [];
 

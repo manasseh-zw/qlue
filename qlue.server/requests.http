@@ -1,10 +1,79 @@
+### Test Entity Resolution
+POST http://localhost:8080/api/taste/resolve
+Content-Type: application/json
 
-POST http://localhost:8080/api/taste/insights/
+[
+  {
+    "query": "apple",
+    "type": "brand"
+  }
+]
+
+###
+
+### Test Insights with Resolved Entity IDs
+POST http://localhost:8080/api/taste/insights
 Content-Type: application/json
 
 {
-  "query":"Whitney Houston",
-  "type":"movie",
-  "age":"35_and_younger",
-  "gender":"male"
+  "entityIds": ["1DDEA936-7526-47D9-8491-8AF680EBDEA5"],
+  "outputType": "person",
+  "tags": ["urn:tag:genre:media:business"],
+  "age": "35_and_younger",
+  "gender": "male",
+  "take": 10
+}
+
+###
+
+### Test Insights with Movie Entity
+POST http://localhost:8080/api/taste/insights
+Content-Type: application/json
+
+{
+  "entityIds": ["titanic_movie"],
+  "outputType": "artist",
+  "age": "35_and_younger",
+  "gender": "female",
+  "take": 15
+}
+
+###
+
+### Test Cross-Domain Profile
+POST http://localhost:8080/api/taste/profile
+Content-Type: application/json
+
+{
+  "entities": [
+    {
+      "query": "Whitney Houston",
+      "type": "artist"
+    },
+    {
+      "query": "Michael Jackson",
+      "type": "artist"
+    },
+    {
+      "query": "Jurassic Park",
+      "type": "book"
+    },
+    {
+      "query": "Founders",
+      "type": "podcast"
+    }
+  ],
+  "domains": ["movie", "artist", "podcast", "book", "brand"],
+  "demographics": {
+    "age": "35_and_younger",
+    "gender": "male"
+  },
+  "location": {
+    "query": "Harare",
+    "radius": 50
+  },
+  "options": {
+    "take": 10,
+    "diversify": true
+  }
 }

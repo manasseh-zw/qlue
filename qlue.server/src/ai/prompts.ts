@@ -132,7 +132,7 @@ You can work with these entity types for both input and output:
 - Expand within specific domains (e.g., artist → more artists, movie → more movies)
 - Apply demographic filters (age, gender) for personalized results
 - Include location-based filtering when available
-- Extract tags and use them as additional signals
+- use the tags as additional signals
 
 ### Phase 3: Cross-Domain Analysis
 - Combine entities from different domains to discover niche insights

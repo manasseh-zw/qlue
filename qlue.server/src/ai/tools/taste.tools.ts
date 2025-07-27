@@ -63,10 +63,9 @@ export const getInsightsTool = tool({
     outputType: z.string().describe("The type of entities to get insights for"),
     age: z.string().optional().describe("Optional age demographic filter"),
     gender: z.string().optional().describe("Optional gender demographic filter ('male' or 'female')"),
-    take: z.number().optional().describe("Number of insights to return (default: 10)"),
   }),
-  execute: async ({ entityIds, tags, outputType, age, gender, take }) => {
-    console.log("💡 getInsights tool called with:", JSON.stringify({ entityIds, tags, outputType, age, gender, take }, null, 2));
+  execute: async ({ entityIds, tags, outputType, age, gender }) => {
+    console.log("💡 getInsights tool called with:", JSON.stringify({ entityIds, tags, outputType, age, gender }, null, 2));
     const startTime = Date.now();
     
     try {
@@ -76,7 +75,6 @@ export const getInsightsTool = tool({
         outputType,
         age,
         gender,
-        take: take || 10,
       });
       const endTime = Date.now();
       
@@ -135,7 +133,6 @@ export const crossDomainProfileTool = tool({
         domains,
         demographics,
         location,
-        options: { take: 10 },
       });
       const endTime = Date.now();
       

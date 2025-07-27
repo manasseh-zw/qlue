@@ -94,7 +94,7 @@ export async function getInsights(request: InsightRequest) {
       filterType: getEntityTypeFromString(request.outputType),
       signalDemographicsAge: request.age as SignalDemographicsAge,
       signalDemographicsGender: request.gender as SignalDemographicsGender,
-      take: request.take || 10,
+      take: request.take || 5,
     });
 
     if (!insights.results?.entities?.length) {
@@ -200,7 +200,7 @@ export async function crossDomainProfile(
           signalDemographicsAge: request.demographics?.age as SignalDemographicsAge,
           signalDemographicsGender: request.demographics?.gender as SignalDemographicsGender,
           signalInterestsEntitiesWeight:10,
-          take: request.options?.take || 15,
+          take: request.options?.take || 5,
         });
 
         if (domainInsights.results?.entities?.length) {
@@ -223,7 +223,7 @@ export async function crossDomainProfile(
       }
     }
 
-    // Step 4: Calculate summary
+
     const totalInsights = Object.values(insights).reduce(
       (sum, domain) => sum + domain.total,
       0

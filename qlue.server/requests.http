@@ -4,8 +4,20 @@ Content-Type: application/json
 
 [
   {
-    "query": "apple",
-    "type": "brand"
+    "query": "Whitney Houston",
+    "type": "artist"
+  },
+  {
+    "query": "Founders",
+    "type": "podcast"
+  },
+  {
+    "query": "Jurassic Park",
+    "type": "book"
+  },
+  {
+    "query": "Spider-Man Into the Spider-Verse",
+    "type": "movie"
   }
 ]
 
@@ -16,9 +28,8 @@ POST http://localhost:8080/api/taste/insights
 Content-Type: application/json
 
 {
-  "entityIds": ["1DDEA936-7526-47D9-8491-8AF680EBDEA5"],
-  "outputType": "person",
-  "tags": ["urn:tag:genre:media:business"],
+  "entityIds": ["BDA775C1-554E-4EA9-B371-5D5DFD5EE6DE", "996272B0-CB79-48D3-8B83-8ED34F2DE9AF"],
+  "outputType": "movie",
   "age": "35_and_younger",
   "gender": "male",
   "take": 10
@@ -71,9 +82,22 @@ Content-Type: application/json
   "location": {
     "query": "Harare",
     "radius": 50
-  },
-  "options": {
-    "take": 10,
-    "diversify": true
   }
+}
+
+###
+
+### Test Taste Profiling Agent - Manasseh's Profile
+POST http://localhost:8080/api/taste/agent
+Content-Type: application/json
+
+{
+  "age": 22,
+  "name": "manasseh",
+  "music": ["Whitney Houston","Christopher Cross","Michael Jackson"],
+  "gender": "male",
+  "podcasts": ["Founders","Aquired"],
+  "hobbiesOther": ["programming", "software engineering","developer"],
+  "booksShowsMovies": ["Jurassic Park","Game of Thrones", "Spiderman: Across the Spider-Verse"],
+  "location":"Harare"
 }

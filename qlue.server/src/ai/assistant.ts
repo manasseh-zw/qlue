@@ -10,22 +10,27 @@ export interface ChatMessage {
 
 export class Assistant {
   private model = openai("gpt-4.1");
-  
+
   async streamChat(messages: ChatMessage[], userId?: string) {
     const result = streamText({
       model: this.model,
       messages,
       system: TASTE_DISCOVERY_SYSTEM_PROMPT,
       maxTokens: 1000,
-      tools: userId ? {
-        saveUserInterests: {
-          ...saveUserInterestsTool,
-          execute: async (params, options) => {
-            // Pass userId through the execution context
-            return saveUserInterestsTool.execute!(params, { ...options, userId } as any); 
-          },
-        },
-      } : undefined,
+      tools: userId
+        ? {
+            saveUserInterests: {
+              ...saveUserInterestsTool,
+              execute: async (params, options) => {
+                // Pass userId through the execution context
+                return saveUserInterestsTool.execute!(params, {
+                  ...options,
+                  userId,
+                } as any);
+              },
+            },
+          }
+        : undefined,
       maxSteps: 3,
     });
 
@@ -38,15 +43,20 @@ export class Assistant {
       messages,
       system: TASTE_DISCOVERY_SYSTEM_PROMPT,
       maxTokens: 1000,
-      tools: userId ? {
-        saveUserInterests: {
-          ...saveUserInterestsTool,
-          execute: async (params, options) => {
-            // Pass userId through the execution context
-            return saveUserInterestsTool.execute!(params, { ...options, userId } as any);
-          },
-        },
-      } : undefined,
+      tools: userId
+        ? {
+            saveUserInterests: {
+              ...saveUserInterestsTool,
+              execute: async (params, options) => {
+                // Pass userId through the execution context
+                return saveUserInterestsTool.execute!(params, {
+                  ...options,
+                  userId,
+                } as any);
+              },
+            },
+          }
+        : undefined,
       maxSteps: 3,
     });
 
@@ -54,4 +64,4 @@ export class Assistant {
   }
 }
 
-export const assistant = new Assistant(); 
+export const assistant = new Assistant();

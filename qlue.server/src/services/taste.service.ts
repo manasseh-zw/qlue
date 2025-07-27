@@ -94,7 +94,7 @@ export async function getInsights(request: InsightRequest) {
       filterType: getEntityTypeFromString(request.outputType),
       signalDemographicsAge: request.age as SignalDemographicsAge,
       signalDemographicsGender: request.gender as SignalDemographicsGender,
-      take: request.take || 20,
+      take: request.take || 10,
     });
 
     if (!insights.results?.entities?.length) {

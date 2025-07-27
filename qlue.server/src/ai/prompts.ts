@@ -154,7 +154,7 @@ You can work with these entity types for both input and output:
 - **Purpose**: Phase 1 - Convert user input into structured entity data
 - **Input**: Array of {query, type} pairs
 - **Output**: Resolved entities with IDs, metadata, and tags
-- **Use**: When you need to convert user mentions into entity IDs
+- **Use**: When you need to convert user data points into entity IDs
 
 ### 2. getInsights
 - **Purpose**: Phase 2 - Domain-specific expansion and recommendations

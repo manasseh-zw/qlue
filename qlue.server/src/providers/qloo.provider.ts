@@ -55,22 +55,16 @@ export type InsightOptions = {
 
 export function getEntityTypeFromString(entityType: string) {
   const typeMap: Record<string, string> = {
-    restaurant: "urn:entity:place",
-    place: "urn:entity:place",
-    hotel: "urn:entity:place",
-    venue: "urn:entity:place",
-    movie: "urn:entity:movie",
-    film: "urn:entity:movie",
     artist: "urn:entity:artist",
-    musician: "urn:entity:artist",
-    band: "urn:entity:artist",
-    podcast: "urn:entity:podcast",
-    show: "urn:entity:podcast",
-    brand: "urn:entity:brand",
-    company: "urn:entity:brand",
     book: "urn:entity:book",
+    brand: "urn:entity:brand",
+    destination: "urn:entity:destination",
+    movie: "urn:entity:movie",
     person: "urn:entity:person",
-    celebrity: "urn:entity:person",
+    place: "urn:entity:place",
+    podcast: "urn:entity:podcast",
+    tv_show: "urn:entity:tv_show",
+    videogame: "urn:entity:videogame",
   };
 
   return typeMap[entityType.toLowerCase()] as FilterType;

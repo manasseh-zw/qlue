@@ -7,7 +7,7 @@ import {
   qlooProvider,
 } from "../providers/qloo.provider";
 
-type QlooEntity = {
+export type QlooEntity = {
   name: string;
   entity_id: string;
   properties: {

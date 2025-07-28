@@ -10,3 +10,8 @@ podcast can infer good books
 tv shows can infer - podcasts to listen to
 movies can infer -> books to read
 books can infer -> movies and tv shows to watch!
+
+decided to do pattern matched cross domain profiling instead of using all signals across the board for all domains to yeaild better results
+
+had gone fully agentic workflow with LLM tool calls but decided to go for an agentic workflow implementaiton which allows for more controlled workflow whilst implementaing ai reasoning in key parts also better for context handling 
+

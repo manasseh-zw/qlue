@@ -65,6 +65,25 @@ export type CrossDomainProfileRequest = {
   };
 };
 
+export type CrossDomainProfileByIdsRequest = {
+  entityIds: string[];
+  domains: string[];
+  demographics?: {
+    age?: string;
+    gender?: string;
+  };
+  location?: {
+    query?: string;
+    coordinates?: string;
+    radius?: number;
+  };
+  options?: {
+    take?: number;
+    confidence?: number;
+    diversify?: boolean;
+  };
+};
+
 export type CrossDomainProfileResult = {
   profile: {
     entities: ResolvedEntity[];
@@ -249,6 +268,79 @@ export async function crossDomainProfile(
     console.error("Cross-domain profile error:", error);
     throw new Error(
       `Failed to create cross-domain profile: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+}
+
+export async function crossDomainProfileByIds(
+  request: CrossDomainProfileByIdsRequest
+): Promise<CrossDomainProfileResult> {
+  try {
+    if (!request.entityIds.length) {
+      throw new Error("No entity IDs provided");
+    }
+
+    // Get insights for each domain using the provided entity IDs
+    const insights: CrossDomainProfileResult['insights'] = {};
+    
+    for (const domain of request.domains) {
+      try {
+        const domainInsights = await qlooProvider.getInsights({
+          signalInterestsEntities: request.entityIds,
+          filterType: getEntityTypeFromString(domain),
+          signalDemographicsAge: request.demographics?.age as SignalDemographicsAge,
+          signalDemographicsGender: request.demographics?.gender as SignalDemographicsGender,
+          signalInterestsEntitiesWeight: 10,
+          take: request.options?.take || 5,
+        });
+
+        if (domainInsights.results?.entities?.length) {
+          insights[domain] = {
+            entities: transformToQlooEntities(domainInsights.results.entities),
+            total: domainInsights.results.entities.length,
+          };
+        } else {
+          insights[domain] = {
+            entities: [],
+            total: 0,
+          };
+        }
+      } catch (error) {
+        console.warn(`Failed to get insights for domain "${domain}":`, error);
+        insights[domain] = {
+          entities: [],
+          total: 0,
+        };
+      }
+    }
+
+    const totalInsights = Object.values(insights).reduce(
+      (sum, domain) => sum + domain.total,
+      0
+    );
+
+    const result: CrossDomainProfileResult = {
+      profile: {
+        entities: [], // No resolved entities since we're using IDs directly
+        demographics: request.demographics,
+        location: request.location,
+      },
+      insights,
+      summary: {
+        totalEntities: request.entityIds.length,
+        successfulResolutions: request.entityIds.length, // All IDs are considered successful
+        domainsAnalyzed: request.domains.length,
+        totalInsights,
+      },
+    };
+
+    return result;
+  } catch (error) {
+    console.error("Cross-domain profile by IDs error:", error);
+    throw new Error(
+      `Failed to create cross-domain profile by IDs: ${
         error instanceof Error ? error.message : "Unknown error"
       }`
     );

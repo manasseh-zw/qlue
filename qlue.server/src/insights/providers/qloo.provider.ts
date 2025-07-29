@@ -1,5 +1,4 @@
 import { Qloo } from "@devma/qloo";
-import { config } from "../../server.config";
 import type {
   FilterType,
   GetInsightsRequest,
@@ -15,33 +14,11 @@ import {
   GetTagTypesRequest,
   GetTagTypesResponse,
 } from "@devma/qloo/dist/commonjs/models/operations";
+import { config } from "../../../server.config";
 
 const qloo = new Qloo({
   apiKey: config.qloo.apiKey,
 });
-
-// export interface TasteProfile {
-//   interests: {
-//     entities: string[];
-//     tags: string[];
-//   };
-//   demographics: {
-//     age?:
-//       | "under_21"
-//       | "21_to_34"
-//       | "35_to_54"
-//       | "55_and_older"
-//       | "35_and_younger"
-//       | "36_to_55";
-//     gender?: "male" | "female";
-//     audiences?: string[];
-//   };
-//   location?: {
-//     query?: string;
-//     coordinates?: string;
-//     radius?: number;
-//   };
-// }
 
 export type InsightOptions = {
   take?: number;
@@ -190,11 +167,12 @@ export class QlooProvider {
           type: entity.types?.[0] || "urn:entity",
           popularity: entity.popularity,
           description: entity.properties?.short_description || "",
-          tags: entity.tags?.slice(0, 3).map((tag: any) => ({
-            name: tag.name || "",
-            tag_id: tag.tag_id || "",
-            value: tag.value || "",
-          })) || [],
+          tags:
+            entity.tags?.slice(0, 3).map((tag: any) => ({
+              name: tag.name || "",
+              tag_id: tag.tag_id || "",
+              value: tag.value || "",
+            })) || [],
           image: entity.properties?.image?.url || null,
         })) || [];
 
@@ -344,8 +322,6 @@ export class QlooProvider {
       );
     }
   }
-
-
 }
 
 export const qlooProvider = QlooProvider;

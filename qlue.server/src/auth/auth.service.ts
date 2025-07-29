@@ -1,5 +1,5 @@
 import { OAuth2Client } from "google-auth-library";
-import { prisma } from "../../db/db";
+import { prisma } from "../db/db";
 import { v4 as uuidv4 } from "uuid";
 import { config } from "../../server.config";
 

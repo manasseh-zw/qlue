@@ -69,7 +69,7 @@ interface TasteProfileInput {
   location?: string;
 }
 
-export class TasteProfilingAgent {
+export class TasteProfilerAgent {
   azure = createAzure();
   private model = azure.languageModel("gpt-4.1");
   // model = openai("gpt-4.1");
@@ -266,7 +266,12 @@ export class TasteProfilingAgent {
     return object;
   }
 
-  private async resolveEntities(parsedData: NormalizedTasteInput) {
+  private async resolveEntities(parsedData: NormalizedTasteInput): Promise<{
+    success: boolean;
+    resolved: ResolvedEntity[];
+    total: number;
+    successful: number;
+  }> {
     const allEntities: EntityResolutionRequest[] = [];
 
     // Flatten all categorized entities into a single array
@@ -456,4 +461,4 @@ export class TasteProfilingAgent {
   }
 }
 
-export const tasteProfilingAgent = new TasteProfilingAgent();
+export const tasteProfilingAgent = new TasteProfilerAgent();

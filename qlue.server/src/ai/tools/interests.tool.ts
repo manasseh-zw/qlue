@@ -1,6 +1,6 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { prisma } from "../../../db/db";
+import { prisma } from "../../db/db";
 
 export interface UserInterests {
   name: string;

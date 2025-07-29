@@ -2,17 +2,20 @@ import Header from "@/components/header";
 import { Button } from "@heroui/react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { useAuth } from "@/lib/providers/auth.provider";
+import { useStore } from "@tanstack/react-store";
+import { authState } from "@/lib/state/auth.state";
 import { signInWithGoogle } from "@/lib/services/auth.service";
+import { publicOnlyLoader } from "@/lib/loaders/auth.loaders";
 
 export const Route = createFileRoute("/")({
   component: App,
+  loader: publicOnlyLoader,
 });
 
 function App() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useStore(authState);
 
   const handleGetStarted = async () => {
     if (isAuthenticated) {

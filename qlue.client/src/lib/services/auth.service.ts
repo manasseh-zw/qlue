@@ -1,5 +1,6 @@
 import { config } from "../../../client.config";
 import type { User } from "@/lib/types/user";
+import { authActions } from "@/lib/state/auth.state";
 
 export const signInWithGoogle = async (): Promise<void> => {
   window.location.href = `${config.serverUrl}/api/auth/google`;
@@ -36,6 +37,7 @@ export const signOut = async (): Promise<void> => {
         "Content-Type": "application/json",
       },
     });
+    authActions.clearUser();
   } catch (error) {
     console.error("Sign out error:", error);
   }
@@ -57,7 +59,9 @@ export const updateUser = async (data: Partial<User>): Promise<User | null> => {
     }
 
     const result = await response.json();
-    return result.user;
+    const updatedUser = result.user;
+    authActions.updateUser(updatedUser);
+    return updatedUser;
   } catch (error) {
     console.error("Update user error:", error);
     return null;

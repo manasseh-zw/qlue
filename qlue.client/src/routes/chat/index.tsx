@@ -6,17 +6,18 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Avatar as UserAvatar } from "@heroui/react";
 import { useEffect, useRef } from "react";
 import { config } from "../../../client.config";
-import { Button } from "@heroui/react";
 import Logo from "@/components/logo";
-import { useAuth } from "@/lib/providers/auth.provider";
+import { useStore } from "@tanstack/react-store";
+import { authState } from "@/lib/state/auth.state";
+import { protectedLoader } from "@/lib/loaders/auth.loaders";
 
 export const Route = createFileRoute("/chat/")({
   component: RouteComponent,
+  loader: protectedLoader,
 });
 
 function RouteComponent() {
-  const navigate = useNavigate();
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user } = useStore(authState);
   const url = `${config.serverUrl}/api/chat`;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -30,12 +31,6 @@ function RouteComponent() {
   });
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      navigate({ to: "/" });
-    }
-  }, [isAuthenticated, isLoading, navigate]);
-
-  useEffect(() => {
     if (status === "streaming") {
       return;
     }
@@ -44,38 +39,14 @@ function RouteComponent() {
   }, [messages.length, status]);
 
   useEffect(() => {
-    if (messages.length === 0 && isAuthenticated) {
+    if (messages.length === 0) {
       append({ role: "user", content: "start_conversation" });
     }
-  }, [append, messages.length, isAuthenticated]);
+  }, [append, messages.length]);
 
   const handleSendMessage = (message: string) => {
     append({ role: "user", content: message });
   };
-
-  if (isLoading) {
-    return (
-      <main className="h-screen w-full bg-content1 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading...</p>
-        </div>
-      </main>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <main className="h-screen w-full bg-content1 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-xl mb-4">Please sign in to continue</p>
-          <Button color="primary" onPress={() => navigate({ to: "/" })}>
-            Go to Home
-          </Button>
-        </div>
-      </main>
-    );
-  }
 
   const displayMessages = messages.filter(
     (msg) => msg.content !== "start_conversation"
@@ -127,7 +98,6 @@ function RouteComponent() {
             </div>
           ))}
 
-          {/* The "Thinking" indicator should show while submitted and streaming. */}
           {status === "submitted" && (
             <div className="flex flex-row items-center gap-3">
               <div className="flex-shrink-0">

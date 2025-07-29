@@ -1,5 +1,7 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { useAuth } from "../../lib/providers/auth.provider";
+import { useStore } from "@tanstack/react-store";
+import { authState } from "@/lib/state/auth.state";
+import { protectedLoader } from "@/lib/loaders/auth.loaders";
 
 interface UserInterests {
   name: string;
@@ -13,29 +15,14 @@ interface UserInterests {
 
 export const Route = createFileRoute("/taste-profile/")({
   component: TasteProfileComponent,
+  loader: protectedLoader,
 });
 
 function TasteProfileComponent() {
-  const { user, isLoading } = useAuth();
+  const { user } = useStore(authState);
   const router = useRouter();
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your taste profile...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    router.navigate({ to: "/" });
-    return null;
-  }
-
-  if (!user.interests || user.onboarding !== "COMPLETE") {
+  if (!user || !user.interests || user.onboarding !== "COMPLETE") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
         <div className="text-center max-w-md">
@@ -56,7 +43,7 @@ function TasteProfileComponent() {
     );
   }
 
-  const interests = user.interests as UserInterests;
+  const interests = user!.interests as UserInterests;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
@@ -67,7 +54,8 @@ function TasteProfileComponent() {
             Your Unique Taste Profile
           </h1>
           <p className="text-xl text-gray-600">
-            Here's what makes {interests.name} uniquely awesome! 🎉
+            Here's what makes {user?.name || interests.name} uniquely awesome!
+            🎉
           </p>
         </div>
 
@@ -76,7 +64,7 @@ function TasteProfileComponent() {
           {/* User Info Header */}
           <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-8 text-white">
             <div className="flex items-center space-x-6">
-              {user.image && (
+              {user?.image && (
                 <img
                   src={user.image}
                   alt={user.name || "User"}

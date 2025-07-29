@@ -8,10 +8,12 @@ import {
 } from "@heroui/react";
 import Logo from "./logo";
 import { useNavigate } from "@tanstack/react-router";
-import { useAuth } from "@/lib/providers/auth.provider";
+import { useStore } from "@tanstack/react-store";
+import { authState } from "@/lib/state/auth.state";
+import { signOut } from "@/lib/services/auth.service";
 
 export default function Header() {
-  const { user, isAuthenticated, signOut } = useAuth();
+  const { user, isAuthenticated } = useStore(authState);
   const navigate = useNavigate();
 
   const handleSignOut = async () => {

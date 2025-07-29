@@ -2,9 +2,9 @@ import ChatPromptForm from "@/components/chat/chat-prompt-form";
 import { Markdown } from "@/components/chat/markdown";
 import { Thinking } from "@/components/chat/thinking";
 import { useChat } from "@ai-sdk/react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { Avatar as UserAvatar } from "@heroui/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { config } from "../../../client.config";
 import Logo from "@/components/logo";
 import { useStore } from "@tanstack/react-store";
@@ -19,6 +19,7 @@ export const Route = createFileRoute("/chat/")({
 function RouteComponent() {
   const { user } = useStore(authState);
   const url = `${config.serverUrl}/api/chat`;
+  const [isInitializing, setIsInitializing] = useState(true);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -39,10 +40,11 @@ function RouteComponent() {
   }, [messages.length, status]);
 
   useEffect(() => {
-    if (messages.length === 0) {
+    if (messages.length === 0 && isInitializing) {
+      setIsInitializing(false);
       append({ role: "user", content: "start_conversation" });
     }
-  }, [append, messages.length]);
+  }, [append, messages.length, isInitializing]);
 
   const handleSendMessage = (message: string) => {
     append({ role: "user", content: message });
@@ -98,8 +100,12 @@ function RouteComponent() {
             </div>
           ))}
 
-          {status === "submitted" && (
-            <div className="flex flex-row items-center gap-3">
+          {(status === "submitted" ||
+            (isInitializing && messages.length === 0)) && (
+            <div
+              className="flex flex-row items-cente
+           r gap-3"
+            >
               <div className="flex-shrink-0">
                 <div className="p-1 rounded-full">
                   <Logo width={34} height={34} />

@@ -18,7 +18,7 @@ export const Route = createFileRoute("/chat/")({
 
 function RouteComponent() {
   const { user } = useStore(authState);
-  const url = `${config.serverUrl}/api/chat`;
+  const url = `${config.serverUrl}/api/ai`;
   const [isInitializing, setIsInitializing] = useState(true);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);

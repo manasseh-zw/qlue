@@ -10,7 +10,7 @@ import {
   ResolvedEntity,
   EntityResolutionRequest,
   CrossDomainProfileResult,
-} from "../services/taste.service";
+} from "../insights/insights.service";
 import { azure, createAzure } from "@ai-sdk/azure";
 
 // Type definitions for type safety
@@ -62,7 +62,7 @@ interface TasteProfileInput {
   name: string;
   age: number;
   gender: string;
-  music: string[];
+  artists: string[];
   podcasts: string[];
   booksShowsMovies: string[];
   hobbiesOther: string[];

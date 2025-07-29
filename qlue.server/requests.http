@@ -94,7 +94,7 @@ Content-Type: application/json
 {
   "age": 22,
   "name": "manasseh",
-  "music": ["Whitney Houston","Christopher Cross","Michael Jackson"],
+  "artists": ["Whitney Houston","Christopher Cross","Michael Jackson"],
   "gender": "male",
   "podcasts": ["Founders","Aquired"],
   "hobbiesOther": ["programming", "software engineering","developer"],

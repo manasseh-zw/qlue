@@ -8,7 +8,7 @@ export const signInWithGoogle = async (): Promise<void> => {
 
 export const getUser = async (): Promise<User | null> => {
   try {
-    const response = await fetch(`${config.serverUrl}/api/user`, {
+    const response = await fetch(`${config.serverUrl}/api/auth/me`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -45,7 +45,7 @@ export const signOut = async (): Promise<void> => {
 
 export const updateUser = async (data: Partial<User>): Promise<User | null> => {
   try {
-    const response = await fetch(`${config.serverUrl}/api/user`, {
+    const response = await fetch(`${config.serverUrl}/api/auth/me/update`, {
       method: "PATCH",
       credentials: "include",
       headers: {

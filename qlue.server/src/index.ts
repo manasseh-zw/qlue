@@ -2,10 +2,9 @@ import { serve } from "bun";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { config } from "../server.config";
-import { authRoutes } from "./routes/auth.routes";
-import { userRoutes } from "./routes/user.routes";
-import { chatRoutes } from "./routes/chat.routes";
-import { tasteRoutes } from "./routes/taste.routes";
+import { authRoutes } from "./auth/auth.routes";
+import { insightRoutes } from "./insights/insight.routes";
+import { aiRoutes } from "./ai/ai.routes";
 
 const app = new Hono();
 
@@ -22,9 +21,8 @@ app.use(
 
 // Route registration
 app.route("/api/auth", authRoutes);
-app.route("/api/user", userRoutes);
-app.route("/api/chat", chatRoutes);
-app.route("/api/taste", tasteRoutes);
+app.route("/api/insights", insightRoutes);
+app.route("/api/ai", aiRoutes);
 
 // Health check endpoint
 app.get("/api/health", (c) => {

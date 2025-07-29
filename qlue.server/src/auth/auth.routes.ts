@@ -6,9 +6,44 @@ import {
   getGoogleAuthUrl,
   getUserFromSession,
   handleGoogleCallback,
-} from "../services/auth.service";
+  updateUser,
+} from "./auth.service";
 
 const authRoutes = new Hono();
+
+// Get current user endpoint
+authRoutes.get("/me", async (c) => {
+  const sessionToken = getCookie(c, "session_token");
+  const user = await getUserFromSession(sessionToken || "");
+
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  return c.json({ user });
+});
+
+// Update current user endpoint
+authRoutes.patch("/me/update", async (c) => {
+  const sessionToken = getCookie(c, "session_token");
+  const user = await getUserFromSession(sessionToken || "");
+
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  try {
+    const updateData = await c.req.json();
+    const updatedUser = await updateUser(user.id, updateData);
+
+    return c.json({ user: updatedUser });
+  } catch (error) {
+    return c.json(
+      { error: error instanceof Error ? error.message : "Update failed" },
+      400
+    );
+  }
+});
 
 // Google OAuth initiation
 authRoutes.get("/google", (c) => {

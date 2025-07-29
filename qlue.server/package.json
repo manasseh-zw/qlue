@@ -1,7 +1,10 @@
 {
   "name": "qlue.server",
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "bun run --hot src/index.ts",
+    "db:generate": "prisma generate --schema=./db/prisma/schema.prisma",
+    "db:push": "prisma db push --schema=./db/prisma/schema.prisma",
+    "db:migrate": "prisma migrate dev --schema=./db/prisma/schema.prisma"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.2.12",

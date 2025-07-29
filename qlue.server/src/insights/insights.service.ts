@@ -5,7 +5,7 @@ import {
 import {
   getEntityTypeFromString,
   qlooProvider,
-} from "../providers/qloo.provider";
+} from "./providers/qloo.provider";
 
 export type QlooEntity = {
   name: string;

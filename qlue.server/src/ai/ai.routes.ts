@@ -1,11 +1,11 @@
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
-import { getUserFromSession } from "../services/auth.service";
-import { assistant } from "../ai/assistant";
+import { getUserFromSession } from "../auth/auth.service";
+import { assistant } from "./conversation.agent";
 
-const chatRoutes = new Hono();
+const aiRoutes = new Hono();
 
-chatRoutes.post("/", async (c) => {
+aiRoutes.post("/", async (c) => {
   const sessionToken = getCookie(c, "session_token");
   const user = await getUserFromSession(sessionToken || "");
 
@@ -19,4 +19,4 @@ chatRoutes.post("/", async (c) => {
   return response;
 });
 
-export { chatRoutes };
+export { aiRoutes };

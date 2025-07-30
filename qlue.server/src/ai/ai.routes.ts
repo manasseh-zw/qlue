@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
 import { getUserFromSession } from "../auth/auth.service";
-import { assistant } from "./conversation.agent";
+import { assistant } from "./agents/conversation.agent";
 
 const aiRoutes = new Hono();
 

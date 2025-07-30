@@ -1,7 +1,7 @@
 import { tool } from "ai";
 import { z } from "zod";
-import { prisma } from "../../db/db";
-import { orchestrator } from "../orchestrator";
+import { prisma } from "../../../db/db";
+import { orchestrator } from "../../orchestrator";
 
 export type UserInterests = {
   name: string;

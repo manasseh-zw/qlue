@@ -2,16 +2,17 @@ import { openai } from "@ai-sdk/openai";
 import { generateObject, generateText } from "ai";
 import { TASTE_PROFILING_AGENT_PROMPT } from "./prompts";
 import { z } from "zod";
+
+import { azure, createAzure } from "@ai-sdk/azure";
 import {
+  QlooEntity,
+  CrossDomainProfileResult,
+  ResolvedEntity,
+  EntityResolutionRequest,
   resolveEntities,
   getInsights,
   crossDomainProfileByIds,
-  ResolvedEntity,
-  EntityResolutionRequest,
-  CrossDomainProfileResult,
-  QlooEntity,
-} from "../insights/insights.service";
-import { azure, createAzure } from "@ai-sdk/azure";
+} from "../../insights/insights.service";
 
 // Type definitions for type safety
 export type Demographics = {
@@ -57,7 +58,6 @@ export type CrossDomainInsight = {
   result: CrossDomainProfileResult;
 };
 
-// Define the input type based on what we expect from the user
 interface TasteProfileInput {
   name: string;
   age: number;

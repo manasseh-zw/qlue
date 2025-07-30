@@ -158,7 +158,7 @@ function RouteComponent() {
 
   return (
     <main className="min-h-screen flex items-center justify-center p-6">
-      <div className="flex justify-center">
+      <div className="flex w-full justify-center">
         <AgentFeed {...agentFeedProps} />
       </div>
     </main>

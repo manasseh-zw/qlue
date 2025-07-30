@@ -4,7 +4,7 @@ import {
   resolveEntities,
   crossDomainProfile,
 } from "./insights.service";
-import { tasteProfilingAgent } from "../ai/profiler.agent";
+import { tasteProfilingAgent } from "../ai/agents/profiler.agent";
 
 const insightRoutes = new Hono();
 
@@ -52,7 +52,7 @@ insightRoutes.post("/agent", async (c) => {
     const body = await c.req.json();
 
     const result = await tasteProfilingAgent.generateTasteProfile(body);
-    return c.text(result);
+    return c.text(result.finalAnalysis);
   } catch (error) {
     return c.json(
       { error: error instanceof Error ? error.message : "Unknown error" },

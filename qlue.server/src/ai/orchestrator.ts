@@ -1,18 +1,16 @@
 import {
   TasteProfileResult,
   tasteProfilingAgent,
-  type TasteProfilerAgent,
-} from "./profiler.agent";
-import { Events } from "../index";
-import { type UserInterests } from "./tools/interests.tool";
-import { type QlooEntity } from "../insights/insights.service";
+} from "./agents/profiler.agent";
+import { type UserInterests } from "./agents/tools/interests.tool";
 import { prisma } from "../db/db";
 import {
-  type AgentStartedEvent,
-  type AgentCompletedEvent,
-  type MessageUpdateData,
-  type TimelineUpdateData,
-} from "../notifications/event";
+  AgentStartedEvent,
+  AgentCompletedEvent,
+  MessageUpdateData,
+  TimelineUpdateData,
+} from "./events/event";
+import { Events } from "../ws/event";
 
 class Orchestrator {
   private static instance: Orchestrator;

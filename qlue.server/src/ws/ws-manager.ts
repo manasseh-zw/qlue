@@ -2,7 +2,15 @@ import type { ServerWebSocket } from "bun";
 import { Event } from "./event";
 
 class WebSocketManager {
+  private static instance: WebSocketManager;
   private connections = new Map<string, Set<ServerWebSocket>>();
+
+  static getInstance(): WebSocketManager {
+    if (!WebSocketManager.instance) {
+      WebSocketManager.instance = new WebSocketManager();
+    }
+    return WebSocketManager.instance;
+  }
 
   addConnection(userId: string, ws: ServerWebSocket) {
     if (!this.connections.has(userId)) {

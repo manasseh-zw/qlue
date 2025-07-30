@@ -13,7 +13,7 @@ export interface UserInterests {
   hobbiesOther: string[];
 }
 
-export const saveUserInterestsTool = tool({
+export const saveUserInterests = tool({
   description:
     "Save user's interests and basic info to create their taste profile",
   parameters: z.object({
@@ -96,5 +96,5 @@ export const saveUserInterestsTool = tool({
 });
 
 export const tools = {
-  saveUserInterests: saveUserInterestsTool,
+  saveUserInterests: saveUserInterests,
 };

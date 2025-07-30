@@ -1,7 +1,7 @@
 import { streamText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { TASTE_DISCOVERY_SYSTEM_PROMPT } from "./prompts";
-import { saveUserInterestsTool } from "./tools/interests.tool";
+import { saveUserInterests } from "./tools/interests.tool";
 
 export interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -20,10 +20,9 @@ export class Assistant {
       tools: userId
         ? {
             saveUserInterests: {
-              ...saveUserInterestsTool,
+              ...saveUserInterests,
               execute: async (params, options) => {
-                // Pass userId through the execution context
-                return saveUserInterestsTool.execute!(params, {
+                return saveUserInterests.execute!(params, {
                   ...options,
                   userId,
                 } as any);
@@ -46,10 +45,10 @@ export class Assistant {
       tools: userId
         ? {
             saveUserInterests: {
-              ...saveUserInterestsTool,
+              ...saveUserInterests,
               execute: async (params, options) => {
                 // Pass userId through the execution context
-                return saveUserInterestsTool.execute!(params, {
+                return saveUserInterests.execute!(params, {
                   ...options,
                   userId,
                 } as any);

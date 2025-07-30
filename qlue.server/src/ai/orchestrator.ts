@@ -80,9 +80,10 @@ class Orchestrator {
         },
       ]);
 
-      const result = await tasteProfilingAgent.generateTasteProfile(
-        userInterests
-      );
+      const result = await tasteProfilingAgent.generateTasteProfile({
+        ...userInterests,
+        userId,
+      });
 
       await this.saveTasteProfileResults(userId, result);
 

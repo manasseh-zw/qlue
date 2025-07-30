@@ -50,6 +50,7 @@ function RouteComponent() {
           console.log(
             "🚀 Agent processing started, redirecting to profiler..."
           );
+          websocket.close();
           setTimeout(() => {
             window.location.href = "/profiler";
           }, 1000);

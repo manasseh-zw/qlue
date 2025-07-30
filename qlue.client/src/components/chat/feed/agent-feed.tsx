@@ -1,49 +1,15 @@
 import { Card, CardBody } from "@heroui/react";
 import { useState, useEffect } from "react";
-import Timeline, { type TimelineItem } from "./timeline";
+import Timeline from "./timeline";
 import EntityUpdate from "./entity-update";
 import { MessageUpdate } from "./message-update";
 import { Thinking } from "../thinking";
-
-interface EntityData {
-  name: string;
-  entity_id: string;
-  properties: {
-    description: string;
-    short_description: string;
-    popularity: string;
-    image: {
-      url: string;
-    };
-  };
-  tags?: Array<{
-    name: string;
-    tag_id: string;
-    value: string;
-  }>;
-}
-
-interface InsightData {
-  entity: EntityData;
-  context: {
-    stage: string;
-    reasoning: string;
-    domainType?: string;
-  };
-}
-
-interface MessageData {
-  message: string;
-  reasoning?: string;
-  stage: string;
-}
-
-interface AgentFeedProps {
-  currentStage: string;
-  timeline: TimelineItem[];
-  insights: InsightData[];
-  messages: MessageData[];
-}
+import type {
+  AgentFeedProps,
+  InsightData,
+  MessageData,
+  TimelineItem,
+} from "./types";
 
 export default function AgentFeed({
   currentStage,
@@ -51,7 +17,7 @@ export default function AgentFeed({
   insights: initialInsights = [],
   messages: initialMessages = [],
 }: AgentFeedProps) {
-  const [timeline, setTimeline] = useState(initialTimeline);
+  const [timeline, setTimeline] = useState<TimelineItem[]>(initialTimeline);
   const [insights, setInsights] = useState<InsightData[]>(initialInsights);
   const [messages, setMessages] = useState<MessageData[]>(initialMessages);
 
@@ -109,7 +75,7 @@ export default function AgentFeed({
                     </li>
                   ) : (
                     feedItems.map((item, index) => (
-                      <li key={`${item.type}-${index}`}>
+                      <li key={`${item.type}-${index}`} className="min-w-0">
                         {item.type === "message" ? (
                           <MessageUpdate
                             message={item.data.message}

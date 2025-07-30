@@ -12,6 +12,7 @@ export type UserInterests = {
   podcasts: string[];
   booksShowsMovies: string[];
   hobbiesOther: string[];
+  userId?: string;
 };
 
 export const saveUserInterests = tool({

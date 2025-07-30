@@ -102,3 +102,21 @@ Content-Type: application/json
   "location":"Harare"
 }
 
+###
+
+### Test Taste Profiling Agent with Streaming Updates
+POST http://localhost:8080/api/taste/agent
+Content-Type: application/json
+
+{
+  "age": 25,
+  "name": "test_user",
+  "artists": ["Taylor Swift", "The Weeknd", "Drake"],
+  "gender": "female",
+  "podcasts": ["Serial", "This American Life"],
+  "hobbiesOther": ["cooking", "travel", "photography"],
+  "booksShowsMovies": ["The Great Gatsby", "Breaking Bad", "Inception"],
+  "location": "New York",
+  "userId": "test-user-123"
+}
+

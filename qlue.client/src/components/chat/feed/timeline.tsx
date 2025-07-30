@@ -3,6 +3,7 @@ import { cn, Spinner } from "@heroui/react";
 import React from "react";
 import { m, LazyMotion, domAnimation } from "framer-motion";
 import { Check, FileSearch, FileText } from "lucide-react";
+import type { TimelineItem } from "./types";
 
 export enum TimelineItemStatus {
   Pending = "pending",
@@ -14,13 +15,6 @@ export enum TimelineItemType {
   Question = "question",
   Analysis = "analysis",
   Synthesis = "synthesis",
-}
-
-export interface TimelineItem {
-  id: string;
-  text: string;
-  status: TimelineItemStatus;
-  type: TimelineItemType;
 }
 
 export interface TimelineProps extends React.HTMLAttributes<HTMLDivElement> {

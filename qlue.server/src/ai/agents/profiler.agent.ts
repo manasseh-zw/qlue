@@ -13,6 +13,7 @@ import {
   getInsights,
   crossDomainProfileByIds,
 } from "../../insights/insights.service";
+import { AgentUpdates } from "../events/event";
 
 // Type definitions for type safety
 export type Demographics = {
@@ -67,6 +68,7 @@ interface TasteProfileInput {
   booksShowsMovies: string[];
   hobbiesOther: string[];
   location?: string;
+  userId?: string;
 }
 
 export type TasteProfileResult = {
@@ -91,27 +93,220 @@ export class TasteProfilerAgent {
 
     try {
       const startTime = Date.now();
+      const userId = input.userId;
 
       // Step 1: Parse and categorize user input into entity resolution requests
       console.log("🔄 Step 1: Parsing and categorizing user input...");
+      await AgentUpdates.sendMessage(
+        userId!,
+        "I'm analyzing your interests and categorizing them for deeper exploration...",
+        "Processing your input to understand what types of entities we're working with",
+        "entity_resolution"
+      );
+      
       const normalizedTasteInput = await this.parseUserInput(input);
       console.log("✅ Step 1 completed:", normalizedTasteInput);
 
+      // Update timeline after Step 1
+      await AgentUpdates.sendTimelineUpdate(
+        userId!,
+        [
+          {
+            id: "1",
+            text: "Gathering Your Interests",
+            status: "completed",
+            type: "question",
+          },
+          {
+            id: "2",
+            text: "Resolving Entities",
+            status: "in_progress",
+            type: "analysis",
+          },
+          {
+            id: "3",
+            text: "Expanding Domains",
+            status: "pending",
+            type: "analysis",
+          },
+          {
+            id: "4",
+            text: "Cross-Domain Analysis",
+            status: "pending",
+            type: "synthesis",
+          },
+          {
+            id: "5",
+            text: "Final Synthesis",
+            status: "pending",
+            type: "synthesis",
+          },
+        ],
+        "Resolving Entities"
+      );
+
       // Step 2: Resolve all entities to get IDs and metadata
       console.log("🔄 Step 2: Resolving entities...");
+      await AgentUpdates.sendMessage(
+        userId!,
+        "Now I'm resolving your interests to get detailed information about each one...",
+        "Looking up each entity in our cultural intelligence database",
+        "entity_resolution"
+      );
+      
       const resolvedEntities = await this.resolveEntities(normalizedTasteInput);
       console.log("✅ Step 2 completed:", resolvedEntities);
 
+      // Stream resolved entities to client
+      if (resolvedEntities.successful > 0) {
+        await AgentUpdates.sendMessage(
+          userId!,
+          `Great! I found detailed information for ${resolvedEntities.successful} of your interests. Let me show you what I discovered...`,
+          "Successfully resolved entities with cultural intelligence data",
+          "entity_resolution"
+        );
+
+        // Stream each resolved entity with delay
+        for (let i = 0; i < resolvedEntities.resolved.length; i++) {
+          const entity = resolvedEntities.resolved[i];
+          if (entity.resolved) {
+            await AgentUpdates.sendInsightUpdate(
+              userId!,
+              entity.resolved,
+              {
+                stage: "entity_resolution",
+                reasoning: `Found detailed information about ${entity.input.query}`,
+                domainType: entity.input.type,
+              },
+              i === 0 ? 0 : 1000
+            );
+          }
+        }
+      }
+
+      // Update timeline after Step 2
+      await AgentUpdates.sendTimelineUpdate(
+        userId!,
+        [
+          {
+            id: "1",
+            text: "Gathering Your Interests",
+            status: "completed",
+            type: "question",
+          },
+          {
+            id: "2",
+            text: "Resolving Entities",
+            status: "completed",
+            type: "analysis",
+          },
+          {
+            id: "3",
+            text: "Expanding Domains",
+            status: "in_progress",
+            type: "analysis",
+          },
+          {
+            id: "4",
+            text: "Cross-Domain Analysis",
+            status: "pending",
+            type: "synthesis",
+          },
+          {
+            id: "5",
+            text: "Final Synthesis",
+            status: "pending",
+            type: "synthesis",
+          },
+        ],
+        "Expanding Domains"
+      );
+
       // Step 3: Domain expansion using resolved entities
       console.log("🔄 Step 3: Expanding within domains...");
+      await AgentUpdates.sendMessage(
+        userId!,
+        "Now I'm exploring what people with similar tastes enjoy in each domain...",
+        "Using your resolved entities to find related interests and patterns",
+        "domain_expansion"
+      );
+      
       const domainExpansions = await this.expandDomains(
         resolvedEntities.resolved,
         normalizedTasteInput.demographics
       );
       console.log("✅ Step 3 completed:", domainExpansions);
 
+      // Stream domain expansion insights
+      for (const [domain, entities] of Object.entries(domainExpansions)) {
+        if (entities.length > 0) {
+          await AgentUpdates.sendMessage(
+            userId!,
+            `I found ${entities.length} related ${domain} that people with your taste enjoy!`,
+            `Expanded ${domain} domain based on your preferences`,
+            "domain_expansion"
+          );
+
+          await AgentUpdates.streamInsights(
+            userId!,
+            entities,
+            {
+              stage: "domain_expansion",
+              reasoning: `People with your taste in ${domain} also enjoy these`,
+              domainType: domain,
+            },
+            1000
+          );
+        }
+      }
+
+      // Update timeline after Step 3
+      await AgentUpdates.sendTimelineUpdate(
+        userId!,
+        [
+          {
+            id: "1",
+            text: "Gathering Your Interests",
+            status: "completed",
+            type: "question",
+          },
+          {
+            id: "2",
+            text: "Resolving Entities",
+            status: "completed",
+            type: "analysis",
+          },
+          {
+            id: "3",
+            text: "Expanding Domains",
+            status: "completed",
+            type: "analysis",
+          },
+          {
+            id: "4",
+            text: "Cross-Domain Analysis",
+            status: "in_progress",
+            type: "synthesis",
+          },
+          {
+            id: "5",
+            text: "Final Synthesis",
+            status: "pending",
+            type: "synthesis",
+          },
+        ],
+        "Cross-Domain Analysis"
+      );
+
       // Step 4: Identify optimal domain pairings
       console.log("🔄 Step 4: Identifying domain pairings...");
+      await AgentUpdates.sendMessage(
+        userId!,
+        "Now I'm finding interesting connections between different domains of your interests...",
+        "Analyzing cross-domain patterns to discover deeper insights",
+        "cross_domain_insights"
+      );
+      
       const domainPairings = await this.identifyDomainPairings(
         resolvedEntities.resolved,
         domainExpansions
@@ -126,13 +321,127 @@ export class TasteProfilerAgent {
       );
       console.log("✅ Step 5 completed:", crossDomainInsights);
 
+      // Stream cross-domain insights
+      for (const insight of crossDomainInsights) {
+        await AgentUpdates.sendMessage(
+          userId!,
+          `Interesting! I found connections between ${insight.pairing.sourceDomain} and ${insight.pairing.targetDomain}...`,
+          insight.pairing.reasoning,
+          "cross_domain_insights"
+        );
+
+        const targetDomainEntities = insight.result.insights[insight.pairing.targetDomain]?.entities;
+        if (targetDomainEntities && targetDomainEntities.length > 0) {
+          await AgentUpdates.streamInsights(
+            userId!,
+            targetDomainEntities,
+            {
+              stage: "cross_domain_insights",
+              reasoning: `Based on your ${insight.pairing.sourceDomain} preferences, you might enjoy these ${insight.pairing.targetDomain}`,
+              domainType: insight.pairing.targetDomain,
+            },
+            1000
+          );
+        }
+      }
+
+      // Update timeline after Step 5
+      await AgentUpdates.sendTimelineUpdate(
+        userId!,
+        [
+          {
+            id: "1",
+            text: "Gathering Your Interests",
+            status: "completed",
+            type: "question",
+          },
+          {
+            id: "2",
+            text: "Resolving Entities",
+            status: "completed",
+            type: "analysis",
+          },
+          {
+            id: "3",
+            text: "Expanding Domains",
+            status: "completed",
+            type: "analysis",
+          },
+          {
+            id: "4",
+            text: "Cross-Domain Analysis",
+            status: "completed",
+            type: "synthesis",
+          },
+          {
+            id: "5",
+            text: "Final Synthesis",
+            status: "in_progress",
+            type: "synthesis",
+          },
+        ],
+        "Final Synthesis"
+      );
+
       console.log("🔄 Step 6: Final synthesis and analysis...");
+      await AgentUpdates.sendMessage(
+        userId!,
+        "Perfect! Now I'm synthesizing all these insights into your comprehensive taste profile...",
+        "Combining all discoveries into a personalized analysis",
+        "final_synthesis"
+      );
+      
       const finalAnalysis = await this.synthesizeProfile(
         resolvedEntities.resolved,
         domainExpansions,
         crossDomainInsights,
         input,
         normalizedTasteInput.demographics
+      );
+
+      await AgentUpdates.sendMessage(
+        userId!,
+        "✨ Your taste profile is complete! I've discovered fascinating patterns about your preferences and can now provide you with truly personalized experiences.",
+        "Successfully created comprehensive taste profile with cross-domain insights",
+        "final_synthesis"
+      );
+
+      // Final timeline update
+      await AgentUpdates.sendTimelineUpdate(
+        userId!,
+        [
+          {
+            id: "1",
+            text: "Gathering Your Interests",
+            status: "completed",
+            type: "question",
+          },
+          {
+            id: "2",
+            text: "Resolving Entities",
+            status: "completed",
+            type: "analysis",
+          },
+          {
+            id: "3",
+            text: "Expanding Domains",
+            status: "completed",
+            type: "analysis",
+          },
+          {
+            id: "4",
+            text: "Cross-Domain Analysis",
+            status: "completed",
+            type: "synthesis",
+          },
+          {
+            id: "5",
+            text: "Final Synthesis",
+            status: "completed",
+            type: "synthesis",
+          },
+        ],
+        "Complete"
       );
 
       const endTime = Date.now();
@@ -162,6 +471,14 @@ export class TasteProfilerAgent {
       return result;
     } catch (error) {
       console.error("❌ Error in taste profile generation:", error);
+      if (input.userId) {
+        await AgentUpdates.sendMessage(
+          input.userId,
+          "I encountered an issue while processing your profile. Let me try again!",
+          "Error during processing",
+          "error"
+        );
+      }
       throw error;
     }
   }

@@ -1,6 +1,7 @@
 import { tool } from "ai";
 import { z } from "zod";
 import { prisma } from "../../db/db";
+import { orchestrator } from "../orchestrator";
 
 export interface UserInterests {
   name: string;
@@ -78,10 +79,15 @@ export const saveUserInterests = tool({
         },
       });
 
+      // Trigger agent processing (non-blocking)
+      orchestrator.startAgentProcessing(userId, interests).catch(error => {
+        console.error("Failed to start agent processing:", error);
+      });
+
       return {
         success: true,
         message:
-          "interets saved successfuly agent now processing profiling your tastes",
+          "Interests saved successfully! I'm now analyzing your taste profile - you'll be redirected shortly to see my progress.",
       };
     } catch (error) {
       console.error("Error saving user interests:", error);

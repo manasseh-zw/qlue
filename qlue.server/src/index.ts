@@ -119,6 +119,45 @@ app.post("/api/test-agent-feed/:userId", async (c) => {
   });
 });
 
+// Test route to manually trigger agent processing
+app.post("/api/test-agent-processing/:userId", async (c) => {
+  const userId = c.req.param("userId");
+  
+  // Mock user interests for testing
+  const mockInterests = {
+    name: "Test User",
+    age: 28,
+    gender: "female",
+    location: "New York",
+    artists: ["Taylor Swift", "Billie Eilish"],
+    podcasts: ["The Joe Rogan Experience"],
+    booksShowsMovies: ["Game of Thrones", "Inception"],
+    hobbiesOther: ["Photography", "Cooking"]
+  };
+
+  try {
+    // Import the orchestrator dynamically to avoid circular dependencies
+    const { orchestrator } = await import("./ai/orchestrator");
+    
+    // Start agent processing
+    orchestrator.startAgentProcessing(userId, mockInterests);
+    
+    return c.json({
+      success: true,
+      message: "Agent processing started for user",
+      userId,
+      mockData: mockInterests
+    });
+  } catch (error) {
+    console.error("Error starting agent processing:", error);
+    return c.json({
+      success: false,
+      message: "Failed to start agent processing",
+      error: error instanceof Error ? error.message : "Unknown error"
+    }, 500);
+  }
+});
+
 // Test route to check if user is online
 app.get("/api/test-ws/:userId/status", (c) => {
   const userId = c.req.param("userId");

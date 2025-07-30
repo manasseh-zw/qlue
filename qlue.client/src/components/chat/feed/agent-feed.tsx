@@ -17,33 +17,78 @@ import EntityUpdate from "./entity-update";
 import { MessageUpdate } from "./message-update";
 import { Thinking } from "../thinking";
 
+interface EntityData {
+  name: string;
+  entity_id: string;
+  properties: {
+    description: string;
+    short_description: string;
+    popularity: string;
+    image: {
+      url: string;
+    };
+  };
+  tags?: Array<{
+    name: string;
+    tag_id: string;
+    value: string;
+  }>;
+}
+
+interface InsightData {
+  entity: EntityData;
+  context: {
+    stage: string;
+    reasoning: string;
+    domainType?: string;
+  };
+}
+
+interface MessageData {
+  message: string;
+  reasoning?: string;
+  stage: string;
+}
+
 interface AgentFeedProps {
   agentName: string;
   agentAvatar: string;
   currentStage: string;
   timeline: TimelineItem[];
-  insights: string[];
+  insights: InsightData[];
+  messages: MessageData[];
 }
 
-interface SSEFeedData {
-  timeline: TimelineItem[];
-  insights: string[];
-  currentStage: string;
-}
-
-export default function AgentFeed({ props }: { props: AgentFeedProps }) {
-  const {
-    agentAvatar,
-    agentName,
-    currentStage: initialStage,
-    timeline: initialTimeline,
-    insights: initialInsights,
-  } = props;
-
-  const [isStreaming, setIsStreaming] = useState(false);
-  const [currentStage, setCurrentStage] = useState(initialStage);
+export default function AgentFeed({ 
+  agentName,
+  agentAvatar,
+  currentStage,
+  timeline: initialTimeline,
+  insights: initialInsights = [],
+  messages: initialMessages = []
+}: AgentFeedProps) {
   const [timeline, setTimeline] = useState(initialTimeline);
-  const [insights, setInsights] = useState(initialInsights);
+  const [insights, setInsights] = useState<InsightData[]>(initialInsights);
+  const [messages, setMessages] = useState<MessageData[]>(initialMessages);
+
+  // Update state when props change
+  useEffect(() => {
+    setTimeline(initialTimeline);
+  }, [initialTimeline]);
+
+  useEffect(() => {
+    setInsights(initialInsights);
+  }, [initialInsights]);
+
+  useEffect(() => {
+    setMessages(initialMessages);
+  }, [initialMessages]);
+
+  // Combine and sort messages and insights by timestamp (using array index as proxy)
+  const feedItems = [
+    ...messages.map((msg, index) => ({ type: 'message' as const, data: msg, index })),
+    ...insights.map((insight, index) => ({ type: 'insight' as const, data: insight, index }))
+  ].sort((a, b) => a.index - b.index);
 
   return (
     <main>
@@ -64,13 +109,39 @@ export default function AgentFeed({ props }: { props: AgentFeedProps }) {
             />
 
             <div className="w-3/4 pl-4">
-              <ul className="space-y-7">
-                <MessageUpdate query="Whitney Houston" />
-                {insights.map((insight, index) => (
-                  <EntityUpdate key={index} />
-                ))}
-                <Thinking />
-              </ul>
+              <div className="h-[450px] overflow-y-auto scrollbar-hide">
+                <ul className="space-y-7">
+                  {feedItems.length === 0 ? (
+                    <li>
+                      <Thinking />
+                    </li>
+                  ) : (
+                    feedItems.map((item, index) => (
+                      <li key={`${item.type}-${index}`}>
+                        {item.type === 'message' ? (
+                          <MessageUpdate 
+                            message={item.data.message}
+                            reasoning={item.data.reasoning}
+                            stage={item.data.stage}
+                          />
+                        ) : (
+                          <EntityUpdate 
+                            entity={item.data.entity}
+                            context={item.data.context}
+                          />
+                        )}
+                      </li>
+                    ))
+                  )}
+                  
+                  {/* Show thinking indicator if processing */}
+                  {feedItems.length > 0 && currentStage.includes("...") && (
+                    <li>
+                      <Thinking />
+                    </li>
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
         </CardBody>

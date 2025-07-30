@@ -1,13 +1,13 @@
 export enum TimelineItemStatus {
-  Completed = "Completed",
-  InProgress = "InProgress",
-  Pending = "Pending",
+  Pending = "pending",
+  InProgress = "in_progress", 
+  Completed = "completed"
 }
 
 export enum TimelineItemType {
-  Question = "Question",
-  Analysis = "Analysis",
-  Synthesis = "Synthesis",
+  Question = "question",
+  Analysis = "analysis", 
+  Synthesis = "synthesis"
 }
 
 export interface TimelineItem {

@@ -5,18 +5,12 @@ import { protectedLoader } from "@/lib/loaders/auth.loaders";
 import AgentFeed from "@/components/chat/feed/agent-feed";
 import { useEffect, useState } from "react";
 import { config } from "../../../client.config";
+import type { TimelineItem } from "../../components/chat/feed/timeline";
 
 export const Route = createFileRoute("/profiler/")({
   component: RouteComponent,
   loader: protectedLoader,
 });
-
-interface TimelineItem {
-  id: string;
-  text: string;
-  status: "pending" | "in_progress" | "completed";
-  type: "question" | "analysis" | "synthesis";
-}
 
 interface InsightData {
   entity: {
@@ -53,11 +47,26 @@ function RouteComponent() {
   const [isConnected, setIsConnected] = useState(false);
   const [currentStage, setCurrentStage] = useState("Initializing...");
   const [timeline, setTimeline] = useState<TimelineItem[]>([
-    { id: "1", text: "Gathering Your Interests", status: "pending", type: "question" },
-    { id: "2", text: "Resolving Entities", status: "pending", type: "analysis" },
+    {
+      id: "1",
+      text: "Gathering Your Interests",
+      status: "pending",
+      type: "question",
+    },
+    {
+      id: "2",
+      text: "Resolving Entities",
+      status: "pending",
+      type: "analysis",
+    },
     { id: "3", text: "Expanding Domains", status: "pending", type: "analysis" },
-    { id: "4", text: "Cross-Domain Analysis", status: "pending", type: "synthesis" },
-    { id: "5", text: "Final Synthesis", status: "pending", type: "synthesis" }
+    {
+      id: "4",
+      text: "Cross-Domain Analysis",
+      status: "pending",
+      type: "synthesis",
+    },
+    { id: "5", text: "Final Synthesis", status: "pending", type: "synthesis" },
   ]);
   const [insights, setInsights] = useState<InsightData[]>([]);
   const [messages, setMessages] = useState<MessageData[]>([]);
@@ -65,8 +74,7 @@ function RouteComponent() {
   useEffect(() => {
     if (!user?.id) return;
 
-    // Create WebSocket connection
-    const wsUrl = `${config.serverUrl.replace('http', 'ws')}/ws/${user.id}`;
+    const wsUrl = `${config.serverUrl.replace("http", "ws")}/ws/${user.id}`;
     const websocket = new WebSocket(wsUrl);
 
     websocket.onopen = () => {
@@ -89,11 +97,11 @@ function RouteComponent() {
 
           case "message":
             setCurrentStage(message.data.message);
-            setMessages(prev => [...prev, message.data]);
+            setMessages((prev) => [...prev, message.data]);
             break;
 
-          case "insight": 
-            setInsights(prev => [...prev, message.data]);
+          case "insight":
+            setInsights((prev) => [...prev, message.data]);
             break;
 
           case "timeline_update":
@@ -142,49 +150,16 @@ function RouteComponent() {
   }
 
   const agentFeedProps = {
-    agentName: "Qlue AI",
-    agentAvatar: "/api/placeholder-avatar",
     currentStage,
     timeline,
     insights,
-    messages
+    messages,
   };
 
   return (
-    <main className="min-h-screen bg-content1 flex items-center justify-center p-6">
-      <div className="w-full max-w-5xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            Building Your Taste Profile
-          </h1>
-          <p className="text-default-600">
-            Watch as I analyze your preferences and discover your unique taste patterns
-          </p>
-          {/* Connection status */}
-          <div className="flex items-center justify-center gap-2 mt-4">
-            <div 
-              className={`w-2 h-2 rounded-full ${
-                isConnected ? 'bg-green-500' : 'bg-red-500'
-              }`}
-            />
-            <span className="text-sm text-default-500">
-              {isConnected ? 'Connected' : 'Connecting...'}
-            </span>
-          </div>
-        </div>
-
-        {/* Agent Feed Component */}
-        <div className="flex justify-center">
-          <AgentFeed {...agentFeedProps} />
-        </div>
-
-        {/* Current Status */}
-        <div className="text-center mt-6">
-          <p className="text-sm text-default-600">
-            Current Status: {currentStage}
-          </p>
-        </div>
+    <main className="min-h-screen flex items-center justify-center p-6">
+      <div className="flex justify-center">
+        <AgentFeed {...agentFeedProps} />
       </div>
     </main>
   );

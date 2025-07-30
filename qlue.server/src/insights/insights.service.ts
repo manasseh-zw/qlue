@@ -87,8 +87,8 @@ export type CrossDomainProfileByIdsRequest = {
 export type CrossDomainProfileResult = {
   profile: {
     entities: ResolvedEntity[];
-    demographics: CrossDomainProfileRequest['demographics'];
-    location: CrossDomainProfileRequest['location'];
+    demographics: CrossDomainProfileRequest["demographics"];
+    location: CrossDomainProfileRequest["location"];
   };
   insights: {
     [domain: string]: {
@@ -117,7 +117,7 @@ export async function getInsights(request: InsightRequest) {
     });
 
     if (!insights.results?.entities?.length) {
-      return "No insights found";
+      return [];
     }
 
     return transformToQlooEntities(insights.results.entities);
@@ -198,27 +198,29 @@ export async function crossDomainProfile(
   try {
     // Step 1: Resolve all entities
     const resolvedEntities = await resolveEntities(request.entities);
-    
+
     if (!resolvedEntities.success || resolvedEntities.successful === 0) {
       throw new Error("No entities could be resolved");
     }
 
     // Step 2: Extract successfully resolved entity IDs
     const entityIds = resolvedEntities.resolved
-      .filter(r => r.resolved)
-      .map(r => r.resolved!.entity_id);
+      .filter((r) => r.resolved)
+      .map((r) => r.resolved!.entity_id);
 
     // Step 3: Get insights for each domain
-    const insights: CrossDomainProfileResult['insights'] = {};
-    
+    const insights: CrossDomainProfileResult["insights"] = {};
+
     for (const domain of request.domains) {
       try {
         const domainInsights = await qlooProvider.getInsights({
           signalInterestsEntities: entityIds,
           filterType: getEntityTypeFromString(domain),
-          signalDemographicsAge: request.demographics?.age as SignalDemographicsAge,
-          signalDemographicsGender: request.demographics?.gender as SignalDemographicsGender,
-          signalInterestsEntitiesWeight:10,
+          signalDemographicsAge: request.demographics
+            ?.age as SignalDemographicsAge,
+          signalDemographicsGender: request.demographics
+            ?.gender as SignalDemographicsGender,
+          signalInterestsEntitiesWeight: 10,
           take: request.options?.take || 5,
         });
 
@@ -241,7 +243,6 @@ export async function crossDomainProfile(
         };
       }
     }
-
 
     const totalInsights = Object.values(insights).reduce(
       (sum, domain) => sum + domain.total,
@@ -283,15 +284,17 @@ export async function crossDomainProfileByIds(
     }
 
     // Get insights for each domain using the provided entity IDs
-    const insights: CrossDomainProfileResult['insights'] = {};
-    
+    const insights: CrossDomainProfileResult["insights"] = {};
+
     for (const domain of request.domains) {
       try {
         const domainInsights = await qlooProvider.getInsights({
           signalInterestsEntities: request.entityIds,
           filterType: getEntityTypeFromString(domain),
-          signalDemographicsAge: request.demographics?.age as SignalDemographicsAge,
-          signalDemographicsGender: request.demographics?.gender as SignalDemographicsGender,
+          signalDemographicsAge: request.demographics
+            ?.age as SignalDemographicsAge,
+          signalDemographicsGender: request.demographics
+            ?.gender as SignalDemographicsGender,
           signalInterestsEntitiesWeight: 10,
           take: request.options?.take || 5,
         });
@@ -366,11 +369,12 @@ function transformToQlooEntity(entity: any): QlooEntity {
   }
 
   // Extract top 3 tags
-  const tags = entity.tags?.slice(0, 3).map((tag: any) => ({
-    name: tag.name || "",
-    tag_id: tag.tag_id || "",
-    value: tag.value || "",
-  })) || [];
+  const tags =
+    entity.tags?.slice(0, 3).map((tag: any) => ({
+      name: tag.name || "",
+      tag_id: tag.tag_id || "",
+      value: tag.value || "",
+    })) || [];
 
   return {
     name: entity.name,

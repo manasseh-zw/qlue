@@ -1,34 +1,41 @@
-export interface FeedUpdateEvent<T = any> {
+export type EventType =
+  | "insight"
+  | "message"
+  | "timeline_update"
+  | "agent_update"
+  | "agent_started"
+  | "agent_completed"
+  | "redirect";
+
+export type Event<T = any> = {
   id: string;
-  stage: "entity_resolution" | "domain_expansion" | "cross_domain_insights" | "final_synthesis" | "agent_started" | "agent_completed";
-  type: "insight" | "message" | "timeline_update" | "agent_update" | "agent_started" | "agent_completed" | "redirect";
+  type: EventType;
   data: T;
   userId?: string;
   timestamp: number;
-}
+};
 
 // Agent processing lifecycle events
-export interface AgentStartedEvent {
+export type AgentStartedEvent = {
   message: string;
   redirectTo: "/profiler";
   userId: string;
-}
+};
 
-export interface AgentCompletedEvent {
+export type AgentCompletedEvent = {
   message: string;
   redirectTo: "/app";
   userId: string;
-  processingTime: number;
-}
+};
 
 // Real-time feed update events
-export interface MessageUpdateData {
+export type MessageUpdateData = {
   message: string;
   reasoning?: string;
   stage: string;
-}
+};
 
-export interface InsightUpdateData {
+export type InsightUpdateData = {
   entity: {
     name: string;
     entity_id: string;
@@ -51,21 +58,20 @@ export interface InsightUpdateData {
     reasoning: string;
     domainType?: string;
   };
-}
+};
 
-export interface TimelineUpdateData {
+export type TimelineUpdateData = {
   timeline: Array<{
     id: string;
-    text: string;
+    stage: string;
     status: "pending" | "in_progress" | "completed";
-    type: "question" | "analysis" | "synthesis";
   }>;
   currentStage: string;
-}
+};
 
-export interface AgentUpdateData {
+export type AgentUpdateData = {
   agentName: string;
   currentStage: string;
   progress?: number;
   message?: string;
-}
+};

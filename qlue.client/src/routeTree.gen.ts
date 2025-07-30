@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TasteProfileIndexRouteImport } from './routes/taste-profile/index'
+import { Route as ProfilerIndexRouteImport } from './routes/profiler/index'
 import { Route as ChatIndexRouteImport } from './routes/chat/index'
 import { Route as AppIndexRouteImport } from './routes/app/index'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const TasteProfileIndexRoute = TasteProfileIndexRouteImport.update({
   id: '/taste-profile/',
   path: '/taste-profile/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfilerIndexRoute = ProfilerIndexRouteImport.update({
+  id: '/profiler/',
+  path: '/profiler/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChatIndexRoute = ChatIndexRouteImport.update({
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppIndexRoute
   '/chat': typeof ChatIndexRoute
+  '/profiler': typeof ProfilerIndexRoute
   '/taste-profile': typeof TasteProfileIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app': typeof AppIndexRoute
   '/chat': typeof ChatIndexRoute
+  '/profiler': typeof ProfilerIndexRoute
   '/taste-profile': typeof TasteProfileIndexRoute
 }
 export interface FileRoutesById {
@@ -52,20 +60,22 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app/': typeof AppIndexRoute
   '/chat/': typeof ChatIndexRoute
+  '/profiler/': typeof ProfilerIndexRoute
   '/taste-profile/': typeof TasteProfileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/chat' | '/taste-profile'
+  fullPaths: '/' | '/app' | '/chat' | '/profiler' | '/taste-profile'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app' | '/chat' | '/taste-profile'
-  id: '__root__' | '/' | '/app/' | '/chat/' | '/taste-profile/'
+  to: '/' | '/app' | '/chat' | '/profiler' | '/taste-profile'
+  id: '__root__' | '/' | '/app/' | '/chat/' | '/profiler/' | '/taste-profile/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppIndexRoute: typeof AppIndexRoute
   ChatIndexRoute: typeof ChatIndexRoute
+  ProfilerIndexRoute: typeof ProfilerIndexRoute
   TasteProfileIndexRoute: typeof TasteProfileIndexRoute
 }
 
@@ -83,6 +93,13 @@ declare module '@tanstack/react-router' {
       path: '/taste-profile'
       fullPath: '/taste-profile'
       preLoaderRoute: typeof TasteProfileIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profiler/': {
+      id: '/profiler/'
+      path: '/profiler'
+      fullPath: '/profiler'
+      preLoaderRoute: typeof ProfilerIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/chat/': {
@@ -106,6 +123,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppIndexRoute: AppIndexRoute,
   ChatIndexRoute: ChatIndexRoute,
+  ProfilerIndexRoute: ProfilerIndexRoute,
   TasteProfileIndexRoute: TasteProfileIndexRoute,
 }
 export const routeTree = rootRouteImport

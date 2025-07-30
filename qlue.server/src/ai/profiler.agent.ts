@@ -1,7 +1,6 @@
 import { openai } from "@ai-sdk/openai";
 import { generateObject, generateText } from "ai";
 import { TASTE_PROFILING_AGENT_PROMPT } from "./prompts";
-import { anthropic } from "@ai-sdk/anthropic";
 import { z } from "zod";
 import {
   resolveEntities,
@@ -10,6 +9,7 @@ import {
   ResolvedEntity,
   EntityResolutionRequest,
   CrossDomainProfileResult,
+  QlooEntity,
 } from "../insights/insights.service";
 import { azure, createAzure } from "@ai-sdk/azure";
 
@@ -49,7 +49,7 @@ export type DomainPairing = {
 };
 
 export type DomainExpansions = {
-  [domain: string]: any;
+  [domain: string]: QlooEntity[];
 };
 
 export type CrossDomainInsight = {
@@ -69,12 +69,21 @@ interface TasteProfileInput {
   location?: string;
 }
 
+export type TasteProfileResult = {
+  primaryEntities: QlooEntity[];
+  domainExpansions: DomainExpansions;
+  crossDomainInsights: CrossDomainInsight[];
+  finalAnalysis: string;
+};
+
 export class TasteProfilerAgent {
   azure = createAzure();
   private model = azure.languageModel("gpt-4.1");
   // model = openai("gpt-4.1");
 
-  async generateTasteProfile(input: TasteProfileInput): Promise<string> {
+  async generateTasteProfile(
+    input: TasteProfileInput
+  ): Promise<TasteProfileResult> {
     console.log(
       "🤖 TasteProfilingAgent: Starting structured taste profile generation"
     );
@@ -117,9 +126,8 @@ export class TasteProfilerAgent {
       );
       console.log("✅ Step 5 completed:", crossDomainInsights);
 
-      // Step 6: Final synthesis and analysis
       console.log("🔄 Step 6: Final synthesis and analysis...");
-      const finalProfile = await this.synthesizeProfile(
+      const finalAnalysis = await this.synthesizeProfile(
         resolvedEntities.resolved,
         domainExpansions,
         crossDomainInsights,
@@ -134,15 +142,24 @@ export class TasteProfilerAgent {
       console.log(`⏱️  Total processing time: ${duration}ms`);
       console.log(
         "📝 Generated taste profile length:",
-        finalProfile.length,
+        finalAnalysis.length,
         "characters"
       );
       console.log(
         "🎯 Taste profile preview:",
-        finalProfile.substring(0, 200) + "..."
+        finalAnalysis.substring(0, 200) + "..."
       );
 
-      return finalProfile;
+      const result: TasteProfileResult = {
+        primaryEntities: resolvedEntities.resolved
+          .map((e) => e.resolved)
+          .filter(Boolean) as QlooEntity[],
+        crossDomainInsights,
+        domainExpansions,
+        finalAnalysis,
+      };
+
+      return result;
     } catch (error) {
       console.error("❌ Error in taste profile generation:", error);
       throw error;

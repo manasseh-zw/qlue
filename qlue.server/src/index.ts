@@ -8,23 +8,17 @@ import { aiRoutes } from "./ai/ai.routes";
 import { createBunWebSocket } from "hono/bun";
 import type { ServerWebSocket } from "bun";
 import { WebSocketManager } from "./notifications/ws-manager";
+import { EventType } from "./notifications/event";
 
 const app = new Hono();
 const wsManager = new WebSocketManager();
 const { upgradeWebSocket, websocket } = createBunWebSocket<ServerWebSocket>();
 
-// Export functions to emit events from anywhere
 export const Events = {
-  sendToUser: <T>(
-    userId: string,
-    stage: "entity_resolution" | "domain_expansion" | "cross_domain_insights" | "final_synthesis",
-    type: "message" | "insight" | "timeline_update" | "agent_update",
-    data: T
-  ) => {
+  sendToUser: <T>(userId: string, type: EventType, data: T) => {
     return wsManager.sendToUser(userId, {
       id: `${type}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
       type,
-      stage,
       data,
       userId,
       timestamp: Date.now(),
@@ -48,12 +42,11 @@ app.route("/api/auth", authRoutes);
 app.route("/api/insights", insightRoutes);
 app.route("/api/ai", aiRoutes);
 
-// Test route to send WebSocket messages
 app.post("/api/test-ws/:userId", async (c) => {
   const userId = c.req.param("userId");
   const body = await c.req.json();
-  
-  const success = Events.sendToUser(userId, "entity_resolution", "message", {
+
+  const success = Events.sendToUser(userId, "message", {
     message: body.message || "Test message from server",
     timestamp: new Date().toISOString(),
   });
@@ -62,111 +55,6 @@ app.post("/api/test-ws/:userId", async (c) => {
     success,
     message: success ? "Message sent to user" : "User not connected",
     userId,
-  });
-});
-
-// Test route to send agent feed updates
-app.post("/api/test-agent-feed/:userId", async (c) => {
-  const userId = c.req.param("userId");
-  const body = await c.req.json();
-  
-  console.log("Sending agent feed update to user:", userId);
-  
-  // Send timeline update
-  Events.sendToUser(userId, "entity_resolution", "timeline_update", {
-    timeline: [
-      {
-        id: "1",
-        text: "Gathering Information",
-        status: "completed",
-        type: "question",
-      },
-      {
-        id: "2", 
-        text: "Analyzing Data",
-        status: "in_progress",
-        type: "analysis",
-      },
-      {
-        id: "3",
-        text: "Synthesizing Results", 
-        status: "pending",
-        type: "synthesis",
-      },
-    ],
-  });
-
-  // Send insight update
-  Events.sendToUser(userId, "domain_expansion", "insight", {
-    insights: [
-      "New insight: Market trends analysis complete",
-      "Competitor analysis in progress",
-      "Growth opportunities identified",
-    ],
-  });
-
-  // Send agent update
-  Events.sendToUser(userId, "cross_domain_insights", "agent_update", {
-    agentName: "AI Assistant",
-    currentStage: body.stage || "Analyzing",
-    progress: body.progress || 75,
-  });
-
-  return c.json({
-    success: true,
-    message: "Agent feed updates sent",
-    userId,
-  });
-});
-
-// Test route to manually trigger agent processing
-app.post("/api/test-agent-processing/:userId", async (c) => {
-  const userId = c.req.param("userId");
-  
-  // Mock user interests for testing
-  const mockInterests = {
-    name: "Test User",
-    age: 28,
-    gender: "female",
-    location: "New York",
-    artists: ["Taylor Swift", "Billie Eilish"],
-    podcasts: ["The Joe Rogan Experience"],
-    booksShowsMovies: ["Game of Thrones", "Inception"],
-    hobbiesOther: ["Photography", "Cooking"]
-  };
-
-  try {
-    // Import the orchestrator dynamically to avoid circular dependencies
-    const { orchestrator } = await import("./ai/orchestrator");
-    
-    // Start agent processing
-    orchestrator.startAgentProcessing(userId, mockInterests);
-    
-    return c.json({
-      success: true,
-      message: "Agent processing started for user",
-      userId,
-      mockData: mockInterests
-    });
-  } catch (error) {
-    console.error("Error starting agent processing:", error);
-    return c.json({
-      success: false,
-      message: "Failed to start agent processing",
-      error: error instanceof Error ? error.message : "Unknown error"
-    }, 500);
-  }
-});
-
-// Test route to check if user is online
-app.get("/api/test-ws/:userId/status", (c) => {
-  const userId = c.req.param("userId");
-  const isOnline = Events.isUserOnline(userId);
-  
-  return c.json({
-    userId,
-    isOnline,
-    message: isOnline ? "User is connected" : "User is not connected",
   });
 });
 
@@ -181,7 +69,7 @@ app.get(
 
     return {
       onOpen: (evt, ws) => {
-        wsManager.addConnection(userId, ws.raw as ServerWebSocket );
+        wsManager.addConnection(userId, ws.raw as ServerWebSocket);
 
         // Send connection confirmation
         ws.send(

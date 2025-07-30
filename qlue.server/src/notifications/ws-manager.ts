@@ -1,5 +1,5 @@
 import type { ServerWebSocket } from "bun";
-import { FeedUpdateEvent } from "./event";
+import { Event } from "./event";
 
 class WebSocketManager {
   private connections = new Map<string, Set<ServerWebSocket>>();
@@ -21,7 +21,7 @@ class WebSocketManager {
     }
   }
 
-  sendToUser<T>(userId: string, event: FeedUpdateEvent<T>): boolean {
+  sendToUser<T>(userId: string, event: Event<T>): boolean {
     const userConnections = this.connections.get(userId);
     if (!userConnections) return false;
 

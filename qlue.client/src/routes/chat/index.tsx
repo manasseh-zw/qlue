@@ -32,28 +32,27 @@ function RouteComponent() {
     },
   });
 
-  // WebSocket connection for agent processing events
   useEffect(() => {
     if (!user?.id) return;
 
-    const wsUrl = `${config.serverUrl.replace('http', 'ws')}/ws/${user.id}`;
+    const wsUrl = `${config.serverUrl.replace("http", "ws")}/ws/${user.id}`;
     const websocket = new WebSocket(wsUrl);
 
     websocket.onopen = () => {
-      console.log("🔌 WebSocket connected for chat");
+      console.log("WebSocket connected for chat");
     };
 
     websocket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
         console.log("📨 Received WebSocket message in chat:", message);
-
-        // Handle agent started event - redirect to profiler
         if (message.type === "agent_started") {
-          console.log("🚀 Agent processing started, redirecting to profiler...");
+          console.log(
+            "🚀 Agent processing started, redirecting to profiler..."
+          );
           setTimeout(() => {
             window.location.href = "/profiler";
-          }, 1000); // Small delay for user feedback
+          }, 1000);
         }
       } catch (error) {
         console.error("❌ Error parsing WebSocket message:", error);
@@ -148,9 +147,7 @@ function RouteComponent() {
 
           {(status === "submitted" ||
             (isInitializing && messages.length === 0)) && (
-            <div
-              className="flex flex-row items-center gap-3"
-            >
+            <div className="flex flex-row items-center gap-3">
               <div className="flex-shrink-0">
                 <div className="p-1 rounded-full">
                   <Logo width={34} height={34} />

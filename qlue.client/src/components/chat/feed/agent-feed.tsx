@@ -1,18 +1,6 @@
-import {
-  Avatar,
-  Card,
-  CardBody,
-  CardHeader,
-  Chip,
-  Divider,
-  Button,
-} from "@heroui/react";
-import { CircleCheck, Icon, Play, Square } from "lucide-react";
+import { Card, CardBody } from "@heroui/react";
 import { useState, useEffect } from "react";
-import type { TimelineItem } from "./research";
-import VerticalTimeline from "./vertical-timeline";
-import Logo from "../../logo";
-import { useSSE } from "../../../hooks/useSSE";
+import Timeline, { type TimelineItem } from "./timeline";
 import EntityUpdate from "./entity-update";
 import { MessageUpdate } from "./message-update";
 import { Thinking } from "../thinking";
@@ -51,21 +39,17 @@ interface MessageData {
 }
 
 interface AgentFeedProps {
-  agentName: string;
-  agentAvatar: string;
   currentStage: string;
   timeline: TimelineItem[];
   insights: InsightData[];
   messages: MessageData[];
 }
 
-export default function AgentFeed({ 
-  agentName,
-  agentAvatar,
+export default function AgentFeed({
   currentStage,
   timeline: initialTimeline,
   insights: initialInsights = [],
-  messages: initialMessages = []
+  messages: initialMessages = [],
 }: AgentFeedProps) {
   const [timeline, setTimeline] = useState(initialTimeline);
   const [insights, setInsights] = useState<InsightData[]>(initialInsights);
@@ -86,8 +70,16 @@ export default function AgentFeed({
 
   // Combine and sort messages and insights by timestamp (using array index as proxy)
   const feedItems = [
-    ...messages.map((msg, index) => ({ type: 'message' as const, data: msg, index })),
-    ...insights.map((insight, index) => ({ type: 'insight' as const, data: insight, index }))
+    ...messages.map((msg, index) => ({
+      type: "message" as const,
+      data: msg,
+      index,
+    })),
+    ...insights.map((insight, index) => ({
+      type: "insight" as const,
+      data: insight,
+      index,
+    })),
   ].sort((a, b) => a.index - b.index);
 
   return (
@@ -99,7 +91,7 @@ export default function AgentFeed({
         <CardBody className="p-6 relative">
           <div className="flex relative">
             <div className="w-1/4 pr-4">
-              <VerticalTimeline items={timeline} className="mb-4" />
+              <Timeline items={timeline} className="mb-4" />
             </div>
 
             {/* Vertical divider - extends beyond CardBody padding */}
@@ -118,14 +110,14 @@ export default function AgentFeed({
                   ) : (
                     feedItems.map((item, index) => (
                       <li key={`${item.type}-${index}`}>
-                        {item.type === 'message' ? (
-                          <MessageUpdate 
+                        {item.type === "message" ? (
+                          <MessageUpdate
                             message={item.data.message}
                             reasoning={item.data.reasoning}
                             stage={item.data.stage}
                           />
                         ) : (
-                          <EntityUpdate 
+                          <EntityUpdate
                             entity={item.data.entity}
                             context={item.data.context}
                           />
@@ -133,7 +125,7 @@ export default function AgentFeed({
                       </li>
                     ))
                   )}
-                  
+
                   {/* Show thinking indicator if processing */}
                   {feedItems.length > 0 && currentStage.includes("...") && (
                     <li>

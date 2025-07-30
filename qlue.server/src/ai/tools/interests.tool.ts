@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "../../db/db";
 import { orchestrator } from "../orchestrator";
 
-export interface UserInterests {
+export type UserInterests = {
   name: string;
   age: number;
   gender: string;
@@ -12,7 +12,7 @@ export interface UserInterests {
   podcasts: string[];
   booksShowsMovies: string[];
   hobbiesOther: string[];
-}
+};
 
 export const saveUserInterests = tool({
   description:
@@ -69,18 +69,17 @@ export const saveUserInterests = tool({
         hobbiesOther,
       };
 
-      // Update user with interests, age, and complete onboarding
       await prisma.user.update({
         where: { id: userId },
         data: {
           age,
-          interests: interests as unknown as any,
+          interests: JSON.stringify(interests),
           onboarding: "COMPLETE",
         },
       });
 
       // Trigger agent processing (non-blocking)
-      orchestrator.startAgentProcessing(userId, interests).catch(error => {
+      orchestrator.startAgentProcessing(userId, interests).catch((error) => {
         console.error("Failed to start agent processing:", error);
       });
 

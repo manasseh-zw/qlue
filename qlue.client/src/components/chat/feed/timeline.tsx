@@ -3,15 +3,27 @@ import { cn, Spinner } from "@heroui/react";
 import React from "react";
 import { m, LazyMotion, domAnimation } from "framer-motion";
 import { Check, FileSearch, FileText } from "lucide-react";
-import {
-  TimelineItemStatus,
-  TimelineItemType,
-  type TimelineItem,
-} from "./research";
 
-// --- Props for the simplified VerticalTimeline component ---
-export interface VerticalTimelineProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export enum TimelineItemStatus {
+  Pending = "pending",
+  InProgress = "in_progress",
+  Completed = "completed",
+}
+
+export enum TimelineItemType {
+  Question = "question",
+  Analysis = "analysis",
+  Synthesis = "synthesis",
+}
+
+export interface TimelineItem {
+  id: string;
+  text: string;
+  status: TimelineItemStatus;
+  type: TimelineItemType;
+}
+
+export interface TimelineProps extends React.HTMLAttributes<HTMLDivElement> {
   items?: TimelineItem[];
   hideProgressBars?: boolean;
   className?: string;
@@ -46,10 +58,7 @@ function AnimatedCheckIcon(props: ComponentProps<"svg">) {
 }
 
 // --- The Simplified VerticalTimeline Component ---
-const VerticalTimeline = React.forwardRef<
-  HTMLDivElement,
-  VerticalTimelineProps
->(
+const Timeline = React.forwardRef<HTMLDivElement, TimelineProps>(
   (
     {
       items = [],
@@ -205,6 +214,4 @@ const VerticalTimeline = React.forwardRef<
   }
 );
 
-VerticalTimeline.displayName = "VerticalTimeline";
-
-export default VerticalTimeline;
+export default Timeline;

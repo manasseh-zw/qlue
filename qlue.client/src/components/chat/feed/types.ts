@@ -118,6 +118,9 @@ export type TimelineItem = {
 export type AgentFeedProps = {
   currentStage: string;
   timeline: TimelineItem[];
-  insights: InsightData[];
-  messages: MessageData[];
+  feedItems: Array<{
+    type: "message" | "insight";
+    data: MessageData | InsightData;
+    id: string;
+  }>;
 };

@@ -2,6 +2,7 @@ import type { ServerWebSocket } from "bun";
 import { createBunWebSocket } from "hono/bun";
 import { WebSocketManager } from "./ws-manager";
 import { EventType } from "./event";
+import { simulateProfilerUpdates, stopProfilerSimulation } from "./test-profiler";
 
 const { upgradeWebSocket, websocket } = createBunWebSocket<ServerWebSocket>();
 
@@ -51,6 +52,18 @@ export function createWebSocketHandler() {
               case "subscribe":
                 // Handle channel subscriptions
                 console.log("User subscribed to channel:", message.channel);
+                break;
+
+              case "test_profiler":
+                // 🧪 TEST ENDPOINT: Simulate profiler agent updates
+                console.log("🧪 Test profiler triggered for user:", userId);
+                simulateProfilerUpdates(userId, ws);
+                break;
+
+              case "stop_test_profiler":
+                // 🛑 Stop the test profiler loop
+                console.log("🛑 Test profiler stopped for user:", userId);
+                stopProfilerSimulation(userId);
                 break;
 
               default:

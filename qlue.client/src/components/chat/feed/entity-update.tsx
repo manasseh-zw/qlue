@@ -1,4 +1,5 @@
 import { Avatar, Chip } from "@heroui/react";
+import { useState } from "react";
 import type { EntityData } from "./types";
 
 type EntityUpdateProps = {
@@ -11,6 +12,11 @@ type EntityUpdateProps = {
 };
 
 export default function EntityUpdate({ entity, context }: EntityUpdateProps) {
+  const [imageSrc, setImageSrc] = useState(
+    entity.properties.image.url ||
+      `https://boring-avatars-api.vercel.app/api/avatar?size=40&variant=bauhaus&name=${entity.name}`
+  );
+
   // Determine chip color based on domain type
   const getChipColor = (type?: string) => {
     switch (type) {
@@ -42,24 +48,23 @@ export default function EntityUpdate({ entity, context }: EntityUpdateProps) {
     return "Entity";
   };
 
-  // Truncate text to prevent overflow
-  const truncateText = (text: string, maxLength: number = 120) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength).trim() + "...";
-  };
-
   return (
     <div className="flex items-start gap-3 min-w-0">
       <Avatar
-        src={entity.properties.image.url || "https://via.placeholder.com/32"}
+        src={imageSrc}
         size="sm"
-        className="w-8 h-8 rounded-full flex-shrink-0"
-        showFallback
+        radius="none"
+        className="w-8 h-8 rounded-none flex-shrink-0"
         name={entity.name.charAt(0)}
+        onError={() => {
+          setImageSrc(
+            `https://boring-avatars-api.vercel.app/api/avatar?size=40&variant=bauhaus&name=${entity.name}`
+          );
+        }}
       />
-      <div className="flex flex-col flex-1 overflow-hidden min-w-0">
+      <div className="flex flex-col flex-1 min-w-0">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-sm font-medium text-black truncate">
+          <span className="text-sm font-medium text-black break-words">
             {entity.name}
           </span>
           <Chip
@@ -72,12 +77,12 @@ export default function EntityUpdate({ entity, context }: EntityUpdateProps) {
           </Chip>
         </div>
         <div className="mt-1 prose prose-sm min-w-0">
-          <p className="text-xs text-default-600 mb-1 overflow-hidden text-ellipsis whitespace-nowrap">
-            {truncateText(entity.properties.short_description, 100)}
+          <p className="text-xs text-default-600 mb-1 break-words leading-relaxed">
+            {entity.properties.short_description}
           </p>
-          <p className="text-xs text-default-500 overflow-hidden text-ellipsis whitespace-nowrap">
-            {truncateText(context.reasoning, 80)}
-          </p>
+          {/* <p className="text-xs text-default-500 break-words leading-relaxed">
+            {context.reasoning}
+          </p> */}
         </div>
       </div>
     </div>

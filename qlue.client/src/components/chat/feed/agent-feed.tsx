@@ -1,4 +1,4 @@
-import { Card, CardBody } from "@heroui/react";
+import { Card, CardBody, Button } from "@heroui/react";
 import { useState, useEffect, useRef } from "react";
 import Timeline from "./timeline";
 import EntityUpdate from "./entity-update";
@@ -10,44 +10,27 @@ import type {
   MessageData,
   TimelineItem,
 } from "./types";
+import Logo from "../../logo";
 
 export default function AgentFeed({
   currentStage,
   timeline: initialTimeline,
-  insights: initialInsights = [],
-  messages: initialMessages = [],
-}: AgentFeedProps) {
+  feedItems: initialFeedItems = [],
+  onContinue,
+}: AgentFeedProps & { onContinue?: () => void }) {
   const [timeline, setTimeline] = useState<TimelineItem[]>(initialTimeline);
-  const [insights, setInsights] = useState<InsightData[]>(initialInsights);
-  const [messages, setMessages] = useState<MessageData[]>(initialMessages);
+  const [feedItems, setFeedItems] = useState(initialFeedItems);
   const feedEndRef = useRef<HTMLDivElement>(null);
 
-  // Combine and sort messages and insights by timestamp (using array index as proxy)
-  const feedItems = [
-    ...messages.map((msg, index) => ({
-      type: "message" as const,
-      data: msg,
-      index,
-    })),
-    ...insights.map((insight, index) => ({
-      type: "insight" as const,
-      data: insight,
-      index,
-    })),
-  ].sort((a, b) => a.index - b.index);
+  // Update feed items when props change
+  useEffect(() => {
+    setFeedItems(initialFeedItems);
+  }, [initialFeedItems]);
 
   // Update state when props change
   useEffect(() => {
     setTimeline(initialTimeline);
   }, [initialTimeline]);
-
-  useEffect(() => {
-    setInsights(initialInsights);
-  }, [initialInsights]);
-
-  useEffect(() => {
-    setMessages(initialMessages);
-  }, [initialMessages]);
 
   // Auto-scroll to bottom when new content is added
   useEffect(() => {
@@ -59,11 +42,14 @@ export default function AgentFeed({
     }
   }, [feedItems.length]);
 
+  // Check if profiler is complete (all timeline items are completed)
+  const isComplete = timeline.every((item) => item.status === "completed");
+
   return (
     <main>
       <Card
         shadow="none"
-        className="w-full h-[520px] border-1 rounded-3xl border-zinc-200"
+        className="w-[1000px] h-[650px] border-1 rounded-3xl border-zinc-200"
       >
         <CardBody className="p-6 relative">
           <div className="flex relative">
@@ -73,31 +59,37 @@ export default function AgentFeed({
 
             {/* Vertical divider - extends beyond CardBody padding */}
             <div
-              className="absolute left-1/4 top-0 bottom-0 w-[0.1px] bg-stone-200 transform -translate-x-1/2 h-[518px]"
+              className="absolute left-1/4 top-0 bottom-0 w-[0.1px] bg-stone-200 transform -translate-x-1/2 h-[648px]"
               style={{ top: "-24px", bottom: "-24px" }}
             />
 
             <div className="w-3/4 pl-4">
-              <div className="h-[450px] overflow-y-auto scrollbar-hide">
+              <div className="h-[580px] overflow-y-auto scrollbar-hide">
                 <ul className="space-y-7">
                   {feedItems.length === 0 ? (
-                    <li>
-                      <Thinking />
+                    <li className="flex items-start gap-2 min-w-0">
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <Thinking />
+                      </div>
                     </li>
                   ) : (
                     feedItems.map((item, index) => (
-                      <li key={`${item.type}-${index}`} className="min-w-0">
+                      <li key={item.id} className="min-w-0 ml-2">
                         {item.type === "message" ? (
                           <MessageUpdate
-                            message={item.data.message}
-                            reasoning={item.data.reasoning}
-                            stage={item.data.stage}
+                            message={(item.data as MessageData).message}
+                            reasoning={(item.data as MessageData).reasoning}
+                            stage={(item.data as MessageData).stage}
                           />
                         ) : (
-                          <EntityUpdate
-                            entity={item.data.entity}
-                            context={item.data.context}
-                          />
+                          <div className="relative">
+                            <div className="pl-8">
+                              <EntityUpdate
+                                entity={(item.data as InsightData).entity}
+                                context={(item.data as InsightData).context}
+                              />
+                            </div>
+                          </div>
                         )}
                       </li>
                     ))
@@ -105,8 +97,10 @@ export default function AgentFeed({
 
                   {/* Show thinking indicator if processing */}
                   {feedItems.length > 0 && currentStage.includes("...") && (
-                    <li>
-                      <Thinking />
+                    <li className="flex items-start gap-2 min-w-0">
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <Thinking />
+                      </div>
                     </li>
                   )}
                 </ul>
@@ -115,6 +109,23 @@ export default function AgentFeed({
               </div>
             </div>
           </div>
+
+          {/* Continue button - appears when profiler is complete */}
+          {isComplete && onContinue && (
+            <div className="absolute bottom-4 right-4">
+              <Button
+
+                color="primary"
+                variant="ghost"
+                size="md"
+                onPress={onContinue}
+                radius="full"
+                className="border-[1.3px] bg-white"
+              >Continue
+
+              </Button>
+            </div>
+          )}
         </CardBody>
       </Card>
     </main>

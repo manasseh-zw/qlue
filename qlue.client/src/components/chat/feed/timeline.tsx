@@ -179,10 +179,10 @@ const Timeline = React.forwardRef<HTMLDivElement, TimelineProps>(
                 </div>
 
                 {/* Text Content */}
-                <div className="flex-1 text-left">
+                <div className="flex-1 text-left min-w-0">
                   <div
                     className={cn(
-                      "text-sm mt-1 transition-[color] duration-300", // Base text style
+                      "text-sm mt-1 transition-[color] duration-300 break-words leading-relaxed", // Base text style
                       // --- Status-specific text styling ---
                       {
                         // Completed: Use default foreground (dark text #212529 on light bg)

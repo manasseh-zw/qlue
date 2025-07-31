@@ -50,10 +50,11 @@ function RouteComponent() {
           console.log(
             "🚀 Agent processing started, redirecting to profiler..."
           );
-          websocket.close();
+          // Explicitly close the WebSocket before redirecting
+          websocket.close(1000, "Redirecting to profiler");
           setTimeout(() => {
             window.location.href = "/profiler";
-          }, 1000);
+          }, 500); // Reduced delay to minimize overlap
         }
       } catch (error) {
         console.error("❌ Error parsing WebSocket message:", error);

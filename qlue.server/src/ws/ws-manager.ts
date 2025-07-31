@@ -13,10 +13,22 @@ class WebSocketManager {
   }
 
   addConnection(userId: string, ws: ServerWebSocket) {
+    // Close any existing connections for this user to ensure only one active connection
+    const existingConnections = this.connections.get(userId);
+    if (existingConnections) {
+      existingConnections.forEach((existingWs) => {
+        if (existingWs.readyState === 1) {
+          existingWs.close(1000, "New connection established");
+        }
+      });
+      existingConnections.clear();
+    }
+
     if (!this.connections.has(userId)) {
       this.connections.set(userId, new Set());
     }
     this.connections.get(userId)!.add(ws);
+    console.log(`🔌 WebSocket connection established for user: ${userId}`);
   }
 
   removeConnection(userId: string, ws: ServerWebSocket) {
@@ -36,12 +48,22 @@ class WebSocketManager {
     const message = JSON.stringify(event);
     let sent = false;
 
+    // Clean up any closed connections before sending
+    const closedConnections: ServerWebSocket[] = [];
     userConnections.forEach((ws) => {
-      if (ws.readyState === 1) {
+      if (ws.readyState !== 1) {
+        closedConnections.push(ws);
+      } else {
         ws.send(message);
         sent = true;
       }
     });
+
+    // Remove closed connections
+    closedConnections.forEach((ws) => userConnections.delete(ws));
+    if (userConnections.size === 0) {
+      this.connections.delete(userId);
+    }
 
     return sent;
   }

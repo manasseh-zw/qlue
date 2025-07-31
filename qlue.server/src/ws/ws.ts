@@ -17,6 +17,7 @@ export function createWebSocketHandler() {
 
       return {
         onOpen: (evt: any, ws: any) => {
+          console.log(`🔌 New WebSocket connection for user: ${userId}`);
           wsManager.addConnection(userId, ws.raw as ServerWebSocket);
 
           // Send connection confirmation
@@ -62,7 +63,9 @@ export function createWebSocketHandler() {
 
         onClose: (evt: any, ws: any) => {
           wsManager.removeConnection(userId, ws.raw as ServerWebSocket);
-          console.log(`WebSocket closed for user: ${userId}`);
+          console.log(
+            `🔌 WebSocket closed for user: ${userId}, code: ${evt.code}, reason: ${evt.reason}`
+          );
         },
 
         onError: (evt: any, ws: any) => {

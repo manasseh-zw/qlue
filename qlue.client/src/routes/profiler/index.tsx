@@ -5,7 +5,7 @@ import { protectedLoader } from "@/lib/loaders/auth.loaders";
 import AgentFeed from "@/components/chat/feed/agent-feed";
 import { useEffect, useState } from "react";
 import { config } from "../../../client.config";
-import type { TimelineItem } from "../../components/chat/feed/timeline";
+import type { TimelineItem } from "../../components/chat/feed/types";
 
 export const Route = createFileRoute("/profiler/")({
   component: RouteComponent,
@@ -139,8 +139,11 @@ function RouteComponent() {
 
     // Cleanup on unmount
     return () => {
-      if (websocket.readyState === WebSocket.OPEN) {
-        websocket.close();
+      if (
+        websocket.readyState === WebSocket.OPEN ||
+        websocket.readyState === WebSocket.CONNECTING
+      ) {
+        websocket.close(1000, "Component unmounting");
       }
     };
   }, [user?.id]);

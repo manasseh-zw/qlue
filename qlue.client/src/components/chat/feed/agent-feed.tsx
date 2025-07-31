@@ -1,5 +1,5 @@
 import { Card, CardBody } from "@heroui/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Timeline from "./timeline";
 import EntityUpdate from "./entity-update";
 import { MessageUpdate } from "./message-update";
@@ -20,19 +20,7 @@ export default function AgentFeed({
   const [timeline, setTimeline] = useState<TimelineItem[]>(initialTimeline);
   const [insights, setInsights] = useState<InsightData[]>(initialInsights);
   const [messages, setMessages] = useState<MessageData[]>(initialMessages);
-
-  // Update state when props change
-  useEffect(() => {
-    setTimeline(initialTimeline);
-  }, [initialTimeline]);
-
-  useEffect(() => {
-    setInsights(initialInsights);
-  }, [initialInsights]);
-
-  useEffect(() => {
-    setMessages(initialMessages);
-  }, [initialMessages]);
+  const feedEndRef = useRef<HTMLDivElement>(null);
 
   // Combine and sort messages and insights by timestamp (using array index as proxy)
   const feedItems = [
@@ -47,6 +35,29 @@ export default function AgentFeed({
       index,
     })),
   ].sort((a, b) => a.index - b.index);
+
+  // Update state when props change
+  useEffect(() => {
+    setTimeline(initialTimeline);
+  }, [initialTimeline]);
+
+  useEffect(() => {
+    setInsights(initialInsights);
+  }, [initialInsights]);
+
+  useEffect(() => {
+    setMessages(initialMessages);
+  }, [initialMessages]);
+
+  // Auto-scroll to bottom when new content is added
+  useEffect(() => {
+    if (feedEndRef.current) {
+      feedEndRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }
+  }, [feedItems.length]);
 
   return (
     <main>
@@ -99,6 +110,8 @@ export default function AgentFeed({
                     </li>
                   )}
                 </ul>
+                {/* Invisible element to scroll to */}
+                <div ref={feedEndRef} />
               </div>
             </div>
           </div>

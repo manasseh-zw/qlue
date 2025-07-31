@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import type { MessageData } from "./types";
 
 type MessageUpdateProps = {
@@ -37,12 +36,7 @@ export function MessageUpdate({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.3 }}
-      className="flex items-start gap-2 min-w-0"
-    >
+    <div className="flex items-start gap-2 min-w-0">
       <span className="text-xl flex-shrink-0">{getStageEmoji(stage)}</span>
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         <p className="text-sm font-medium text-black overflow-hidden text-ellipsis whitespace-nowrap">
@@ -54,6 +48,6 @@ export function MessageUpdate({
           </p>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

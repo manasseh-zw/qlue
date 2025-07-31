@@ -1,5 +1,4 @@
 import { Avatar, Chip } from "@heroui/react";
-import { motion } from "framer-motion";
 import type { EntityData } from "./types";
 
 type EntityUpdateProps = {
@@ -50,12 +49,7 @@ export default function EntityUpdate({ entity, context }: EntityUpdateProps) {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="flex items-start gap-3 min-w-0"
-    >
+    <div className="flex items-start gap-3 min-w-0">
       <Avatar
         src={entity.properties.image.url || "https://via.placeholder.com/32"}
         size="sm"
@@ -86,6 +80,6 @@ export default function EntityUpdate({ entity, context }: EntityUpdateProps) {
           </p>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

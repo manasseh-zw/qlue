@@ -1,0 +1,1 @@
+web: npx -y bun src/scripts/deployment.js -s 

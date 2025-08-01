@@ -10,7 +10,6 @@ import type {
   MessageData,
   TimelineItem,
 } from "./types";
-import Logo from "../../logo";
 
 export default function AgentFeed({
   currentStage,
@@ -73,7 +72,7 @@ export default function AgentFeed({
                       </div>
                     </li>
                   ) : (
-                    feedItems.map((item, index) => (
+                    feedItems.map((item) => (
                       <li key={item.id} className="min-w-0 ml-2">
                         {item.type === "message" ? (
                           <MessageUpdate
@@ -114,15 +113,14 @@ export default function AgentFeed({
           {isComplete && onContinue && (
             <div className="absolute bottom-4 right-4">
               <Button
-
                 color="primary"
                 variant="ghost"
                 size="md"
                 onPress={onContinue}
                 radius="full"
                 className="border-[1.3px] bg-white"
-              >Continue
-
+              >
+                Continue
               </Button>
             </div>
           )}

@@ -37,7 +37,7 @@ export const publicOnlyLoader = async () => {
     const { isAuthenticated } = authState.state;
     if (isAuthenticated) {
       throw redirect({
-        to: "/app",
+        to: "/me",
       });
     }
 

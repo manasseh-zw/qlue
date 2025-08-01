@@ -1,4 +1,3 @@
-import type { MessageData } from "./types";
 import Logo from "../../logo";
 
 type MessageUpdateProps = {
@@ -7,11 +6,7 @@ type MessageUpdateProps = {
   stage: string;
 };
 
-export function MessageUpdate({
-  message,
-  reasoning,
-  stage,
-}: MessageUpdateProps) {
+export function MessageUpdate({ message, reasoning }: MessageUpdateProps) {
   return (
     <div className=" flex items-start gap-2 min-w-0">
       <Logo width={24} height={24} />

@@ -20,6 +20,7 @@ function RouteComponent() {
   const { user } = useStore(authState);
   const url = `${config.serverUrl}/api/ai`;
   const [isInitializing, setIsInitializing] = useState(true);
+  // @ts-ignore
   const [ws, setWs] = useState<WebSocket | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);

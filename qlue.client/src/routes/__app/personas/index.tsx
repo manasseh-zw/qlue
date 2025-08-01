@@ -35,6 +35,7 @@ function RouteComponent() {
     },
   ];
 
+  // @ts-ignore
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 

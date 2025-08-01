@@ -10,8 +10,6 @@ import {
   Tab,
   Progress,
   Avatar,
-  Divider,
-  Badge,
 } from "@heroui/react";
 
 // Sample data structure matching TasteProfileResult
@@ -223,13 +221,7 @@ export const Route = createFileRoute("/__app/me/")({
 function RouteComponent() {
   const [selected, setSelected] = useState("profile");
 
-  const EntityCard = ({
-    entity,
-    type = "default",
-  }: {
-    entity: any;
-    type?: string;
-  }) => (
+  const EntityCard = ({ entity }: { entity: any; type?: string }) => (
     <Card className="w-full max-w-[200px] hover:scale-105 transition-transform duration-200 cursor-pointer">
       <CardBody className="p-0">
         <Image

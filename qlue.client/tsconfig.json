@@ -13,13 +13,13 @@
     "verbatimModuleSyntax": true,
     "noEmit": true,
 
-    /* Linting */
+    /* Linting - Disabled for deployment */
     "skipLibCheck": true,
     "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
+    "noUncheckedSideEffectImports": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],

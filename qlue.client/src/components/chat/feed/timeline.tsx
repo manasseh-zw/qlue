@@ -5,18 +5,6 @@ import { m, LazyMotion, domAnimation } from "framer-motion";
 import { Check, FileSearch, FileText } from "lucide-react";
 import type { TimelineItem } from "./types";
 
-export enum TimelineItemStatus {
-  Pending = "pending",
-  InProgress = "in_progress",
-  Completed = "completed",
-}
-
-export enum TimelineItemType {
-  Question = "question",
-  Analysis = "analysis",
-  Synthesis = "synthesis",
-}
-
 export interface TimelineProps extends React.HTMLAttributes<HTMLDivElement> {
   items?: TimelineItem[];
   hideProgressBars?: boolean;
@@ -83,11 +71,11 @@ const Timeline = React.forwardRef<HTMLDivElement, TimelineProps>(
         // Using text-default-500 (#6c757d) for pending icons
         const iconProps = { className: "h-4 w-4 text-default-500" };
         switch (item.type) {
-          case TimelineItemType.Question:
+          case "question":
             return <Check {...iconProps} />;
-          case TimelineItemType.Analysis:
+          case "analysis":
             return <FileSearch {...iconProps} />;
-          case TimelineItemType.Synthesis:
+          case "synthesis":
             return <FileText {...iconProps} />;
           default:
             // Default fallback icon for pending items (simple dot)
@@ -99,16 +87,16 @@ const Timeline = React.forwardRef<HTMLDivElement, TimelineProps>(
       return <div className="h-2 w-2 rounded-full bg-gray-400" />;
     };
 
-    // --- Map TimelineItemStatus to internal status string ---
+    // --- Map TimelineItem status string to internal status string ---
     const getStatusString = (
-      status: TimelineItemStatus
+      status: "pending" | "in_progress" | "completed"
     ): "inactive" | "active" | "complete" => {
       switch (status) {
-        case TimelineItemStatus.Completed:
+        case "completed":
           return "complete";
-        case TimelineItemStatus.InProgress:
+        case "in_progress":
           return "active";
-        case TimelineItemStatus.Pending:
+        case "pending":
           return "inactive";
         default:
           return "inactive";

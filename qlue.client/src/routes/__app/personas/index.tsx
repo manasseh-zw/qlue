@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@heroui/react";
 import { Play } from "lucide-react";
 import { useState, useRef } from "react";
+import { StartConversation } from "../../../components/persona/conversation";
 
 export const Route = createFileRoute("/__app/personas/")({
   component: RouteComponent,
@@ -11,11 +12,14 @@ function RouteComponent() {
   const personas = [
     {
       id: 1,
-      title: "Healthcare Assistant",
+      title: "Charlie - Sales Lead",
       description:
-        "Guide patient intake, analyze symptoms, and provide real-time medical documentation support.",
+        "Perfect pitch mode: Charlie analyzes your taste profile to craft personalized sales pitches that resonate with your unique preferences and lifestyle.",
       video: "demo/demo1.mp4#t=12",
-      tag: "HEALTHCARE",
+      tag: "SALES",
+      personaId: "p4fcc991a271",
+      replicaId: "rb17cf590e15",
+      mode: "perfect_pitch" as const,
     },
     {
       id: 2,
@@ -24,6 +28,9 @@ function RouteComponent() {
         "Brainstorm ideas, refine concepts, and bring your creative vision to life with expert guidance.",
       video: "demo/demo2.mp4#t=8",
       tag: "CREATIVE",
+      personaId: "p4fcc991a271", // Placeholder
+      replicaId: "rb17cf590e15", // Placeholder
+      mode: "taste_critic" as const,
     },
     {
       id: 3,
@@ -32,10 +39,12 @@ function RouteComponent() {
         "Develop growth strategies, analyze market trends, and optimize your business operations.",
       video: "demo/demo3.mp4#t=3",
       tag: "BUSINESS",
+      personaId: "p4fcc991a271", // Placeholder
+      replicaId: "rb17cf590e15", // Placeholder
+      mode: "adaptive_conversation" as const,
     },
   ];
 
-  // @ts-ignore
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
@@ -107,14 +116,14 @@ function RouteComponent() {
                     </div>
 
                     {/* Start Conversation Button */}
-                    <Button
-                      className="w-full bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all duration-300 group-hover:scale-105"
-                      size="lg"
-                      radius="md"
-                      startContent={<Play className="w-4 h-4" />}
-                    >
-                      Start Conversation
-                    </Button>
+                    <StartConversation
+                      persona={{
+                        personaId: persona.personaId,
+                        replicaId: persona.replicaId,
+                        mode: persona.mode,
+                        title: persona.title,
+                      }}
+                    />
                   </div>
                 </div>
 

@@ -16,8 +16,12 @@ export const config = {
   database: {
     url: process.env.DATABASE_URL,
   },
-  qloo: {
+  qloo: { 
     apiKey: process.env.QLOO_API_KEY,
     url: process.env.QLOO_URL,
+  },
+  tavus: {
+    apiKey: process.env.TAVUS_API_KEY,
+    url: process.env.TAVUS_URL || "https://tavusapi.com",
   },
 };

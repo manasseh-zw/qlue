@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfilerIndexRouteImport } from './routes/profiler/index'
 import { Route as ChatIndexRouteImport } from './routes/chat/index'
 import { Route as _appPersonasIndexRouteImport } from './routes/__app/personas/index'
+import { Route as _appMeetIndexRouteImport } from './routes/__app/meet/index'
 import { Route as _appMeIndexRouteImport } from './routes/__app/me/index'
 
 const _appRoute = _appRouteImport.update({
@@ -40,6 +41,11 @@ const _appPersonasIndexRoute = _appPersonasIndexRouteImport.update({
   path: '/personas/',
   getParentRoute: () => _appRoute,
 } as any)
+const _appMeetIndexRoute = _appMeetIndexRouteImport.update({
+  id: '/meet/',
+  path: '/meet/',
+  getParentRoute: () => _appRoute,
+} as any)
 const _appMeIndexRoute = _appMeIndexRouteImport.update({
   id: '/me/',
   path: '/me/',
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof ChatIndexRoute
   '/profiler': typeof ProfilerIndexRoute
   '/me': typeof _appMeIndexRoute
+  '/meet': typeof _appMeetIndexRoute
   '/personas': typeof _appPersonasIndexRoute
 }
 export interface FileRoutesByTo {
@@ -58,6 +65,7 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatIndexRoute
   '/profiler': typeof ProfilerIndexRoute
   '/me': typeof _appMeIndexRoute
+  '/meet': typeof _appMeetIndexRoute
   '/personas': typeof _appPersonasIndexRoute
 }
 export interface FileRoutesById {
@@ -67,13 +75,14 @@ export interface FileRoutesById {
   '/chat/': typeof ChatIndexRoute
   '/profiler/': typeof ProfilerIndexRoute
   '/__app/me/': typeof _appMeIndexRoute
+  '/__app/meet/': typeof _appMeetIndexRoute
   '/__app/personas/': typeof _appPersonasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/chat' | '/profiler' | '/me' | '/personas'
+  fullPaths: '/' | '/chat' | '/profiler' | '/me' | '/meet' | '/personas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/chat' | '/profiler' | '/me' | '/personas'
+  to: '/' | '/chat' | '/profiler' | '/me' | '/meet' | '/personas'
   id:
     | '__root__'
     | '/'
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/chat/'
     | '/profiler/'
     | '/__app/me/'
+    | '/__app/meet/'
     | '/__app/personas/'
   fileRoutesById: FileRoutesById
 }
@@ -128,6 +138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof _appPersonasIndexRouteImport
       parentRoute: typeof _appRoute
     }
+    '/__app/meet/': {
+      id: '/__app/meet/'
+      path: '/meet'
+      fullPath: '/meet'
+      preLoaderRoute: typeof _appMeetIndexRouteImport
+      parentRoute: typeof _appRoute
+    }
     '/__app/me/': {
       id: '/__app/me/'
       path: '/me'
@@ -140,11 +157,13 @@ declare module '@tanstack/react-router' {
 
 interface _appRouteChildren {
   _appMeIndexRoute: typeof _appMeIndexRoute
+  _appMeetIndexRoute: typeof _appMeetIndexRoute
   _appPersonasIndexRoute: typeof _appPersonasIndexRoute
 }
 
 const _appRouteChildren: _appRouteChildren = {
   _appMeIndexRoute: _appMeIndexRoute,
+  _appMeetIndexRoute: _appMeetIndexRoute,
   _appPersonasIndexRoute: _appPersonasIndexRoute,
 }
 

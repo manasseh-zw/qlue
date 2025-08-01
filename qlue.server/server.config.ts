@@ -7,7 +7,7 @@ export const config = {
   },
   clientUrl: process.env.CLIENT_URL || "http://localhost:3000",
   auth: {
-    url: "http://localhost:8080",
+    url: process.env.SERVER_URL,
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,

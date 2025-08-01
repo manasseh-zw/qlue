@@ -1,3 +1,4 @@
+import { QlooEntity } from "../../insights/insights.service";
 import { Events } from "../../ws/event";
 
 // Agent processing lifecycle events
@@ -66,22 +67,22 @@ export const AgentUpdates = {
     delayMs: number = 0
   ) => {
     if (delayMs > 0) {
-      await new Promise(resolve => setTimeout(resolve, delayMs));
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
-    
+
     const data: MessageUpdateData = {
       message,
       reasoning,
       stage,
     };
-    
+
     Events.sendToUser(userId, "message", data);
   },
 
   // Send insight updates with streaming delay
   sendInsightUpdate: async (
     userId: string,
-    entity: any,
+    entity: QlooEntity,
     context: {
       stage: string;
       reasoning: string;
@@ -90,9 +91,9 @@ export const AgentUpdates = {
     delayMs: number = 0
   ) => {
     if (delayMs > 0) {
-      await new Promise(resolve => setTimeout(resolve, delayMs));
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
-    
+
     const data: InsightUpdateData = {
       entity: {
         name: entity.name,
@@ -109,7 +110,7 @@ export const AgentUpdates = {
       },
       context,
     };
-    
+
     Events.sendToUser(userId, "insight", data);
   },
 
@@ -126,14 +127,14 @@ export const AgentUpdates = {
     delayMs: number = 0
   ) => {
     if (delayMs > 0) {
-      await new Promise(resolve => setTimeout(resolve, delayMs));
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
-    
+
     const data: TimelineUpdateData = {
       timeline,
       currentStage,
     };
-    
+
     Events.sendToUser(userId, "timeline_update", data);
   },
 
@@ -158,4 +159,3 @@ export const AgentUpdates = {
     }
   },
 };
-  

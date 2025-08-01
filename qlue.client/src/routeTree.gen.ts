@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as _appRouteImport } from './routes/__app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfilerIndexRouteImport } from './routes/profiler/index'
 import { Route as ChatIndexRouteImport } from './routes/chat/index'
-import { Route as AppIndexRouteImport } from './routes/app/index'
+import { Route as _appPersonasIndexRouteImport } from './routes/__app/personas/index'
+import { Route as _appMeIndexRouteImport } from './routes/__app/me/index'
 
+const _appRoute = _appRouteImport.update({
+  id: '/__app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -29,48 +35,71 @@ const ChatIndexRoute = ChatIndexRouteImport.update({
   path: '/chat/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/app/',
-  path: '/app/',
-  getParentRoute: () => rootRouteImport,
+const _appPersonasIndexRoute = _appPersonasIndexRouteImport.update({
+  id: '/personas/',
+  path: '/personas/',
+  getParentRoute: () => _appRoute,
+} as any)
+const _appMeIndexRoute = _appMeIndexRouteImport.update({
+  id: '/me/',
+  path: '/me/',
+  getParentRoute: () => _appRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppIndexRoute
   '/chat': typeof ChatIndexRoute
   '/profiler': typeof ProfilerIndexRoute
+  '/me': typeof _appMeIndexRoute
+  '/personas': typeof _appPersonasIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app': typeof AppIndexRoute
   '/chat': typeof ChatIndexRoute
   '/profiler': typeof ProfilerIndexRoute
+  '/me': typeof _appMeIndexRoute
+  '/personas': typeof _appPersonasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/app/': typeof AppIndexRoute
+  '/__app': typeof _appRouteWithChildren
   '/chat/': typeof ChatIndexRoute
   '/profiler/': typeof ProfilerIndexRoute
+  '/__app/me/': typeof _appMeIndexRoute
+  '/__app/personas/': typeof _appPersonasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/chat' | '/profiler'
+  fullPaths: '/' | '/chat' | '/profiler' | '/me' | '/personas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app' | '/chat' | '/profiler'
-  id: '__root__' | '/' | '/app/' | '/chat/' | '/profiler/'
+  to: '/' | '/chat' | '/profiler' | '/me' | '/personas'
+  id:
+    | '__root__'
+    | '/'
+    | '/__app'
+    | '/chat/'
+    | '/profiler/'
+    | '/__app/me/'
+    | '/__app/personas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppIndexRoute: typeof AppIndexRoute
+  _appRoute: typeof _appRouteWithChildren
   ChatIndexRoute: typeof ChatIndexRoute
   ProfilerIndexRoute: typeof ProfilerIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/__app': {
+      id: '/__app'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof _appRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -92,19 +121,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/': {
-      id: '/app/'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof rootRouteImport
+    '/__app/personas/': {
+      id: '/__app/personas/'
+      path: '/personas'
+      fullPath: '/personas'
+      preLoaderRoute: typeof _appPersonasIndexRouteImport
+      parentRoute: typeof _appRoute
+    }
+    '/__app/me/': {
+      id: '/__app/me/'
+      path: '/me'
+      fullPath: '/me'
+      preLoaderRoute: typeof _appMeIndexRouteImport
+      parentRoute: typeof _appRoute
     }
   }
 }
 
+interface _appRouteChildren {
+  _appMeIndexRoute: typeof _appMeIndexRoute
+  _appPersonasIndexRoute: typeof _appPersonasIndexRoute
+}
+
+const _appRouteChildren: _appRouteChildren = {
+  _appMeIndexRoute: _appMeIndexRoute,
+  _appPersonasIndexRoute: _appPersonasIndexRoute,
+}
+
+const _appRouteWithChildren = _appRoute._addFileChildren(_appRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppIndexRoute: AppIndexRoute,
+  _appRoute: _appRouteWithChildren,
   ChatIndexRoute: ChatIndexRoute,
   ProfilerIndexRoute: ProfilerIndexRoute,
 }

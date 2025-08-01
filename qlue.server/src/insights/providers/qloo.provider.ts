@@ -161,20 +161,43 @@ export class QlooProvider {
       const rawResult = await response.json();
 
       const cleanedResults =
-        rawResult.results?.map((entity: any) => ({
-          name: entity.name,
-          entity_id: entity.entity_id,
-          type: entity.types?.[0] || "urn:entity",
-          popularity: entity.popularity,
-          description: entity.properties?.short_description || "",
-          tags:
+        rawResult.results?.map((entity: any) => {
+          // Find English short description, fallback to first available
+          let shortDescription = "";
+          if (entity.properties?.short_descriptions?.length) {
+            const englishDesc = entity.properties.short_descriptions.find((desc: any) =>
+              desc.languages?.includes("en")
+            );
+            shortDescription =
+              englishDesc?.value ||
+              entity.properties.short_descriptions[0]?.value ||
+              "";
+          } else {
+            shortDescription = entity.properties?.short_description || "";
+          }
+
+          // Extract top 3 tags
+          const tags =
             entity.tags?.slice(0, 3).map((tag: any) => ({
               name: tag.name || "",
               tag_id: tag.tag_id || "",
               value: tag.value || "",
-            })) || [],
-          image: entity.properties?.image?.url || null,
-        })) || [];
+            })) || [];
+
+          return {
+            name: entity.name,
+            entity_id: entity.entity_id,
+            properties: {
+              description: entity.properties?.description || "",
+              short_description: shortDescription,
+              popularity: entity.popularity?.toString() || "0",
+              image: {
+                url: entity.properties?.image?.url || "",
+              },
+            },
+            tags,
+          };
+        }) || [];
 
       return {
         success: true,

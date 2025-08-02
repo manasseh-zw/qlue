@@ -3,6 +3,10 @@
   "installCommand": "npm install",
   "framework": "vite",
   "outputDirectory": "dist",
-  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }]
-  
+  "rewrites": [
+    {
+      "source": "/((?!api/.*).*)",
+      "destination": "/index.html"
+    }
+  ]
 }

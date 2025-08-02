@@ -13,6 +13,8 @@ import { Route as _appRouteImport } from './routes/__app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfilerIndexRouteImport } from './routes/profiler/index'
 import { Route as ChatIndexRouteImport } from './routes/chat/index'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
+import { Route as AuthSigninRouteImport } from './routes/auth/signin'
 import { Route as _appPersonasIndexRouteImport } from './routes/__app/personas/index'
 import { Route as _appMeetIndexRouteImport } from './routes/__app/meet/index'
 import { Route as _appMeIndexRouteImport } from './routes/__app/me/index'
@@ -36,6 +38,16 @@ const ChatIndexRoute = ChatIndexRouteImport.update({
   path: '/chat/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/auth/signup',
+  path: '/auth/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSigninRoute = AuthSigninRouteImport.update({
+  id: '/auth/signin',
+  path: '/auth/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const _appPersonasIndexRoute = _appPersonasIndexRouteImport.update({
   id: '/personas/',
   path: '/personas/',
@@ -54,6 +66,8 @@ const _appMeIndexRoute = _appMeIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth/signin': typeof AuthSigninRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/chat': typeof ChatIndexRoute
   '/profiler': typeof ProfilerIndexRoute
   '/me': typeof _appMeIndexRoute
@@ -62,6 +76,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth/signin': typeof AuthSigninRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/chat': typeof ChatIndexRoute
   '/profiler': typeof ProfilerIndexRoute
   '/me': typeof _appMeIndexRoute
@@ -72,6 +88,8 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/__app': typeof _appRouteWithChildren
+  '/auth/signin': typeof AuthSigninRoute
+  '/auth/signup': typeof AuthSignupRoute
   '/chat/': typeof ChatIndexRoute
   '/profiler/': typeof ProfilerIndexRoute
   '/__app/me/': typeof _appMeIndexRoute
@@ -80,13 +98,31 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/chat' | '/profiler' | '/me' | '/meet' | '/personas'
+  fullPaths:
+    | '/'
+    | '/auth/signin'
+    | '/auth/signup'
+    | '/chat'
+    | '/profiler'
+    | '/me'
+    | '/meet'
+    | '/personas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/chat' | '/profiler' | '/me' | '/meet' | '/personas'
+  to:
+    | '/'
+    | '/auth/signin'
+    | '/auth/signup'
+    | '/chat'
+    | '/profiler'
+    | '/me'
+    | '/meet'
+    | '/personas'
   id:
     | '__root__'
     | '/'
     | '/__app'
+    | '/auth/signin'
+    | '/auth/signup'
     | '/chat/'
     | '/profiler/'
     | '/__app/me/'
@@ -97,6 +133,8 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   _appRoute: typeof _appRouteWithChildren
+  AuthSigninRoute: typeof AuthSigninRoute
+  AuthSignupRoute: typeof AuthSignupRoute
   ChatIndexRoute: typeof ChatIndexRoute
   ProfilerIndexRoute: typeof ProfilerIndexRoute
 }
@@ -129,6 +167,20 @@ declare module '@tanstack/react-router' {
       path: '/chat'
       fullPath: '/chat'
       preLoaderRoute: typeof ChatIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/signin': {
+      id: '/auth/signin'
+      path: '/auth/signin'
+      fullPath: '/auth/signin'
+      preLoaderRoute: typeof AuthSigninRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/__app/personas/': {
@@ -172,6 +224,8 @@ const _appRouteWithChildren = _appRoute._addFileChildren(_appRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   _appRoute: _appRouteWithChildren,
+  AuthSigninRoute: AuthSigninRoute,
+  AuthSignupRoute: AuthSignupRoute,
   ChatIndexRoute: ChatIndexRoute,
   ProfilerIndexRoute: ProfilerIndexRoute,
 }

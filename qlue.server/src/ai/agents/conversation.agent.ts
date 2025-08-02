@@ -2,6 +2,7 @@ import { streamText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { TASTE_DISCOVERY_SYSTEM_PROMPT } from "./prompts";
 import { saveUserInterests } from "./tools/interests.tool";
+import { azure, createAzure } from "@ai-sdk/azure";
 
 export interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -9,7 +10,8 @@ export interface ChatMessage {
 }
 
 export class Assistant {
-  private model = openai("gpt-4.1");
+  azure = createAzure();
+  private model = azure.languageModel("gpt-4.1");
 
   async streamChat(messages: ChatMessage[], userId?: string) {
     const result = streamText({

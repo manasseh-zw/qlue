@@ -3,7 +3,10 @@ import type { User } from "@/lib/types/user";
 import { authActions } from "@/lib/state/auth.state";
 import type { ApiResponse } from "@/lib/utils/api";
 
-export const signInWithEmail = async (email: string, password: string): Promise<ApiResponse<User>> => {
+export const signInWithEmail = async (
+  email: string,
+  password: string
+): Promise<ApiResponse<User>> => {
   try {
     const response = await fetch(`${config.serverUrl}/api/auth/login`, {
       method: "POST",
@@ -24,7 +27,11 @@ export const signInWithEmail = async (email: string, password: string): Promise<
   }
 };
 
-export const signUpWithEmail = async (email: string, password: string, name?: string): Promise<ApiResponse<User>> => {
+export const signUpWithEmail = async (
+  email: string,
+  password: string,
+  name?: string
+): Promise<ApiResponse<User>> => {
   try {
     const response = await fetch(`${config.serverUrl}/api/auth/signup`, {
       method: "POST",
@@ -60,7 +67,10 @@ export const getUser = async (): Promise<User | null> => {
     }
 
     const data = await response.json();
-    return data.user;
+    if (data.success && data.data) {
+      return data.data;
+    }
+    return null;
   } catch (error) {
     console.error("Get user error:", error);
     return null;

@@ -3,17 +3,17 @@ import { Markdown } from "@/components/chat/markdown";
 import { Thinking } from "@/components/chat/thinking";
 import { useChat } from "@ai-sdk/react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Avatar as UserAvatar } from "@heroui/react";
 import { useEffect, useRef, useState } from "react";
 import { config } from "../../../client.config";
 import Logo from "@/components/logo";
 import { useStore } from "@tanstack/react-store";
 import { authState } from "@/lib/state/auth.state";
-import { protectedLoader } from "@/lib/loaders/auth.loaders";
+import { authenticatedOnlyLoader } from "@/lib/loaders/auth.loaders";
+import Avatar from "boring-avatars";
 
 export const Route = createFileRoute("/chat/")({
   component: RouteComponent,
-  loader: protectedLoader,
+  loader: authenticatedOnlyLoader,
 });
 
 function RouteComponent() {
@@ -30,6 +30,12 @@ function RouteComponent() {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
+    },
+    onError: (error) => {
+      console.error("Chat error:", error);
+    },
+    onFinish: (message) => {
+      console.log("Chat finished:", message);
     },
   });
 
@@ -122,7 +128,11 @@ function RouteComponent() {
                   </div>
                 ) : (
                   <div className="p-1 rounded-full">
-                    <UserAvatar name={user?.name || "You"} src={user?.image} />
+                    <Avatar
+                      name="Mary Edwards"
+                      colors={["#ff0000", "#0000ff"]}
+                      variant="beam"
+                    />
                   </div>
                 )}
               </div>
@@ -134,7 +144,7 @@ function RouteComponent() {
                 <div
                   className={
                     message.role === "user"
-                      ? "rounded-2xl bg-content2 p-3 max-w-[85%] break-words"
+                      ? "rounded-2xl bg-content3 p-3 max-w-[85%] break-words"
                       : "text-base max-w-[90%]"
                   }
                 >

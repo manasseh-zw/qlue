@@ -14,7 +14,7 @@
         "@tanstack/react-store": "^0.7.3",
         "@tanstack/router-plugin": "^1.121.2",
         "@tavus/cvi-ui": "^0.0.1-beta.5",
-        "boring-avatars": "^1.11.2",
+        "boring-avatars": "^2.0.1",
         "framer-motion": "^12.23.6",
         "jotai": "^2.12.5",
         "lucide-react": "^0.525.0",
@@ -744,7 +744,7 @@
 
     "binary-extensions": ["binary-extensions@2.3.0", "", {}, "sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw=="],
 
-    "boring-avatars": ["boring-avatars@1.11.2", "", {}, "sha512-3+wkwPeObwS4R37FGXMYViqc4iTrIRj5yzfX9Qy4mnpZ26sX41dGMhsAgmKks1r/uufY1pl4vpgzMWHYfJRb2A=="],
+    "boring-avatars": ["boring-avatars@2.0.1", "", { "peerDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0" } }, "sha512-TeBnZrp7WxHcQPuLhGQamklgNqaL7eUAUh3E11kFj9rTn0Hari2ZKVTchqNrp62UOHN/XOe5bZGcbzVGwHjHwg=="],
 
     "bowser": ["bowser@2.11.0", "", {}, "sha512-AlcaJBi/pqqJBIQ8U9Mcpc9i8Aqxn88Skv5d+xBX006BY5u8N3mGLHa5Lgppa7L/HfwgwLgZ6NYs+Ag6uUmJRA=="],
 

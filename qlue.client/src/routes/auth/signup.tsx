@@ -3,11 +3,15 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Button, Input, Alert } from "@heroui/react";
 import { Eye, EyeClosed } from "lucide-react";
 import { authState } from "@/lib/state/auth.state";
+import { signUpWithEmail } from "@/lib/services/auth.service";
 import type { User } from "@/lib/types/user";
 import type { ApiResponse } from "@/lib/utils/api";
+import Logo from "../../components/logo";
+import { unauthenticatedOnlyLoader } from "@/lib/loaders/auth.loaders";
 
 export const Route = createFileRoute("/auth/signup")({
   component: SignUp,
+  loader: unauthenticatedOnlyLoader,
 });
 
 function SignUp() {
@@ -27,16 +31,11 @@ function SignUp() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(formData),
-      });
-
-      const data: ApiResponse<User> = await response.json();
+      const data: ApiResponse<User> = await signUpWithEmail(
+        formData.email,
+        formData.password,
+        formData.name
+      );
 
       if (data.success) {
         authState.setState(() => ({
@@ -63,7 +62,7 @@ function SignUp() {
     <div className="flex h-[100dvh] w-full items-center justify-center bg-content1">
       <div className="flex w-full max-w-xs flex-col gap-4 rounded-large mb-5 px-4 md:px-2">
         <div className="flex flex-col items-center pb-3 gap-3">
-          <h1 className="text-2xl font-bold">Sign Up</h1>
+          <Logo width={40} height={40} />
           <p className="text-small text-secondary-700">Create your account</p>
         </div>
 
@@ -84,6 +83,10 @@ function SignUp() {
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <Input
             isRequired
+            classNames={{
+              input:
+                "focus:outline-none border-transparent focus:border-transparent focus:ring-0",
+            }}
             label="Name"
             type="text"
             variant="flat"
@@ -95,6 +98,10 @@ function SignUp() {
 
           <Input
             isRequired
+            classNames={{
+              input:
+                "focus:outline-none border-transparent focus:border-transparent focus:ring-0",
+            }}
             label="Email"
             type="email"
             variant="flat"
@@ -106,6 +113,10 @@ function SignUp() {
 
           <Input
             isRequired
+            classNames={{
+              input:
+                "focus:outline-none border-transparent focus:border-transparent focus:ring-0",
+            }}
             endContent={
               <button
                 type="button"

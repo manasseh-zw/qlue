@@ -21,7 +21,7 @@
     "@tanstack/react-store": "^0.7.3",
     "@tanstack/router-plugin": "^1.121.2",
     "@tavus/cvi-ui": "^0.0.1-beta.5",
-    "boring-avatars": "^1.11.2",
+    "boring-avatars": "^2.0.1",
     "framer-motion": "^12.23.6",
     "jotai": "^2.12.5",
     "lucide-react": "^0.525.0",

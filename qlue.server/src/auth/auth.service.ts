@@ -1,48 +1,22 @@
 import { prisma } from "../db/db";
 import { v4 as uuidv4 } from "uuid";
 import { config } from "../../server.config";
+import { authResponse, loginRequest, signupRequest } from "./types";
 
-
-export const hashPassword = async (password: string): Promise<string> => {
-  return Bun.password.hash(password);
-};
-
-export const comparePassword = async (password: string, hashedPassword: string): Promise<boolean> => {
-  return Bun.password.verify(password, hashedPassword);
-};
-
-export interface SignupData {
-  email: string;
-  password: string;
-  name?: string;
-}
-
-export interface LoginData {
-  email: string;
-  password: string;
-}
-
-export interface AuthResult {
-  user: any;
-  sessionToken: string;
-}
-
-export const signup = async (data: SignupData): Promise<AuthResult> => {
+export const signup = async (data: signupRequest): Promise<authResponse> => {
   const { email, password, name } = data;
 
-  // Check if user already exists
   const existingUser = await prisma.user.findUnique({
     where: { email },
   });
 
-  if (existingUser) {
-    throw new Error("User with this email already exists");
-  }
+  if (existingUser) throw new Error("User with this email already exists");
 
-  // Hash password
-  const hashedPassword = await hashPassword(password);
+  if (password.length < 8)
+    throw new Error("Password must be at least 8 characters long");
 
-  // Create new user
+  const hashedPassword = await Bun.password.hash(password);
+
   const user = await prisma.user.create({
     data: {
       email,
@@ -50,37 +24,34 @@ export const signup = async (data: SignupData): Promise<AuthResult> => {
       name,
       onboarding: "SIGNUP",
     },
-    include: { tasteProfile: true },
+    include: { tasteProfile: false },
   });
 
-  // Create session
   const sessionToken = await createSession(user.id);
 
   return { user, sessionToken };
 };
 
-export const login = async (data: LoginData): Promise<AuthResult> => {
+export const login = async (data: loginRequest): Promise<authResponse> => {
   const { email, password } = data;
 
-  // Find user by email
   const user = await prisma.user.findUnique({
     where: { email },
-    include: { tasteProfile: true },
+    include: { tasteProfile: false },
   });
 
   if (!user) {
     throw new Error("Invalid email or password");
   }
-
   // Check if user has password (not Google-only user)
   if (!user.password) {
-    throw new Error("This account was created with Google. Please use Google sign-in.");
+    throw new Error("Invalid email or password");
   }
 
   // Verify password
-  const isPasswordValid = await comparePassword(password, user.password);
+  const isPasswordValid = await Bun.password.verify(password, user.password);
   if (!isPasswordValid) {
-    throw new Error("Invalid email or password");
+    throw new Error("Invalid Credentials");
   }
 
   // Create session
@@ -113,7 +84,7 @@ export const getUserFromSession = async (sessionToken: string) => {
     where: { token: sessionToken },
     include: {
       user: {
-        include: { tasteProfile: true },
+        include: { tasteProfile: false },
       },
     },
   });
@@ -131,12 +102,11 @@ export const deleteSession = async (sessionToken: string): Promise<void> => {
   });
 };
 
-
 export const updateUser = async (userId: string, updateData: any) => {
   const updatedUser = await prisma.user.update({
     where: { id: userId },
     data: updateData,
-    include: { tasteProfile: true },
+    include: { tasteProfile: false },
   });
 
   return updatedUser;

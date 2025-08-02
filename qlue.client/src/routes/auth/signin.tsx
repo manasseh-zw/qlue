@@ -3,11 +3,15 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Button, Input, Alert } from "@heroui/react";
 import { Eye, EyeClosed } from "lucide-react";
 import { authState } from "@/lib/state/auth.state";
+import { signInWithEmail } from "@/lib/services/auth.service";
 import type { User } from "@/lib/types/user";
 import type { ApiResponse } from "@/lib/utils/api";
+import Logo from "../../components/logo";
+import { unauthenticatedOnlyLoader } from "@/lib/loaders/auth.loaders";
 
 export const Route = createFileRoute("/auth/signin")({
   component: SignIn,
+  loader: unauthenticatedOnlyLoader,
 });
 
 function SignIn() {
@@ -26,16 +30,10 @@ function SignIn() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(formData),
-      });
-
-      const data: ApiResponse<User> = await response.json();
+      const data: ApiResponse<User> = await signInWithEmail(
+        formData.email,
+        formData.password
+      );
 
       if (data.success) {
         authState.setState(() => ({
@@ -62,7 +60,7 @@ function SignIn() {
     <div className="flex h-[100dvh] w-full items-center justify-center bg-content1">
       <div className="flex w-full max-w-xs flex-col gap-4 rounded-large mb-5 px-4 md:px-2">
         <div className="flex flex-col items-center pb-3 gap-3">
-          <h1 className="text-2xl font-bold">Sign In</h1>
+          <Logo width={40} height={40} />
           <p className="text-small text-secondary-700">
             Sign in to your account
           </p>
@@ -89,6 +87,10 @@ function SignIn() {
             type="email"
             variant="flat"
             size="sm"
+            classNames={{
+              input:
+                "focus:outline-none border-transparent focus:border-transparent focus:ring-0",
+            }}
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             isDisabled={isLoading}
@@ -96,6 +98,10 @@ function SignIn() {
 
           <Input
             isRequired
+            classNames={{
+              input:
+                "focus:outline-none border-transparent focus:border-transparent focus:ring-0",
+            }}
             endContent={
               <button
                 type="button"

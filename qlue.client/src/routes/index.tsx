@@ -4,7 +4,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useStore } from "@tanstack/react-store";
 import { authState } from "@/lib/state/auth.state";
-import { signInWithGoogle } from "@/lib/services/auth.service";
 import { publicOnlyLoader } from "@/lib/loaders/auth.loaders";
 
 export const Route = createFileRoute("/")({
@@ -15,21 +14,30 @@ export const Route = createFileRoute("/")({
 function App() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const { isAuthenticated } = useStore(authState);
+  const { isAuthenticated, user } = useStore(authState);
 
   const handleGetStarted = async () => {
     if (isAuthenticated) {
+      // The loader will handle redirects automatically
       navigate({ to: "/chat" });
       return;
     }
 
-    setIsLoading(true);
+    // If not authenticated, redirect to sign in
+    navigate({ to: "/auth/signin" });
+  };
 
-    try {
-      await signInWithGoogle();
-    } catch (error) {
-      console.error("Authentication failed:", error);
-      setIsLoading(false);
+  const getButtonText = () => {
+    if (!isAuthenticated) {
+      return "Get Started";
+    }
+
+    if (user?.onboarding === "SIGNUP") {
+      return "Continue to Chat";
+    } else if (user?.onboarding === "COMPLETE") {
+      return "Continue to App";
+    } else {
+      return "Continue to Chat";
     }
   };
 
@@ -105,9 +113,7 @@ function App() {
                 onPress={handleGetStarted}
                 isLoading={isLoading}
               >
-                {isAuthenticated
-                  ? "Continue to Chat"
-                  : "Get Started with Google"}
+                {getButtonText()}
               </Button>
             </div>
           </div>

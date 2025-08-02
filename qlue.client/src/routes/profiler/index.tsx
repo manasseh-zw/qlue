@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { authState } from "@/lib/state/auth.state";
-import { protectedLoader } from "@/lib/loaders/auth.loaders";
+import { authenticatedOnlyLoader } from "@/lib/loaders/auth.loaders";
 import AgentFeed from "@/components/chat/feed/agent-feed";
 import { useEffect, useState } from "react";
 import { config } from "../../../client.config";
@@ -9,7 +9,7 @@ import type { TimelineItem } from "../../components/chat/feed/types";
 
 export const Route = createFileRoute("/profiler/")({
   component: RouteComponent,
-  loader: protectedLoader,
+  loader: authenticatedOnlyLoader,
 });
 
 interface InsightData {
@@ -244,8 +244,7 @@ function RouteComponent() {
     timeline,
     feedItems,
     onContinue: () => {
-      // Navigate to the app page when user clicks continue
-      window.location.href = "/app";
+      window.location.href = "/me";
     },
   };
 

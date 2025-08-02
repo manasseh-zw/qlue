@@ -13,9 +13,10 @@ datasource db {
 model User {
   id       String  @id @default(cuid())
   email    String  @unique
+  password String? // Added for email/password auth
   name     String?
   image    String?
-  googleId String  @unique // Google user ID
+  googleId String? @unique // Made optional since we're removing Google Auth
 
   // Custom fields for our app
   age            Int?

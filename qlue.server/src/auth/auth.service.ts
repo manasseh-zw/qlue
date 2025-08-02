@@ -1,19 +1,25 @@
-import { OAuth2Client } from "google-auth-library";
 import { prisma } from "../db/db";
 import { v4 as uuidv4 } from "uuid";
 import { config } from "../../server.config";
 
-const googleClient = new OAuth2Client(
-  config.auth.google.clientId,
-  config.auth.google.clientSecret,
-  `${config.auth.url}/api/auth/google/callback`
-);
 
-export interface GoogleUserInfo {
-  sub: string; // Google ID
+export const hashPassword = async (password: string): Promise<string> => {
+  return Bun.password.hash(password);
+};
+
+export const comparePassword = async (password: string, hashedPassword: string): Promise<boolean> => {
+  return Bun.password.verify(password, hashedPassword);
+};
+
+export interface SignupData {
   email: string;
-  name: string;
-  picture: string;
+  password: string;
+  name?: string;
+}
+
+export interface LoginData {
+  email: string;
+  password: string;
 }
 
 export interface AuthResult {
@@ -21,143 +27,117 @@ export interface AuthResult {
   sessionToken: string;
 }
 
-// Generate Google OAuth URL
-export const getGoogleAuthUrl = (): string => {
-  const authUrl = googleClient.generateAuthUrl({
-    access_type: "offline",
-    scope: ["profile", "email"],
-    prompt: "consent",
+export const signup = async (data: SignupData): Promise<AuthResult> => {
+  const { email, password, name } = data;
+
+  // Check if user already exists
+  const existingUser = await prisma.user.findUnique({
+    where: { email },
   });
-  return authUrl;
+
+  if (existingUser) {
+    throw new Error("User with this email already exists");
+  }
+
+  // Hash password
+  const hashedPassword = await hashPassword(password);
+
+  // Create new user
+  const user = await prisma.user.create({
+    data: {
+      email,
+      password: hashedPassword,
+      name,
+      onboarding: "SIGNUP",
+    },
+    include: { tasteProfile: true },
+  });
+
+  // Create session
+  const sessionToken = await createSession(user.id);
+
+  return { user, sessionToken };
 };
 
-// Exchange authorization code for user info
-export const handleGoogleCallback = async (
-  code: string
-): Promise<AuthResult> => {
-  try {
-    // Get tokens from Google
-    const { tokens } = await googleClient.getToken(code);
-    googleClient.setCredentials(tokens);
+export const login = async (data: LoginData): Promise<AuthResult> => {
+  const { email, password } = data;
 
-    // Get user info from Google
-    const ticket = await googleClient.verifyIdToken({
-      idToken: tokens.id_token!,
-      audience: config.auth.google.clientId,
-    });
+  // Find user by email
+  const user = await prisma.user.findUnique({
+    where: { email },
+    include: { tasteProfile: true },
+  });
 
-    const payload = ticket.getPayload();
-    if (!payload) {
-      throw new Error("No payload from Google");
-    }
-
-    const googleUserInfo: GoogleUserInfo = {
-      sub: payload.sub,
-      email: payload.email!,
-      name: payload.name!,
-      picture: payload.picture!,
-    };
-
-    // Find or create user in our database
-    let user = await prisma.user.findUnique({
-      where: { googleId: googleUserInfo.sub },
-      include: { tasteProfile: true },
-    });
-
-    if (!user) {
-      // Create new user
-      user = await prisma.user.create({
-        data: {
-          googleId: googleUserInfo.sub,
-          email: googleUserInfo.email,
-          name: googleUserInfo.name,
-          image: googleUserInfo.picture,
-          onboarding: "SIGNUP",
-        },
-        include: { tasteProfile: true },
-      });
-    } else {
-      // Update existing user info
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          name: googleUserInfo.name,
-          image: googleUserInfo.picture,
-        },
-        include: { tasteProfile: true },
-      });
-    }
-
-    // Create session
-    const sessionToken = await createSession(user.id);
-
-    return { user, sessionToken };
-  } catch (error) {
-    console.error("Google OAuth error:", error);
-    throw new Error("Authentication failed");
+  if (!user) {
+    throw new Error("Invalid email or password");
   }
+
+  // Check if user has password (not Google-only user)
+  if (!user.password) {
+    throw new Error("This account was created with Google. Please use Google sign-in.");
+  }
+
+  // Verify password
+  const isPasswordValid = await comparePassword(password, user.password);
+  if (!isPasswordValid) {
+    throw new Error("Invalid email or password");
+  }
+
+  // Create session
+  const sessionToken = await createSession(user.id);
+
+  return { user, sessionToken };
 };
 
 // Create session for user
 export const createSession = async (userId: string): Promise<string> => {
-  const token = uuidv4();
+  const sessionToken = uuidv4();
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
   await prisma.session.create({
     data: {
-      token,
       userId,
+      token: sessionToken,
       expiresAt,
     },
   });
 
-  return token;
+  return sessionToken;
 };
 
 // Get user from session token
-export const getUserFromSession = async (
-  token: string
-): Promise<any | null> => {
-  if (!token) return null;
+export const getUserFromSession = async (sessionToken: string) => {
+  if (!sessionToken) return null;
 
   const session = await prisma.session.findUnique({
-    where: { token },
+    where: { token: sessionToken },
     include: {
       user: {
-        include: {
-          tasteProfile: true,
-        },
+        include: { tasteProfile: true },
       },
     },
   });
 
   if (!session || session.expiresAt < new Date()) {
-    // Clean up expired session
-    if (session) {
-      await prisma.session.delete({ where: { id: session.id } });
-    }
     return null;
   }
 
   return session.user;
 };
 
-// Delete session (logout)
-export const deleteSession = async (token: string): Promise<void> => {
-  await prisma.session
-    .delete({
-      where: { token },
-    })
-    .catch(() => {
-      // Ignore if session doesn't exist
-    });
+export const deleteSession = async (sessionToken: string): Promise<void> => {
+  await prisma.session.deleteMany({
+    where: { token: sessionToken },
+  });
 };
 
-// Update user data
-export const updateUser = async (userId: string, data: any) => {
-  return await prisma.user.update({
+
+export const updateUser = async (userId: string, updateData: any) => {
+  const updatedUser = await prisma.user.update({
     where: { id: userId },
-    data,
+    data: updateData,
     include: { tasteProfile: true },
   });
+
+  return updatedUser;
 };

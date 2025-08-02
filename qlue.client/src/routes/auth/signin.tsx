@@ -40,6 +40,8 @@ function SignIn() {
           user: data.data,
           isAuthenticated: true,
           isLoading: false,
+          tasteProfile: null,
+          tasteProfileLoading: false,
         }));
         router.navigate({ to: "/chat", replace: true });
       } else {

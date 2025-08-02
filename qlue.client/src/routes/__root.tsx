@@ -16,12 +16,16 @@ export const Route = createRootRoute({
             user,
             isAuthenticated: true,
             isLoading: false,
+            tasteProfile: null,
+            tasteProfileLoading: false,
           }));
         } else {
           authState.setState(() => ({
             user: null,
             isAuthenticated: false,
             isLoading: false,
+            tasteProfile: null,
+            tasteProfileLoading: false,
           }));
         }
       } catch (error) {
@@ -30,6 +34,8 @@ export const Route = createRootRoute({
           user: null,
           isAuthenticated: false,
           isLoading: false,
+          tasteProfile: null,
+          tasteProfileLoading: false,
         }));
       }
     }

@@ -26,7 +26,7 @@ function RouteComponent() {
       title: "Perfect Date",
       description:
         "Reeva is a warm, flirty, and witty AI companion designed to simulate an engaging and romantic dinner date. She builds connection through playful banter, sincere compliments, and shared interests.",
-      video: "demo/demo2.mp4#t=8",
+      video: "demo/date.mp4#t=8",
       tag: "DATING",
       personaId: "p993c6e0119c",
       replicaId: "r9d30b0e55ac",
@@ -37,7 +37,7 @@ function RouteComponent() {
       title: "Roast Me",
       description:
         "Jack is a brutally honest, sarcastic best friend who uses sharp humor and casual AAVE slang to mercilessly roast your taste in media. Like two close friends clowning on each other.",
-      video: "demo/demo3.mp4#t=3",
+      video: "demo/roast.mp4#t=3",
       tag: "COMEDY",
       personaId: "p68091165734",
       replicaId: "r93183fb36c0",

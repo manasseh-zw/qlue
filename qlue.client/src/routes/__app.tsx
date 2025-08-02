@@ -9,9 +9,9 @@ export const Route = createFileRoute("/__app")({
 
 function RouteComponent() {
   return (
-    <main className="h-screen w-full overflow-hidden flex flex-row bg-primary">
+    <main className="h-screen w-full overflow-hidden flex flex-row bg-[#18181A]">
       <AppSidebar />
-      <div className="flex-1 overflow-y-auto rounded-2xl shadow-sm bg-content1 border-1 border-content3 m-1">
+      <div className="flex-1 overflow-y-auto rounded-2xl shadow-sm border-content3 m-1">
         <Outlet />
       </div>
     </main>

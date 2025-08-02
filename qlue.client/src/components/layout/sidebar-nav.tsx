@@ -14,7 +14,7 @@ export const sidebarItems: SidebarItem[] = [
   {
     key: "me",
     href: "/me",
-    iconName: "user-circle",
+    iconName: "circle-user",
     title: "Profile",
   },
   {

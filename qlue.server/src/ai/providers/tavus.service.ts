@@ -37,9 +37,9 @@ export class TavusService {
       conversational_context: conversationalContext,
       custom_greeting: customGreeting,
       properties: {
-        max_call_duration: 1800,
-        participant_left_timeout: 60,
-        participant_absent_timeout: 300,
+        max_call_duration: 300,
+        participant_left_timeout: 20,
+        participant_absent_timeout: 30,
         enable_closed_captions: true,
         language: "English",
       },

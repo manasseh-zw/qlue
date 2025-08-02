@@ -18,8 +18,12 @@ function App() {
 
   const handleGetStarted = async () => {
     if (isAuthenticated) {
-      // The loader will handle redirects automatically
-      navigate({ to: "/chat" });
+      // Check user onboarding status for proper redirect
+      if (user?.onboarding === "COMPLETE") {
+        navigate({ to: "/me" });
+      } else {
+        navigate({ to: "/chat" });
+      }
       return;
     }
 

@@ -1,20 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Card,
   CardBody,
   CardHeader,
-  Chip,
-  Image,
   Tabs,
   Tab,
   Avatar,
-  Button,
-  Spinner,
 } from "@heroui/react";
 import { getTasteProfile } from "@/lib/services/ai.service";
 import { Markdown } from "@/components/chat/markdown";
-import { User, Music, Film, Heart, TrendingUp, Users } from "lucide-react";
+import { Music, Film, TrendingUp, Users } from "lucide-react";
+import { EntityCard } from "../../../components/persona/entity-card";
+import { authState, authActions } from "../../../lib/state/auth.state";
 
 interface TasteProfileResult {
   primaryEntities: any[];
@@ -25,79 +23,34 @@ interface TasteProfileResult {
 
 export const Route = createFileRoute("/__app/me/")({
   component: RouteComponent,
+  loader: async () => {
+    // Check if we have cached taste profile in auth state
+    const currentState = authState.state;
+
+    if (currentState.tasteProfile) {
+      // Return cached data
+      return { tasteProfile: currentState.tasteProfile };
+    }
+
+    // If not cached, fetch from API
+    try {
+      authActions.setTasteProfileLoading(true);
+      const data = await getTasteProfile();
+      authActions.setTasteProfile(data);
+      return { tasteProfile: data };
+    } catch (error) {
+      authActions.setTasteProfileLoading(false);
+      throw new Error(
+        error instanceof Error ? error.message : "Failed to load profile"
+      );
+    }
+  },
 });
 
 function RouteComponent() {
   const [selected, setSelected] = useState("profile");
-  const [profileData, setProfileData] = useState<TasteProfileResult | null>(
-    null
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { tasteProfile } = Route.useLoaderData();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-        const data = await getTasteProfile();
-        setProfileData(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load profile");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  const EntityCard = ({ entity }: { entity: any; type?: string }) => {
-    // Debug logging console.log("Entity data:", entity);
-    // Add null checks and fallbacks
-    if (!entity || !entity.properties) {
-      console.warn("Invalid entity structure:", entity);
-      return (
-        <Card className="w-full min-w-[180px] max-w-[220px] border border-gray-100">
-          <CardBody className="p-3">
-            <h4 className="font-medium text-sm truncate">Invalid Entity</h4>
-            <p className="text-xs text-gray-500 mt-1">Data structure error</p>
-          </CardBody>
-        </Card>
-      );
-    }
-    return (
-      <Card className="w-full min-w-[180px] max-w-[220px] hover:scale-105 transition-transform duration-200 cursor-pointer border border-gray-100">
-        <CardBody className="p-0">
-          <Image
-            alt={entity.name || "Unknown"}
-            // The class below is the only change needed
-            className="w-full h-full object-cover"
-            src={
-              entity.properties.image?.url ||
-              "https://via.placeholder.com/200x200?text=No+Image"
-            }
-            fallbackSrc="https://via.placeholder.com/200x200?text=No+Image"
-          />
-          <div className="p-3">
-            <h4 className="font-medium text-sm truncate">
-              {entity.name || "Unknown"}
-            </h4>
-            <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-              {entity.properties.short_description ||
-                "No description available"}
-            </p>
-            <div className="flex flex-wrap gap-1 mt-2">
-              {entity.tags?.slice(0, 2).map((tag: any, index: number) => (
-                <Chip key={index} size="sm" variant="flat" className="text-xs">
-                  {tag.name}
-                </Chip>
-              ))}
-            </div>
-          </div>
-        </CardBody>
-      </Card>
-    );
-  };
   const DomainSection = ({
     title,
     entities,
@@ -160,29 +113,7 @@ function RouteComponent() {
     </Card>
   );
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Spinner size="lg" />
-          <p className="mt-4 text-gray-600">Loading your taste profile...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <Button onClick={() => window.location.reload()}>Try Again</Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!profileData) {
+  if (!tasteProfile) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -193,7 +124,7 @@ function RouteComponent() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen w-full bg-gray-50">
       {/* Tabs */}
       <div className="bg-white pt-6 sm:px-6">
         <Tabs
@@ -211,13 +142,13 @@ function RouteComponent() {
         {selected === "profile" ? (
           <div className="space-y-8">
             {/* Domain Expansions */}
-            {Object.entries(profileData.domainExpansions).map(
+            {Object.entries(tasteProfile.domainExpansions).map(
               ([domain, entities]) => (
                 <DomainSection
                   key={domain}
                   title={`More ${domain} you might like`}
                   subtitle={`Based on your ${domain} preferences`}
-                  entities={entities}
+                  entities={entities as any[]}
                   icon={
                     domain === "artist"
                       ? Music
@@ -230,7 +161,7 @@ function RouteComponent() {
             )}
 
             {/* Cross-Domain Insights */}
-            {profileData.crossDomainInsights.length > 0 && (
+            {tasteProfile.crossDomainInsights.length > 0 && (
               <div className="mb-8">
                 <div className="flex items-center gap-2 mb-4">
                   <TrendingUp className="w-5 h-5 text-gray-600" />
@@ -241,9 +172,11 @@ function RouteComponent() {
                 <p className="text-sm text-gray-500 mb-6">
                   Interesting connections between your different interests
                 </p>
-                {profileData.crossDomainInsights.map((insight, index) => (
-                  <CrossDomainInsight key={index} insight={insight} />
-                ))}
+                {tasteProfile.crossDomainInsights.map(
+                  (insight: any, index: number) => (
+                    <CrossDomainInsight key={index} insight={insight} />
+                  )
+                )}
               </div>
             )}
           </div>
@@ -253,7 +186,7 @@ function RouteComponent() {
             <Card className="border border-gray-100">
               <CardBody className="p-10">
                 <div className="prose prose-sm max-w-none">
-                  <Markdown>{profileData.finalAnalysis}</Markdown>
+                  <Markdown>{tasteProfile.finalAnalysis}</Markdown>
                 </div>
               </CardBody>
             </Card>

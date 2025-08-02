@@ -1,4 +1,4 @@
-import { Avatar, Button, cn, Spacer, Tooltip } from "@heroui/react";
+import { Button, cn, Spacer, Tooltip } from "@heroui/react";
 import React from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { ChevronLeft, ChevronRight, LogOut, SidebarIcon } from "lucide-react";
@@ -6,6 +6,7 @@ import SidebarNav from "./sidebar-nav";
 import SidebarDrawer from "./sidebar-drawer";
 import { authState } from "@/lib/state/auth.state";
 import Logo from "../logo";
+import Avatar from "boring-avatars";
 
 const SIDEBAR_COLLAPSED_KEY = "jude-sidebar-collapsed";
 
@@ -78,13 +79,10 @@ export default function AppSidebar() {
       <Spacer y={6} />
       <div className="flex items-center gap-3 px-3 text-gray-100">
         <Avatar
-          size="md"
-          classNames={{
-            base: "text-gray-100",
-            name: "text-gray-50",
-          }}
-          name={user?.name}
-          src={user?.image}
+          name={user?.name ?? "you"}
+          size={36}
+          variant="beam"
+          colors={["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"]}
         />
         <div
           className={cn("flex max-w-full flex-col overflow-hidden", {

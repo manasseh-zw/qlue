@@ -1,6 +1,5 @@
 import { Github, LogOut } from "lucide-react";
 import {
-  Avatar,
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
@@ -11,7 +10,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
 import { authState } from "@/lib/state/auth.state";
 import { signOut } from "@/lib/services/auth.service";
-
+import Avatar from "boring-avatars";
 export default function Header() {
   const { user, isAuthenticated } = useStore(authState);
   const navigate = useNavigate();
@@ -49,11 +48,10 @@ export default function Header() {
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
               <Avatar
-                as="button"
-                className="transition-transform hover:scale-105"
-                src={user.image}
-                name={user.name}
-                size="md"
+                name={user.name ?? "you"}
+                size={40}
+                variant="beam"
+                colors={["#92A1C6", "#146A7C", "#F0AB3D", "#C271B4", "#C20D90"]}
               />
             </DropdownTrigger>
             <DropdownMenu aria-label="User menu" variant="flat">

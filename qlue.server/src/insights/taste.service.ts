@@ -18,9 +18,6 @@ export class TasteProfileService {
         return null;
       }
 
-      console.log("Raw taste profile data:", user.tasteProfile.data);
-      console.log("Type of data:", typeof user.tasteProfile.data);
-
       // Parse the JSON string from the database
       let tasteProfileData: any;
       if (typeof user.tasteProfile.data === "string") {
@@ -29,25 +26,12 @@ export class TasteProfileService {
         tasteProfileData = user.tasteProfile.data;
       }
 
-      console.log("Parsed taste profile data:", tasteProfileData);
-      console.log("Primary entities:", tasteProfileData.primaryEntities);
-      console.log(
-        "First primary entity:",
-        tasteProfileData.primaryEntities?.[0]
-      );
-
       const tasteProfileResult: TasteProfileResult = {
         primaryEntities: tasteProfileData.primaryEntities || [],
         domainExpansions: tasteProfileData.domainExpansions || {},
         crossDomainInsights: tasteProfileData.crossDomainInsights || [],
         finalAnalysis: tasteProfileData.finalAnalysis || "",
       };
-
-      console.log("Final taste profile result:", tasteProfileResult);
-      console.log(
-        "First primary entity in result:",
-        tasteProfileResult.primaryEntities[0]
-      );
 
       return tasteProfileResult;
     } catch (error) {

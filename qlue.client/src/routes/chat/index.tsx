@@ -129,9 +129,16 @@ function RouteComponent() {
                 ) : (
                   <div className="p-1 rounded-full">
                     <Avatar
-                      name="Mary Edwards"
-                      colors={["#ff0000", "#0000ff"]}
+                      name={user?.name ?? "you"}
+                      size={38}
                       variant="beam"
+                      colors={[
+                        "#92A1C6",
+                        "#146A7C",
+                        "#F0AB3D",
+                        "#C271B4",
+                        "#C20D90",
+                      ]}
                     />
                   </div>
                 )}

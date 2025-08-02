@@ -12,9 +12,9 @@ function RouteComponent() {
   const personas = [
     {
       id: 1,
-      title: "Charlie - Sales Lead",
+      title: "Perfect Pitch",
       description:
-        "Perfect pitch mode: Charlie analyzes your taste profile to craft personalized sales pitches that resonate with your unique preferences and lifestyle.",
+        "Charlie analyzes your taste profile to craft personalized sales pitches that resonate with your unique preferences and lifestyle.",
       video: "demo/demo1.mp4#t=12",
       tag: "SALES",
       personaId: "p4fcc991a271",
@@ -23,25 +23,25 @@ function RouteComponent() {
     },
     {
       id: 2,
-      title: "Creative Director",
+      title: "Perfect Date",
       description:
-        "Brainstorm ideas, refine concepts, and bring your creative vision to life with expert guidance.",
+        "Reeva is a warm, flirty, and witty AI companion designed to simulate an engaging and romantic dinner date. She builds connection through playful banter, sincere compliments, and shared interests.",
       video: "demo/demo2.mp4#t=8",
-      tag: "CREATIVE",
-      personaId: "p4fcc991a271", // Placeholder
-      replicaId: "rb17cf590e15", // Placeholder
-      mode: "taste_critic" as const,
+      tag: "DATING",
+      personaId: "p993c6e0119c",
+      replicaId: "r9d30b0e55ac",
+      mode: "adaptive_conversation" as const,
     },
     {
       id: 3,
-      title: "Business Strategist",
+      title: "Roast Me",
       description:
-        "Develop growth strategies, analyze market trends, and optimize your business operations.",
+        "Jack is a brutally honest, sarcastic best friend who uses sharp humor and casual AAVE slang to mercilessly roast your taste in media. Like two close friends clowning on each other.",
       video: "demo/demo3.mp4#t=3",
-      tag: "BUSINESS",
-      personaId: "p4fcc991a271", // Placeholder
-      replicaId: "rb17cf590e15", // Placeholder
-      mode: "adaptive_conversation" as const,
+      tag: "COMEDY",
+      personaId: "p68091165734",
+      replicaId: "r93183fb36c0",
+      mode: "taste_critic" as const,
     },
   ];
 

@@ -22,7 +22,7 @@
     "noUncheckedSideEffectImports": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*"]
     }
   }
 }

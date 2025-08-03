@@ -1,16 +1,11 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import viteReact from "@vitejs/plugin-react";
 import tanstackRouter from "@tanstack/router-plugin/vite";
-import { resolve } from "node:path";
 
 export default defineConfig({
   plugins: [tanstackRouter({ autoCodeSplitting: true }), viteReact()],
-  resolve: {
-    alias: {
-      "@": resolve(__dirname, "./src"),
-    },
-  },
-  css: {
-    postcss: "./postcss.config.js",
+  test: {
+    globals: true,
+    environment: "jsdom",
   },
 });

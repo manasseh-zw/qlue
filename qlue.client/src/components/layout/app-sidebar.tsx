@@ -4,9 +4,9 @@ import { useMediaQuery } from "usehooks-ts";
 import { ChevronLeft, ChevronRight, LogOut, SidebarIcon } from "lucide-react";
 import SidebarNav from "./sidebar-nav";
 import SidebarDrawer from "./sidebar-drawer";
-import { authState } from "@/lib/state/auth.state";
 import Logo from "../logo";
 import Avatar from "boring-avatars";
+import { authState } from "@/lib/state/auth.state";
 
 const SIDEBAR_COLLAPSED_KEY = "jude-sidebar-collapsed";
 

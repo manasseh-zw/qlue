@@ -1,6 +1,6 @@
-import { getUser } from "@/lib/services/auth.service";
-import { authState } from "@/lib/state/auth.state";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
+import { getUser } from "../lib/services/auth.service";
+import { authState } from "../lib/state/auth.state";
 
 export const Route = createRootRoute({
   component: RootComponent,

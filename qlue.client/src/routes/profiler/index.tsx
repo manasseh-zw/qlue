@@ -1,11 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useStore } from "@tanstack/react-store";
-import { authState } from "@/lib/state/auth.state";
-import { authenticatedOnlyLoader } from "@/lib/loaders/auth.loaders";
-import AgentFeed from "@/components/chat/feed/agent-feed";
 import { useEffect, useState } from "react";
 import { config } from "../../../client.config";
 import type { TimelineItem } from "../../components/chat/feed/types";
+import AgentFeed from "../../components/chat/feed/agent-feed";
+import { authenticatedOnlyLoader } from "../../lib/loaders/auth.loaders";
+import { authState } from "../../lib/state/auth.state";
 
 export const Route = createFileRoute("/profiler/")({
   component: RouteComponent,
@@ -42,7 +41,7 @@ interface MessageData {
 }
 
 function RouteComponent() {
-  const { user } = useStore(authState);
+  const { user } = authState.state;
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [currentStage, setCurrentStage] = useState("Initializing...");

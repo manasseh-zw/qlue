@@ -1,15 +1,14 @@
-import ChatPromptForm from "@/components/chat/chat-prompt-form";
-import { Markdown } from "@/components/chat/markdown";
-import { Thinking } from "@/components/chat/thinking";
 import { useChat } from "@ai-sdk/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { config } from "../../../client.config";
-import Logo from "@/components/logo";
-import { useStore } from "@tanstack/react-store";
-import { authState } from "@/lib/state/auth.state";
-import { authenticatedOnlyLoader } from "@/lib/loaders/auth.loaders";
 import Avatar from "boring-avatars";
+import Markdown from "react-markdown";
+import ChatPromptForm from "../../components/chat/chat-prompt-form";
+import { Thinking } from "../../components/chat/thinking";
+import Logo from "../../components/logo";
+import { authenticatedOnlyLoader } from "../../lib/loaders/auth.loaders";
+import { authState } from "../../lib/state/auth.state";
 
 export const Route = createFileRoute("/chat/")({
   component: RouteComponent,
@@ -17,7 +16,7 @@ export const Route = createFileRoute("/chat/")({
 });
 
 function RouteComponent() {
-  const { user } = useStore(authState);
+  const { user } = authState.state;
   const url = `${config.serverUrl}/api/ai`;
   const [isInitializing, setIsInitializing] = useState(true);
   // @ts-ignore

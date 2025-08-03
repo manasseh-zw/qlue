@@ -1,6 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "@heroui/react";
-import { Play } from "lucide-react";
 import { useState, useRef } from "react";
 import { StartConversation } from "../../../components/persona/conversation";
 

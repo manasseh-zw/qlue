@@ -8,11 +8,12 @@ import {
 import Logo from "./logo";
 import { useNavigate } from "@tanstack/react-router";
 import { useStore } from "@tanstack/react-store";
-import { authState } from "@/lib/state/auth.state";
-import { signOut } from "@/lib/services/auth.service";
+
 import Avatar from "boring-avatars";
+import { signOut } from "../lib/services/auth.service";
+import { authState } from "../lib/state/auth.state";
 export default function Header() {
-  const { user, isAuthenticated } = useStore(authState);
+  const { user, isAuthenticated } = authState.state;
   const navigate = useNavigate();
 
   const handleSignOut = async () => {

@@ -1,7 +1,7 @@
 import { config } from "../../../client.config";
-import type { User } from "@/lib/types/user";
-import { authActions } from "@/lib/state/auth.state";
-import type { ApiResponse } from "@/lib/utils/api";
+import { authActions } from "../state/auth.state";
+import type { User } from "../types/user";
+import type { ApiResponse } from "../utils/api";
 
 export const signInWithEmail = async (
   email: string,

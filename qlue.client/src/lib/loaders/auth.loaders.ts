@@ -1,5 +1,5 @@
-import { authState } from "@/lib/state/auth.state";
 import { redirect } from "@tanstack/react-router";
+import { authState } from "../state/auth.state";
 
 const AUTH_CHECK_TIMEOUT = 5000; // 5 seconds timeout
 
@@ -71,7 +71,7 @@ export const onboardingRequiredLoader = async () => {
     await waitForAuthState();
 
     const { isAuthenticated, user } = authState.state;
-    
+
     if (!isAuthenticated) {
       throw redirect({ to: "/auth/signin" });
     }
@@ -79,7 +79,7 @@ export const onboardingRequiredLoader = async () => {
     if (user?.onboarding === "COMPLETE") {
       // User has completed onboarding, they can stay on this route
       return null;
-    } 
+    }
 
     throw redirect({ to: "/chat" });
   } catch (error) {

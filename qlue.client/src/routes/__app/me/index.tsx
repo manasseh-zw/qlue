@@ -1,18 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Tabs,
-  Tab,
-  Avatar,
-} from "@heroui/react";
-import { getTasteProfile } from "@/lib/services/ai.service";
-import { Markdown } from "@/components/chat/markdown";
+import { Card, CardBody, CardHeader, Tabs, Tab, Avatar } from "@heroui/react";
 import { Music, Film, TrendingUp, Users } from "lucide-react";
 import { EntityCard } from "../../../components/persona/entity-card";
 import { authState, authActions } from "../../../lib/state/auth.state";
+import Markdown from "react-markdown";
+import { getTasteProfile } from "../../../lib/services/ai.service";
 
 interface TasteProfileResult {
   primaryEntities: any[];

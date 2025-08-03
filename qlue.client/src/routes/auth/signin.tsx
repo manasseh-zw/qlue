@@ -2,12 +2,13 @@ import { useState } from "react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Button, Input, Alert } from "@heroui/react";
 import { Eye, EyeClosed } from "lucide-react";
-import { authState } from "@/lib/state/auth.state";
-import { signInWithEmail } from "@/lib/services/auth.service";
-import type { User } from "@/lib/types/user";
-import type { ApiResponse } from "@/lib/utils/api";
 import Logo from "../../components/logo";
-import { unauthenticatedOnlyLoader } from "@/lib/loaders/auth.loaders";
+import { unauthenticatedOnlyLoader } from "../../lib/loaders/auth.loaders";
+import { signInWithEmail } from "../../lib/services/auth.service";
+import { authState } from "../../lib/state/auth.state";
+import type { User } from "../../lib/types/user";
+import type { ApiResponse } from "../../lib/utils/api";
+
 
 export const Route = createFileRoute("/auth/signin")({
   component: SignIn,

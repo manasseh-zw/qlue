@@ -6,7 +6,7 @@ import SidebarNav from "./sidebar-nav";
 import SidebarDrawer from "./sidebar-drawer";
 import Logo from "../logo";
 import Avatar from "boring-avatars";
-import { authState } from "@/lib/state/auth.state";
+import { authState } from "../../lib/state/auth.state";
 
 const SIDEBAR_COLLAPSED_KEY = "jude-sidebar-collapsed";
 

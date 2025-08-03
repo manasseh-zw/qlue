@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import AppSidebar from "@/components/layout/app-sidebar";
-import { onboardingRequiredLoader } from "@/lib/loaders/auth.loaders";
+import AppSidebar from "../components/layout/app-sidebar";
+import { onboardingRequiredLoader } from "../lib/loaders/auth.loaders";
 
 export const Route = createFileRoute("/__app")({
   component: RouteComponent,

@@ -1,10 +1,10 @@
-import Header from "@/components/header";
 import { Button } from "@heroui/react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useStore } from "@tanstack/react-store";
-import { authState } from "@/lib/state/auth.state";
-import { publicOnlyLoader } from "@/lib/loaders/auth.loaders";
+import Header from "../components/header";
+import { publicOnlyLoader } from "../lib/loaders/auth.loaders";
+import { authState } from "../lib/state/auth.state";
 
 export const Route = createFileRoute("/")({
   component: App,

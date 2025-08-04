@@ -136,12 +136,12 @@ authRoutes.post("/logout", async (c) => {
   }
 
   setCookie(c, "session_token", "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    httpOnly: false,
+    secure: true,
     sameSite: "None",
     maxAge: 0,
     path: "/",
-    domain: process.env.NODE_ENV === "production" ? undefined : "localhost",
+    domain: process.env.NODE_ENV === "production" ? config.clientUrl : "localhost",
   });
 
   return c.json({ success: true });

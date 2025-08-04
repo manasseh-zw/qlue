@@ -8,7 +8,7 @@ import { authState } from "../lib/state/auth.state";
 
 export const Route = createFileRoute("/")({
   component: App,
-  loader: publicOnlyLoader,
+  loader: publicOnlyLoader
 });
 
 function App() {

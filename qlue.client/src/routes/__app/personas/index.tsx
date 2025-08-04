@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef } from "react";
 import { StartConversation } from "../../../components/persona/conversation";
+import { config } from "../../../../client.config";
+import { Chip } from "@heroui/react";
 
 export const Route = createFileRoute("/__app/personas/")({
   component: RouteComponent,
@@ -13,7 +15,7 @@ function RouteComponent() {
       title: "Perfect Pitch",
       description:
         "Charlie analyzes your taste profile to craft personalized sales pitches that resonate with your unique preferences and lifestyle.",
-      video: "demo/demo1.mp4#t=12",
+      video: `${config.cdn}/preview-pitch.mp4#t=5`,
       tag: "SALES",
       personaId: "p4fcc991a271",
       replicaId: "rb17cf590e15",
@@ -23,8 +25,8 @@ function RouteComponent() {
       id: 2,
       title: "Perfect Date",
       description:
-        "Reeva is a warm, flirty, and witty AI companion designed to simulate an engaging and romantic dinner date. She builds connection through playful banter, sincere compliments, and shared interests.",
-      video: "demo/date.mp4#t=8",
+        "Reeva is a warm, flirty, and witty AI companion designed to simulate an engaging date. She builds connection through playful banter.",
+      video: `${config.cdn}/preview-date.mp4#t=8`,
       tag: "DATING",
       personaId: "p993c6e0119c",
       replicaId: "r9d30b0e55ac",
@@ -34,8 +36,8 @@ function RouteComponent() {
       id: 3,
       title: "Roast Me",
       description:
-        "Jack is a brutally honest, sarcastic best friend who uses sharp humor and casual AAVE slang to mercilessly roast your taste in media. Like two close friends clowning on each other.",
-      video: "demo/roast.mp4#t=3",
+        "Jack is a brutally honest, sarcastic best friend who uses sharp humor and casual AAVE slang to mercilessly roast your taste in media.",
+      video: `${config.cdn}/preview-roast.mp4#t=3`,
       tag: "COMEDY",
       personaId: "p68091165734",
       replicaId: "r93183fb36c0",
@@ -97,15 +99,19 @@ function RouteComponent() {
                 <div className="absolute inset-0 p-6 flex flex-col justify-between">
                   {/* Top Section */}
                   <div className="flex justify-between items-start">
-                    <span className="px-3 py-1 bg-black/30 backdrop-blur-sm rounded-md text-xs font-medium text-white border border-white/20">
+                    <Chip
+                      variant="shadow"
+                      color="success"
+                      className="text-white items-center gap-1"
+                    >
                       {persona.tag}
-                    </span>
+                    </Chip>
                   </div>
 
                   {/* Bottom Section */}
                   <div className="space-y-4">
                     <div>
-                      <h3 className="text-2xl font-bold text-white mb-2">
+                      <h3 className="text-2xl font-light text-white mb-2">
                         {persona.title}
                       </h3>
                       <p className="text-white/90 text-sm leading-relaxed">

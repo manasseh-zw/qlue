@@ -69,10 +69,10 @@ export function StartConversation({ persona }: ConversationProps) {
 
   return (
     <Button
-      className="w-full bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all duration-300 group-hover:scale-105"
+      className="py-6 w-full bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all duration-300 group-hover:scale-105"
       size="lg"
-      radius="md"
-      startContent={<Phone className="w-4 h-4" />}
+      radius="full"
+      startContent={<Phone className="w-6 h-6" />}
       onPress={createConversation}
       isLoading={isLoading}
     >

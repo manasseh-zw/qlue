@@ -30,6 +30,12 @@ app.get("/api/health", (c) => {
 
 app.get("/ws/:userId", wsHandler.upgradeWebSocket(wsHandler.handler));
 
-serve({ fetch: app.fetch, websocket: wsHandler.websocket, port: 8080 });
+serve({ 
+  fetch: app.fetch, 
+  websocket: wsHandler.websocket, 
+  port: 8080,
+  idleTimeout: 300000, // 5 minutes
+  maxRequestBodySize: 10 * 1024 * 1024, // 10MB
+});
 
 console.log("🚀 Server running on http://localhost:8080");

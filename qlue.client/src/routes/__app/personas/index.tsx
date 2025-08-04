@@ -100,9 +100,9 @@ function RouteComponent() {
                   {/* Top Section */}
                   <div className="flex justify-between items-start">
                     <Chip
-                      variant="shadow"
+                      variant="dot"
                       color="success"
-                      className="text-white items-center gap-1"
+                      className="text-white items-center gap-1 border-[1px]"
                     >
                       {persona.tag}
                     </Chip>

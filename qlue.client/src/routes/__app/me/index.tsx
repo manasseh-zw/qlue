@@ -67,7 +67,7 @@ function RouteComponent() {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-10">
         {entities.map((entity, index) => (
           <EntityCard key={index} entity={entity} />
         ))}
@@ -80,11 +80,16 @@ function RouteComponent() {
       <CardHeader>
         <div className="flex items-center gap-3">
           <Avatar
+            className="bg-white"
+            classNames={{
+              base: "bg-white",
+            }}
             src={
               insight.result.insights[insight.pairing.targetDomain]?.entities[0]
                 ?.properties.image.url
             }
             size="sm"
+            radius="none"
           />
           <div>
             <h4 className="font-medium">
@@ -98,7 +103,7 @@ function RouteComponent() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {insight.result.insights[insight.pairing.targetDomain]?.entities.map(
             (entity: any, index: number) => (
-              <EntityCard key={index} entity={entity} />
+              <EntityCard className="shadow-none" key={index} entity={entity} />
             )
           )}
         </div>
@@ -176,8 +181,8 @@ function RouteComponent() {
         ) : (
           <div className="space-y-6">
             {/* Final Analysis */}
-            <Card className="border border-gray-100">
-              <CardBody className="p-10">
+            <Card shadow="sm" radius="lg">
+              <CardBody className="p-16">
                 <div className="prose prose-sm max-w-none">
                   <Markdown>{tasteProfile.finalAnalysis}</Markdown>
                 </div>

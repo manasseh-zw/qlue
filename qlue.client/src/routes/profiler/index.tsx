@@ -74,7 +74,6 @@ function RouteComponent() {
       id: string;
     }>
   >([]);
-  const [isTestRunning, setIsTestRunning] = useState(false);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -93,13 +92,6 @@ function RouteComponent() {
         console.log("📨 Received WebSocket message:", message);
 
         switch (message.type) {
-          // case "agent_completed":
-          //   // Redirect to app page
-          //   setTimeout(() => {
-          //     window.location.href = "/app";
-          //   }, 2000);
-          //   break;
-
           case "message":
             setCurrentStage(message.data.message);
             setFeedItems((prev) => [
@@ -167,73 +159,6 @@ function RouteComponent() {
     };
   }, [user?.id]);
 
-  const triggerTestProfiler = () => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      console.log("🧪 Triggering test profiler...");
-      setIsTestRunning(true);
-
-      // Reset state for clean test
-      setTimeline([
-        {
-          id: "1",
-          text: "Gathering Your Interests",
-          status: "pending",
-          type: "question",
-        },
-        {
-          id: "2",
-          text: "Resolving Entities",
-          status: "pending",
-          type: "analysis",
-        },
-        {
-          id: "3",
-          text: "Expanding Domains",
-          status: "pending",
-          type: "analysis",
-        },
-        {
-          id: "4",
-          text: "Cross-Domain Analysis",
-          status: "pending",
-          type: "synthesis",
-        },
-        {
-          id: "5",
-          text: "Final Synthesis",
-          status: "pending",
-          type: "synthesis",
-        },
-      ]);
-      setFeedItems([]);
-      setCurrentStage("Initializing...");
-
-      ws.send(
-        JSON.stringify({
-          type: "test_profiler",
-          timestamp: Date.now(),
-        })
-      );
-    } else {
-      console.error("❌ WebSocket not connected");
-    }
-  };
-
-  const stopTestProfiler = () => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      console.log("🛑 Stopping test profiler...");
-      setIsTestRunning(false);
-      ws.send(
-        JSON.stringify({
-          type: "stop_test_profiler",
-          timestamp: Date.now(),
-        })
-      );
-    } else {
-      console.error("❌ WebSocket not connected");
-    }
-  };
-
   if (!user) {
     return <div>Loading...</div>;
   }
@@ -251,29 +176,6 @@ function RouteComponent() {
     <main className="min-h-screen flex items-center justify-center p-6">
       <div className="flex w-full justify-center">
         <div className="flex flex-col items-center gap-4 min-w-[800px]">
-          {/* 🧪 Test Buttons - Only show in test mode */}
-          {config.testMode && (
-            <div className="flex gap-2 mb-4">
-              <button
-                onClick={triggerTestProfiler}
-                disabled={!isConnected || isTestRunning}
-                className="px-4 py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                🧪 Start Test Loop
-              </button>
-
-              {isTestRunning && (
-                <button
-                  onClick={stopTestProfiler}
-                  disabled={!isConnected}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  🛑 Stop Test Loop
-                </button>
-              )}
-            </div>
-          )}
-
           <AgentFeed {...agentFeedProps} />
         </div>
       </div>

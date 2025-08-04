@@ -95,7 +95,7 @@ function App() {
       return;
     }
 
-    navigate({ to: "/auth/signin" });
+    navigate({ to: "/auth/signup" });
   };
 
   const getButtonText = () => {

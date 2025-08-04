@@ -13,9 +13,9 @@ const wsHandler = createWebSocketHandler();
 app.use(
   "/*",
   cors({
-    origin: [config.clientUrl],
+    origin: [config.clientUrl, "http://localhost:3000", "http://localhost:5173", "https://www.qlue.live"],
     allowHeaders: ["Content-Type", "Authorization"],
-    allowMethods: ["POST", "GET", "OPTIONS", "PATCH"],
+    allowMethods: ["POST", "GET", "OPTIONS", "PATCH", "PUT", "DELETE"],
     credentials: true,
   })
 );

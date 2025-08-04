@@ -54,6 +54,7 @@ export const signUpWithEmail = async (
 
 export const getUser = async (): Promise<User | null> => {
   try {
+    console.log("Fetching user from:", `${config.serverUrl}/api/auth/me`);
     const response = await fetch(`${config.serverUrl}/api/auth/me`, {
       method: "GET",
       credentials: "include",
@@ -62,11 +63,17 @@ export const getUser = async (): Promise<User | null> => {
       },
     });
 
+    console.log("Response status:", response.status);
+    console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+
     if (!response.ok) {
+      console.log("Response not ok, status:", response.status);
       return null;
     }
 
     const data = await response.json();
+    console.log("Response data:", data);
+    
     if (data.success && data.data) {
       return data.data;
     }

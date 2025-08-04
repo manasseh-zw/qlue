@@ -2,7 +2,6 @@ import { tool } from "ai";
 import { z } from "zod";
 import { prisma } from "../../../db/db";
 import { orchestrator } from "../../orchestrator";
-import { eventManager } from "../../events/event-manager";
 
 export type UserInterests = {
   name: string;
@@ -78,14 +77,6 @@ export const saveUserInterests = tool({
           interests: JSON.stringify(interests),
           onboarding: "COMPLETE",
         },
-      });
-
-      // Send SSE event to trigger redirect
-      eventManager.sendEventToUser(userId, {
-        type: "agent_started",
-        message: "🤖 I'm starting to analyze your taste profile! Let me show you what I discover...",
-        redirectTo: "/profiler",
-        userId,
       });
 
       // Trigger agent processing (non-blocking)

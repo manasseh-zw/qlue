@@ -36,17 +36,11 @@ export const getTasteProfile = async () => {
 };
 
 export class AIService {
-  private baseUrl: string;
-
-  constructor() {
-    this.baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8080";
-  }
-
   async createConversation(
     request: CreateConversationRequest
   ): Promise<CreateConversationResponse> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/ai/tavus/conversation`, {
+      const response = await fetch(`${config.serverUrl}/api/ai/tavus/conversation`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,7 +66,7 @@ export class AIService {
   ): Promise<CreateConversationResponse> {
     try {
       const response = await fetch(
-        `${this.baseUrl}/api/ai/tavus/conversation/${conversationId}`,
+        `${config.serverUrl}/api/ai/tavus/conversation/${conversationId}`,
         {
           method: "GET",
           credentials: "include",
@@ -94,7 +88,7 @@ export class AIService {
   async endConversation(conversationId: string): Promise<void> {
     try {
       const response = await fetch(
-        `${this.baseUrl}/api/ai/tavus/conversation/${conversationId}/end`,
+        `${config.serverUrl}/api/ai/tavus/conversation/${conversationId}/end`,
         {
           method: "POST",
           credentials: "include",
@@ -114,7 +108,7 @@ export class AIService {
   async deleteConversation(conversationId: string): Promise<void> {
     try {
       const response = await fetch(
-        `${this.baseUrl}/api/ai/tavus/conversation/${conversationId}`,
+        `${config.serverUrl}/api/ai/tavus/conversation/${conversationId}`,
         {
           method: "DELETE",
           credentials: "include",

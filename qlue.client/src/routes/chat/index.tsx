@@ -19,7 +19,6 @@ function RouteComponent() {
   const { user } = authState.state;
   const url = `${config.serverUrl}/api/ai`;
   const [isInitializing, setIsInitializing] = useState(true);
-  const [eventSource, setEventSource] = useState<EventSource | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -35,60 +34,20 @@ function RouteComponent() {
     onFinish: (message) => {
       console.log("Chat finished:", message);
     },
-  });
-
-  useEffect(() => {
-    if (!user?.id) return;
-
-    // Get session token from cookies
-    const getSessionToken = () => {
-      const cookies = document.cookie.split(';');
-      const sessionCookie = cookies.find(cookie => cookie.trim().startsWith('session_token='));
-      return sessionCookie ? sessionCookie.split('=')[1] : null;
-    };
-
-    const sessionToken = getSessionToken();
-    if (!sessionToken) {
-      console.error("No session token found");
-      return;
-    }
-
-    // Create SSE connection for agent events
-    const sseUrl = `${config.serverUrl}/api/ai/events?session_token=${encodeURIComponent(sessionToken)}`;
-    const eventSourceInstance = new EventSource(sseUrl);
-
-    eventSourceInstance.onopen = () => {
-      console.log("📡 SSE connected for chat");
-    };
-
-    eventSourceInstance.addEventListener("agent_event", (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log("📨 Received SSE agent event:", data);
+    onToolCall: async ({ toolCall }) => {
+      console.log("🔧 Tool called:", toolCall.toolName);
+      
+      // Check if the interests tool was called
+      if (toolCall.toolName === "saveUserInterests") {
+        console.log("🚀 Interests tool called, redirecting to profiler...");
         
-        if (data.type === "agent_started") {
-          console.log("🚀 Agent processing started, redirecting to profiler...");
-          setTimeout(() => {
-            window.location.href = data.redirectTo || "/profiler";
-          }, 500);
-        }
-      } catch (error) {
-        console.error("❌ Error parsing SSE agent event:", error);
+        // Small delay to let the user see the tool is being called
+        setTimeout(() => {
+          window.location.href = "/profiler";
+        }, 1500);
       }
-    });
-
-    eventSourceInstance.onerror = (error) => {
-      console.error("❌ SSE error in chat:", error);
-    };
-
-    setEventSource(eventSourceInstance);
-
-    return () => {
-      if (eventSourceInstance) {
-        eventSourceInstance.close();
-      }
-    };
-  }, [user?.id]);
+    },
+  });
 
   useEffect(() => {
     if (status === "streaming") {

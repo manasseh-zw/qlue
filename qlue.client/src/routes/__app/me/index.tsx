@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Card, CardBody, CardHeader, Tabs, Tab, Avatar } from "@heroui/react";
-import { Music, Film, TrendingUp, Users } from "lucide-react";
+import { Music, Film, TrendingUp, Users, Tv, Book, Gamepad, Mic, Mic2 } from "lucide-react";
 import { EntityCard } from "../../../components/persona/entity-card";
 import { authState, authActions } from "../../../lib/state/auth.state";
 import Markdown from "react-markdown";
@@ -55,24 +55,26 @@ function RouteComponent() {
     subtitle?: string;
     icon?: any;
   }) => (
-    <div className="mb-8">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2">
-          {Icon && <Icon className="w-5 h-5 text-gray-600" />}
+    <Card shadow="sm" className="mb-6 border border-gray-100">
+      <CardHeader>
+        <div className="flex items-center gap-3">
+          {Icon && <Icon className="w-11 h-11 font-bold text-pink-600" />}
           <div>
-            <h3 className="text-xl font-medium">{title}</h3>
+            <h3 className="text-xl ">{title}</h3>
             {subtitle && (
-              <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
+              <p className="text-xs text-zinc-600 ">{subtitle}</p>
             )}
           </div>
         </div>
-      </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-10">
-        {entities.map((entity, index) => (
-          <EntityCard key={index} entity={entity} />
-        ))}
-      </div>
-    </div>
+      </CardHeader>
+      <CardBody>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {entities.map((entity, index) => (
+            <EntityCard className="shadow-none" key={index} entity={entity} />
+          ))}
+        </div>
+      </CardBody>
+    </Card>
   );
 
   const CrossDomainInsight = ({ insight }: { insight: any }) => (
@@ -128,6 +130,7 @@ function RouteComponent() {
         <Tabs
           selectedKey={selected}
           variant="solid"
+          color="primary"
           onSelectionChange={(key) => setSelected(key as string)}
         >
           <Tab key="profile" title="Profile" />
@@ -152,7 +155,15 @@ function RouteComponent() {
                       ? Music
                       : domain === "movie"
                         ? Film
-                        : Users
+                        : domain === "tv_show"
+                          ? Tv
+                          : domain === "book"
+                            ? Book
+                            : domain === "videogame"
+                              ? Gamepad
+                              : domain === "podcast"
+                                ? Mic
+                              : Users
                   }
                 />
               )

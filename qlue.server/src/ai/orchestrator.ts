@@ -36,15 +36,7 @@ class Orchestrator {
     this.activeProcessing.set(userId, true);
 
     try {
-      const agentStartedData: AgentStartedEvent = {
-        message:
-          "🤖 I'm starting to analyze your taste profile! Let me show you what I discover...",
-        redirectTo: "/profiler",
-        userId,
-      };
 
-      Events.sendToUser(userId, "agent_started", agentStartedData);
-      await this.delay(500); // Small delay to ensure redirect happens
 
       // Initialize timeline
       this.sendTimelineUpdate(userId, " ", [

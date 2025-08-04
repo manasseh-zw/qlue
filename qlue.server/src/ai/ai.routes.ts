@@ -1,9 +1,11 @@
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
+import { streamSSE } from "hono/streaming";
 import { getUserFromSession } from "../auth/auth.service";
 import { assistant } from "./agents/conversation.agent";
 import { TavusService } from "./providers/tavus.service";
 import { TasteProfileService } from "../insights/taste.service";
+import { eventManager } from "./events/event-manager";
 
 
 const aiRoutes = new Hono();
@@ -131,6 +133,34 @@ aiRoutes.delete("/tavus/conversation/:conversationId", async (c) => {
     console.error("Failed to delete Tavus conversation:", error);
     return c.json({ error: "Failed to delete conversation" }, 500);
   }
+});
+
+aiRoutes.get("/events", async (c) => {
+  // Get session token from query parameter since EventSource doesn't support custom headers
+  const sessionToken = c.req.query("session_token");
+  const user = await getUserFromSession(sessionToken || "");
+
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  return streamSSE(c, async (stream) => {
+    const userId = user.id;
+    
+    // Add this SSE connection to the event manager
+    eventManager.addSSEConnection(userId, stream);
+    
+    try {
+      // Keep the connection alive
+      await new Promise(() => {
+        // This promise never resolves, keeping the connection open
+        // The connection will be closed when the client disconnects
+      });
+    } finally {
+      // Clean up when the connection is closed
+      eventManager.removeSSEConnection(userId);
+    }
+  });
 });
 
 export { aiRoutes };

@@ -19,8 +19,7 @@ function RouteComponent() {
   const { user } = authState.state;
   const url = `${config.serverUrl}/api/ai`;
   const [isInitializing, setIsInitializing] = useState(true);
-  // @ts-ignore
-  const [ws, setWs] = useState<WebSocket | null>(null);
+  const [eventSource, setEventSource] = useState<EventSource | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -41,45 +40,52 @@ function RouteComponent() {
   useEffect(() => {
     if (!user?.id) return;
 
-    const wsUrl = `${config.serverUrl.replace("http", "ws")}/ws/${user.id}`;
-    const websocket = new WebSocket(wsUrl);
-
-    websocket.onopen = () => {
-      console.log("WebSocket connected for chat");
+    // Get session token from cookies
+    const getSessionToken = () => {
+      const cookies = document.cookie.split(';');
+      const sessionCookie = cookies.find(cookie => cookie.trim().startsWith('session_token='));
+      return sessionCookie ? sessionCookie.split('=')[1] : null;
     };
 
-    websocket.onmessage = (event) => {
+    const sessionToken = getSessionToken();
+    if (!sessionToken) {
+      console.error("No session token found");
+      return;
+    }
+
+    // Create SSE connection for agent events
+    const sseUrl = `${config.serverUrl}/api/ai/events?session_token=${encodeURIComponent(sessionToken)}`;
+    const eventSourceInstance = new EventSource(sseUrl);
+
+    eventSourceInstance.onopen = () => {
+      console.log("📡 SSE connected for chat");
+    };
+
+    eventSourceInstance.addEventListener("agent_event", (event) => {
       try {
-        const message = JSON.parse(event.data);
-        console.log("📨 Received WebSocket message in chat:", message);
-        if (message.type === "agent_started") {
-          console.log(
-            "🚀 Agent processing started, redirecting to profiler..."
-          );
-          // Explicitly close the WebSocket before redirecting
-          websocket.close(1000, "Redirecting to profiler");
+        const data = JSON.parse(event.data);
+        console.log("📨 Received SSE agent event:", data);
+        
+        if (data.type === "agent_started") {
+          console.log("🚀 Agent processing started, redirecting to profiler...");
           setTimeout(() => {
-            window.location.href = "/profiler";
-          }, 500); // Reduced delay to minimize overlap
+            window.location.href = data.redirectTo || "/profiler";
+          }, 500);
         }
       } catch (error) {
-        console.error("❌ Error parsing WebSocket message:", error);
+        console.error("❌ Error parsing SSE agent event:", error);
       }
+    });
+
+    eventSourceInstance.onerror = (error) => {
+      console.error("❌ SSE error in chat:", error);
     };
 
-    websocket.onclose = () => {
-      console.log("🔌 WebSocket disconnected in chat");
-    };
-
-    websocket.onerror = (error) => {
-      console.error("❌ WebSocket error in chat:", error);
-    };
-
-    setWs(websocket);
+    setEventSource(eventSourceInstance);
 
     return () => {
-      if (websocket.readyState === WebSocket.OPEN) {
-        websocket.close();
+      if (eventSourceInstance) {
+        eventSourceInstance.close();
       }
     };
   }, [user?.id]);

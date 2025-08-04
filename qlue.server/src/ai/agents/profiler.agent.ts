@@ -81,7 +81,6 @@ export type TasteProfileResult = {
 export class TasteProfilerAgent {
   azure = createAzure();
   private model = azure.languageModel("gpt-4.1");
-  // model = openai("gpt-4.1");
 
   async generateTasteProfile(
     input: TasteProfileInput

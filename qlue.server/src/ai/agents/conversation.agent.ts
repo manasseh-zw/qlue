@@ -1,5 +1,4 @@
 import { streamText } from "ai";
-import { openai } from "@ai-sdk/openai";
 import { TASTE_DISCOVERY_SYSTEM_PROMPT } from "./prompts";
 import { saveUserInterests } from "./tools/interests.tool";
 import { azure, createAzure } from "@ai-sdk/azure";

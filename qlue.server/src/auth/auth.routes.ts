@@ -27,12 +27,11 @@ authRoutes.post("/signup", async (c) => {
 
     // Set session cookie
     setCookie(c, "session_token", sessionToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      httpOnly: false,
+      secure: true,
       sameSite: "None",
       maxAge: 30 * 24 * 60 * 60, // 30 days
       path: "/",
-      domain: process.env.NODE_ENV === "production" ? undefined : "localhost",
     });
 
     return c.json({ success: true, data: user });
@@ -63,12 +62,11 @@ authRoutes.post("/login", async (c) => {
 
     // Set session cookie
     setCookie(c, "session_token", sessionToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      httpOnly: false,
+      secure: true,
       sameSite: "None",
       maxAge: 30 * 24 * 60 * 60, // 30 days
       path: "/",
-      domain: process.env.NODE_ENV === "production" ? undefined : "localhost",
     });
 
     return c.json({ success: true, data: user });
@@ -141,7 +139,6 @@ authRoutes.post("/logout", async (c) => {
     sameSite: "None",
     maxAge: 0,
     path: "/",
-    domain: process.env.NODE_ENV === "production" ? config.clientUrl : "localhost",
   });
 
   return c.json({ success: true });

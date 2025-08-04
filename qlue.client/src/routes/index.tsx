@@ -1,15 +1,84 @@
 import { Button } from "@heroui/react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useStore } from "@tanstack/react-store";
 import Header from "../components/header";
 import { publicOnlyLoader } from "../lib/loaders/auth.loaders";
 import { authState } from "../lib/state/auth.state";
+import { config } from "../../client.config";
 
 export const Route = createFileRoute("/")({
   component: App,
-  loader: publicOnlyLoader
+  loader: publicOnlyLoader,
 });
+
+// Custom hook for lazy loading videos
+function useLazyVideo() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isInView, setIsInView] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (videoRef.current) {
+      observer.observe(videoRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  const handleLoadedData = () => {
+    setIsLoaded(true);
+  };
+
+  return { videoRef, isInView, isLoaded, handleLoadedData };
+}
+
+// Video component with lazy loading and poster
+function LazyVideo({
+  src,
+  poster,
+  startTime = 0,
+  className = "",
+}: {
+  src: string;
+  poster: string;
+  startTime?: number;
+  className?: string;
+}) {
+  const { videoRef, isInView, isLoaded, handleLoadedData } = useLazyVideo();
+  const cdnSrc = `${config.cdn}/${src}`;
+  const cdnPoster = `${config.cdn}/${poster}`;
+
+  return (
+    <div className="relative">
+      <video
+        ref={videoRef}
+        src={isInView ? cdnSrc : ""}
+        poster={cdnPoster}
+        autoPlay={isInView}
+        muted
+        loop
+        playsInline
+        preload="none"
+        onLoadedData={handleLoadedData}
+        className={`aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg transition-opacity duration-300 ${
+          isLoaded ? "opacity-100" : "opacity-0"
+        } ${className}`}
+      />
+      <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10" />
+    </div>
+  );
+}
 
 function App() {
   const navigate = useNavigate();
@@ -18,7 +87,6 @@ function App() {
 
   const handleGetStarted = async () => {
     if (isAuthenticated) {
-      // Check user onboarding status for proper redirect
       if (user?.onboarding === "COMPLETE") {
         navigate({ to: "/me" });
       } else {
@@ -27,7 +95,6 @@ function App() {
       return;
     }
 
-    // If not authenticated, redirect to sign in
     navigate({ to: "/auth/signin" });
   };
 
@@ -79,7 +146,6 @@ function App() {
         />
       </svg>
 
-      {/* Gradient Blur Effect */}
       <div
         className="absolute left-1/2 right-0 top-0 -z-10 -ml-24 transform-gpu overflow-hidden blur-3xl lg:ml-24 xl:ml-48"
         aria-hidden="true"
@@ -93,10 +159,8 @@ function App() {
         />
       </div>
 
-      {/* Main Content */}
       <div className="mx-auto max-w-7xl px-6 pt-20 lg:px-8 h-full pb-20">
         <div className="mx-auto max-w-2xl gap-x-14 lg:mx-0 lg:flex lg:max-w-none lg:items-center h-full">
-          {/* Left Content */}
           <div className="relative w-full max-w-xl lg:shrink-0 xl:max-w-2xl flex flex-col justify-center">
             <h1 className="text-4xl md:text-7xl sm:font-extralight text-zinc-900 text-center lg:text-left">
               <span className="block ">Conversational AI</span>
@@ -122,73 +186,37 @@ function App() {
             </div>
           </div>
 
-          {/* Right Video Grid */}
           <div className="mt-14 flex justify-end gap-8 sm:-mt-44 sm:justify-start sm:pl-20 lg:mt-0 lg:pl-0">
             <div className="ml-auto w-44 flex-none space-y-8 pt-32 sm:ml-0 sm:pt-80 lg:order-last lg:pt-36 xl:order-none xl:pt-80">
-              <div className="relative">
-                <video
-                  src="demo/demo3.mp4#t=3"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
-                />
-                <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10" />
-              </div>
+              <LazyVideo
+                src="demo3.mp4#t=3"
+                poster="demo3.webp"
+                startTime={3}
+              />
             </div>
             <div className="mr-auto w-44 flex-none space-y-8 sm:mr-0 sm:pt-52 lg:pt-36">
-              <div className="relative">
-                <video
-                  src="demo/demo2.mp4#t=8"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
-                />
-                <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10" />
-              </div>
-              <div className="relative">
-                <video
-                  src="demo/demo4.mp4#t=3"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
-                />
-                <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10" />
-              </div>
+              <LazyVideo
+                src="demo2.mp4#t=8"
+                poster="demo2.webp"
+                startTime={8}
+              />
+              <LazyVideo
+                src="demo4.mp4#t=3"
+                poster="demo4.webp"
+                startTime={3}
+              />
             </div>
             <div className="w-44 flex-none space-y-8 pt-32 sm:pt-0">
-              <div className="relative">
-                <video
-                  src="demo/demo1.mp4#t=12"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
-                />
-                <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10" />
-              </div>
-              <div className="relative">
-                <video
-                  src="demo/demo5.mp4#t=8"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
-                />
-                <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10" />
-              </div>
+              <LazyVideo
+                src="demo1.mp4#t=12"
+                poster="demo1.webp"
+                startTime={12}
+              />
+              <LazyVideo
+                src="demo5.mp4#t=8"
+                poster="demo5.webp"
+                startTime={8}
+              />
             </div>
           </div>
         </div>

@@ -260,11 +260,11 @@ This SDK was developed to address the complexity of the Qloo API and provide a m
     <img src="https://img.shields.io/badge/Qloo_TypeScript_SDK-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="Qloo TypeScript SDK"/>
   </a>&nbsp;&nbsp;
   
-  <a href="https://www.linkedin.com/in/your-profile/">
+  <a href="https://www.linkedin.com/in/devmanasseh/">
     <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn Profile"/>
   </a>&nbsp;&nbsp;
   
-  <a href="https://x.com/your-handle">
+  <a href="https://x.com/devmanasseh">
     <img src="https://img.shields.io/badge/twitter-black?style=for-the-badge&logo=x&logoColor=white" alt="X Profile"/>
   </a>
 </div>

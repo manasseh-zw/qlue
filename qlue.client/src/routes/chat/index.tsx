@@ -36,15 +36,15 @@ function RouteComponent() {
     },
     onToolCall: async ({ toolCall }) => {
       console.log("🔧 Tool called:", toolCall.toolName);
-      
+
       // Check if the interests tool was called
       if (toolCall.toolName === "saveUserInterests") {
         console.log("🚀 Interests tool called, redirecting to profiler...");
-        
+
         // Small delay to let the user see the tool is being called
         setTimeout(() => {
           window.location.href = "/profiler";
-        }, 1500);
+        }, 500);
       }
     },
   });

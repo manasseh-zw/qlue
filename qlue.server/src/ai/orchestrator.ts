@@ -35,9 +35,9 @@ class Orchestrator {
     console.log(`🚀 Starting agent processing for user: ${userId}`);
     this.activeProcessing.set(userId, true);
 
+    setTimeout(() => {}, 1500);
+
     try {
-
-
       // Initialize timeline
       this.sendTimelineUpdate(userId, " ", [
         {

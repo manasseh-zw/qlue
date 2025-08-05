@@ -18,7 +18,7 @@ class Orchestrator {
 
   static getInstance(): Orchestrator {
     if (!Orchestrator.instance) {
-      Orchestrator.instance = new Orchestrator(); 
+      Orchestrator.instance = new Orchestrator();
     }
     return Orchestrator.instance;
   }
@@ -37,7 +37,7 @@ class Orchestrator {
 
     try {
       // Small delay to ensure user has landed on profiler page
-      await this.delay(1500);
+      await this.delay(4000);
 
       // Send initial agent started event
       const agentStartedData: AgentStartedEvent = {

@@ -46,6 +46,7 @@ function RouteComponent() {
           window.location.href = "/profiler";
         }, 500);
       }
+      
     },
   });
 

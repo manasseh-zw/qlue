@@ -35,9 +35,20 @@ class Orchestrator {
     console.log(`🚀 Starting agent processing for user: ${userId}`);
     this.activeProcessing.set(userId, true);
 
-    setTimeout(() => {}, 1500);
-
     try {
+      // Small delay to ensure user has landed on profiler page
+      await this.delay(1500);
+
+      // Send initial agent started event
+      const agentStartedData: AgentStartedEvent = {
+        message:
+          "🤖 I'm starting to analyze your taste profile! Let me show you what I discover...",
+        redirectTo: "/profiler",
+        userId,
+      };
+
+      Events.sendToUser(userId, "agent_started", agentStartedData);
+
       // Initialize timeline
       this.sendTimelineUpdate(userId, " ", [
         {

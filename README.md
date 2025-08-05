@@ -36,17 +36,19 @@ Qlue is a revolutionary AI experience powered by an intelligent agent that dynam
 
 - **Cross-Domain Intelligence:** Qlue's agent connects preferences across all life domains - music → food → lifestyle → psychology. It discovers hidden connections like "Taylor Swift fans typically enjoy artisanal coffee" and "Korean BBQ suggests adventurous spirit."
 
-- **Real-Time Streaming Profile Building:** Utilizes Server-Sent Events (SSE) to stream profile discoveries in real-time, creating an engaging experience where users see their taste profile being built live with confidence scoring and reasoning chains.
+- **Real-Time WebSocket Profile Building:** Utilizes WebSocket connections to stream profile discoveries in real-time, creating an engaging experience where users see their taste profile being built live with confidence scoring and reasoning chains.
 
 - **Hybrid Agentic Architecture:** Implements a controlled agentic workflow that allows for strategic AI reasoning in key parts while maintaining better context handling and reliability than fully autonomous systems.
 
 - **Pattern-Matched Cross-Domain Profiling:** Instead of using all signals across all domains, Qlue implements intelligent pattern matching that yields more relevant results (podcasts → books, TV shows → podcasts, movies → books, books → movies/TV shows).
 
+- **Custom TypeScript SDK:** Developed a comprehensive, type-safe TypeScript SDK for the Qloo API to streamline development and ensure robust API integration with full IntelliSense support.
+
 ## 🏗️ Architecture
 
 - **Frontend:** React (Vite) with TanStack Router & Query, TypeScript
 
-  - **Real-time Updates:** Server-Sent Events (SSE) for streaming profile discoveries
+  - **Real-time Updates:** WebSocket connections for streaming profile discoveries
   - **Video Integration:** Tavus video agents for personalized conversations
   - **UI Components:** Custom CVI components for enhanced user experience
 
@@ -63,20 +65,46 @@ Qlue is a revolutionary AI experience powered by an intelligent agent that dynam
   - **Vercel AI SDK:** AI SDK documentation for enhanced agent capabilities
   - **Open AI :** OPEN AI Models (Gpt 4.1)
 
+## 🔧 Custom TypeScript SDK Development
+
+> [!IMPORTANT]
+> As part of the Qloo Hackathon 2025, we developed a comprehensive TypeScript SDK to efficiently interact with the Qloo API. This SDK provides type safety, developer-friendly interfaces, and streamlined API integration.
+
+### SDK Features
+
+- **Type-Safe API Integration:** Full TypeScript support with comprehensive type definitions for all Qloo API endpoints
+- **Developer-Friendly Design:** Intuitive API design with excellent IDE support and IntelliSense
+- **Dual Module Support:** Works with both ESM and CommonJS environments
+- **Built-in Validation:** Request/response validation using Zod schemas
+- **Modern JavaScript Support:** Compatible with Node.js 18+ and modern runtimes
+- **Comprehensive Documentation:** Complete documentation and usage examples
+
+### SDK Repository
+
+The custom TypeScript SDK is available at: [qloo-ts-sdk](https://github.com/manasseh-zw/qloo-ts-sdk)
+
+This SDK was developed to address the complexity of the Qloo API and provide a more efficient, type-safe way to interact with cultural intelligence endpoints. It includes:
+
+- Complete API coverage for Insights, Audiences, and Tags endpoints
+- Type-safe request/response handling
+- Built-in error handling and validation
+- Support for multiple server environments (hackathon, staging, production)
+- Comprehensive examples and documentation
+
 ## 🔄 Taste Discovery Flow
 
 1. **User Input & Initial Analysis:**
 
    - User provides preferences (e.g., "I love Taylor Swift, Joe Rogan, and Korean BBQ")
    - Agent analyzes input and creates investigation strategy
-   - System initializes real-time streaming session
+   - System initializes real-time WebSocket session
 
 2. **Cross-Domain Investigation:**
 
-   - Agent makes strategic Qloo API calls to discover taste patterns
+   - Agent makes strategic Qloo API calls using the custom SDK to discover taste patterns
    - Implements signal weighting to maintain domain relevance
    - Discovers hidden connections across music, food, lifestyle, and psychology
-   - Streams discoveries in real-time to user interface
+   - Streams discoveries in real-time to user interface via WebSocket
 
 3. **Pattern Recognition & Profile Building:**
 
@@ -97,7 +125,7 @@ Qlue is a revolutionary AI experience powered by an intelligent agent that dynam
 > [!NOTE]
 > These innovative design decisions highlight Qlue's interesting architecture and our approach to solving complex technical challenges.
 
-- **API Integration Complexity:** Initially struggled with Qloo API complexity, so we built a custom SDK from the OpenAPI spec to streamline development and enable intelligent agent calls.
+- **Custom TypeScript SDK Development:** To efficiently interact with the Qloo API, we developed a comprehensive TypeScript SDK from the OpenAPI specification. This SDK provides type safety, developer-friendly interfaces, and streamlined API integration, making it significantly easier to build intelligent agent calls and handle complex cultural intelligence queries.
 
 - **Cross-Domain Signal Weighting:** Discovered that cross-domain searches were getting diluted by unrelated signals. Solved by implementing dynamic signal weighting (`signal.entities.weight`) to ensure domain-specific entities maintained relevance.
 
@@ -105,7 +133,7 @@ Qlue is a revolutionary AI experience powered by an intelligent agent that dynam
 
 - **Hybrid Agentic Architecture:** Initially went fully agentic with LLM tool calls but pivoted to a hybrid approach that allows for more controlled workflows while implementing AI reasoning in key parts. This proved better for context handling and reliability.
 
-- **Real-Time Streaming:** Implemented Server-Sent Events (SSE) to stream profile discoveries in real-time, creating an engaging experience where users see their taste profile being built live.
+- **Real-Time WebSocket Communication:** Implemented WebSocket connections to stream profile discoveries in real-time, creating an engaging experience where users see their taste profile being built live with confidence scoring and reasoning chains.
 
 ## 🚀 Getting Started
 
@@ -197,11 +225,13 @@ Qlue is a revolutionary AI experience powered by an intelligent agent that dynam
 
 - **Modular Design:** Qlue's architecture separates concerns (taste discovery, profile building, video integration) into discrete components, allowing for easy maintenance and extensibility. When we wanted to add support for new taste domains, we only needed to modify the agent's investigation pipeline without disrupting other components.
 
-- **Scalability:** The asynchronous event-driven design using WebSockets and SSE enables Qlue to handle multiple user sessions simultaneously without performance degradation. The system maintains responsiveness while processing complex taste discovery queries.
+- **Scalability:** The asynchronous event-driven design using WebSockets enables Qlue to handle multiple user sessions simultaneously without performance degradation. The system maintains responsiveness while processing complex taste discovery queries.
 
-- **Integration Flexibility:** The system integrates seamlessly with Qloo's cultural intelligence API while maintaining the ability to incorporate specialized tools like Tavus for video agents. This hybrid approach leverages the strengths of cultural intelligence while accessing specialized capabilities when needed.
+- **Integration Flexibility:** The system integrates seamlessly with Qloo's cultural intelligence API through our custom TypeScript SDK while maintaining the ability to incorporate specialized tools like Tavus for video agents. This hybrid approach leverages the strengths of cultural intelligence while accessing specialized capabilities when needed.
 
-- **Real-Time Intelligence:** The streaming architecture provides immediate feedback to users, creating engaging experiences where they can see their taste profile being built in real-time with confidence scoring and reasoning chains.
+- **Real-Time Intelligence:** The WebSocket architecture provides immediate feedback to users, creating engaging experiences where they can see their taste profile being built in real-time with confidence scoring and reasoning chains.
+
+- **Type-Safe Development:** The custom TypeScript SDK ensures robust API integration with full type safety, reducing development time and preventing runtime errors.
 
 ## 🎯 Use Cases
 
@@ -222,8 +252,12 @@ Qlue is a revolutionary AI experience powered by an intelligent agent that dynam
 ## 🔗 Links
 
 <div align="center">
-  <a href="https://github.com/your-username/qlue">
+  <a href="https://github.com/manasseh-zw/qlue">
     <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Repository"/>
+  </a>&nbsp;&nbsp;
+  
+  <a href="https://github.com/manasseh-zw/qloo-ts-sdk">
+    <img src="https://img.shields.io/badge/Qloo_TypeScript_SDK-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="Qloo TypeScript SDK"/>
   </a>&nbsp;&nbsp;
   
   <a href="https://www.linkedin.com/in/your-profile/">
@@ -257,10 +291,12 @@ Qlue is a revolutionary AI experience powered by an intelligent agent that dynam
 
 - **Cultural Intelligence**: [Qloo API Documentation](https://qloo.com/) - The foundation for Qlue's taste discovery capabilities, enabling cross-domain cultural analysis and preference mapping.
 
+- **Custom TypeScript SDK**: [Qloo TypeScript SDK](https://github.com/manasseh-zw/qloo-ts-sdk) - Our custom-developed SDK that provides type-safe, developer-friendly access to the Qloo API, streamlining integration and ensuring robust cultural intelligence queries.
+
 - **Agentic Systems**: [Vercel AI SDK Guide](https://sdk.vercel.ai/) - Leveraged for structured outputs and streaming capabilities that power Qlue's real-time profile building.
 
 - **Video AI Integration**: [Tavus Documentation](https://tavus.com/) - Enables personalized video agent conversations that feel genuinely human and deeply personal.
 
 - **Cross-Domain Analysis**: [Cultural Intelligence Research](https://mf.media.mit.edu/pubs/journal/TasteFabric.pdf) - Theoretical foundation for connecting preferences across music, food, lifestyle, and psychology domains.
 
-These advanced techniques were carefully integrated into Qlue's agentic architecture to create an AI experience that surpasses traditional personalization approaches. The cultural intelligence implementation enhances cross-domain understanding, while the streaming architecture enables engaging real-time experiences that feel genuinely understanding.
+These advanced techniques were carefully integrated into Qlue's agentic architecture to create an AI experience that surpasses traditional personalization approaches. The custom TypeScript SDK enhances development efficiency and type safety, while the WebSocket architecture enables engaging real-time experiences that feel genuinely understanding.

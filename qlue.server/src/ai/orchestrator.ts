@@ -18,7 +18,7 @@ class Orchestrator {
 
   static getInstance(): Orchestrator {
     if (!Orchestrator.instance) {
-      Orchestrator.instance = new Orchestrator();
+      Orchestrator.instance = new Orchestrator(); 
     }
     return Orchestrator.instance;
   }
